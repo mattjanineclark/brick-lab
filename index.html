@@ -1,0 +1,2194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Brick Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#1C1C1E;--panel:#2C2C2E;--panel2:#3A3A3C;
+  --yellow:#F2C314;--yellow2:#C9A00F;
+  --text:#F5F5F5;--muted:#8E8E93;--border:#48484A;
+  --radius:12px;--safe:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);
+  font-family:'Inter',sans-serif;font-size:15px;
+  overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}
+h1,h2,h3,.sg{font-family:'Space Grotesk',sans-serif;}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;
+  background:var(--panel);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;}
+.hdr-logo{width:30px;height:30px;border-radius:7px;background:var(--yellow);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hdr-logo svg{width:18px;height:18px;}
+.hdr h1{font-size:1.05rem;font-weight:700;letter-spacing:-.02em;}
+.hdr-actions{margin-left:auto;display:flex;gap:8px;}
+.icon-btn{background:var(--panel2);border:1px solid var(--border);
+  border-radius:8px;padding:6px 10px;color:var(--text);
+  font-family:'Space Grotesk',sans-serif;font-size:0.75rem;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;gap:5px;}
+.icon-btn:active{opacity:.7;}
+
+/* ── MAIN SCROLL AREA ── */
+.app{display:flex;flex-direction:column;gap:0;
+  height:calc(100vh - 55px);overflow-y:auto;overflow-x:hidden;}
+
+/* ── SECTION CARDS ── */
+.card{background:var(--panel);border-bottom:1px solid var(--border);padding:16px;}
+.card-title{font-size:.7rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--muted);margin-bottom:12px;}
+
+/* ── UPLOAD ── */
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);
+  padding:24px 12px;text-align:center;cursor:pointer;position:relative;
+  transition:border-color .15s;}
+.upload-zone.has-image{border-style:solid;border-color:var(--yellow);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;
+  cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:2rem;margin-bottom:6px;}
+.upload-zone p{font-size:.82rem;color:var(--muted);}
+.thumb-wrap{position:relative;width:100%;aspect-ratio:4/3;
+  background:#000;border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.thumb-crop-badge{position:absolute;bottom:8px;right:8px;
+  background:rgba(0,0,0,.7);border:1px solid var(--yellow);
+  border-radius:6px;padding:4px 10px;font-size:.72rem;font-family:'Space Grotesk',sans-serif;
+  font-weight:600;color:var(--yellow);cursor:pointer;}
+
+/* ── SIZE INPUTS ── */
+.size-grid{display:grid;grid-template-columns:1fr 36px 1fr;gap:8px;align-items:end;}
+.inp-group{display:flex;flex-direction:column;gap:4px;}
+.inp-group label{font-size:.75rem;color:var(--muted);font-weight:500;}
+.inp-group input{background:var(--panel2);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:10px;font-size:.95rem;
+  font-family:'Inter',sans-serif;width:100%;outline:none;text-align:center;}
+.inp-group input:focus{border-color:var(--yellow);}
+.lock-btn{width:36px;height:42px;border-radius:8px;
+  background:var(--panel2);border:1.5px solid var(--border);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;}
+.lock-btn.locked{border-color:var(--yellow);background:rgba(242,195,20,.12);}
+.lock-btn svg{width:16px;height:16px;}
+.set-btn{margin-top:10px;width:100%;padding:11px;
+  background:rgba(242,195,20,.12);border:1.5px solid var(--yellow);
+  color:var(--yellow);border-radius:8px;
+  font-family:'Space Grotesk',sans-serif;font-size:.85rem;font-weight:700;
+  cursor:pointer;transition:background .15s;}
+.set-btn:active{background:rgba(242,195,20,.25);}
+.ratio-hint{font-size:.7rem;color:var(--muted);margin-top:6px;text-align:center;}
+
+/* ── SELECTS ── */
+select{background:var(--panel2);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:10px;font-size:.85rem;
+  font-family:'Inter',sans-serif;width:100%;outline:none;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238E8E93' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;}
+
+/* ── PIECE TYPE BUTTONS ── */
+.piece-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.piece-btn{display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 4px;border-radius:8px;background:var(--panel2);
+  border:1.5px solid var(--border);cursor:pointer;
+  font-size:.62rem;color:var(--muted);
+  font-family:'Space Grotesk',sans-serif;font-weight:600;
+  transition:all .15s;user-select:none;}
+.piece-btn.active{border-color:var(--yellow);
+  background:rgba(242,195,20,.12);color:var(--yellow);}
+.piece-btn svg{width:22px;height:22px;}
+
+/* ── OPTION CARDS (border / join / hang) ── */
+.option-scroll{display:flex;gap:10px;overflow-x:auto;
+  padding-bottom:4px;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;}
+.option-scroll::-webkit-scrollbar{display:none;}
+.opt-card{flex:0 0 140px;border-radius:10px;border:2px solid var(--border);
+  background:var(--panel2);cursor:pointer;overflow:hidden;
+  transition:border-color .15s;}
+.opt-card.active{border-color:var(--yellow);}
+.opt-card img{width:100%;height:80px;object-fit:cover;display:block;
+  background:#111;}
+.opt-card-body{padding:7px 8px;}
+.opt-card-title{font-size:.72rem;font-weight:600;
+  font-family:'Space Grotesk',sans-serif;color:var(--text);line-height:1.2;}
+.opt-card-sub{font-size:.62rem;color:var(--muted);margin-top:2px;line-height:1.3;}
+
+/* ── GENERATE BUTTON ── */
+.gen-btn{display:block;width:calc(100% - 32px);margin:14px 16px;
+  padding:16px;background:var(--yellow);color:#1C1C1E;
+  border:none;border-radius:var(--radius);
+  font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;
+  cursor:pointer;transition:background .15s;}
+.gen-btn:active{background:var(--yellow2);}
+.gen-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+/* ── MOSAIC VIEWER ── */
+.viewer-card{background:var(--panel);border-bottom:1px solid var(--border);}
+.viewer-toolbar{display:flex;align-items:center;gap:6px;
+  padding:10px 12px;flex-wrap:wrap;}
+.viewer-toolbar h2{font-size:.85rem;font-weight:600;margin-right:auto;}
+.zoom-btns{display:flex;gap:5px;align-items:center;}
+.zoom-btn{width:36px;height:36px;border-radius:8px;
+  background:var(--panel2);border:1px solid var(--border);
+  font-size:1.1rem;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;color:var(--text);user-select:none;flex-shrink:0;}
+.zoom-pct{font-size:.72rem;color:var(--muted);font-family:'Space Grotesk',sans-serif;
+  min-width:38px;text-align:center;}
+.edit-toggle{padding:0 12px;height:36px;border-radius:8px;
+  background:var(--panel2);border:1.5px solid var(--border);
+  font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:700;
+  color:var(--muted);cursor:pointer;white-space:nowrap;flex-shrink:0;
+  transition:all .15s;}
+.edit-toggle.active{background:rgba(242,195,20,.15);
+  border-color:var(--yellow);color:var(--yellow);}
+/* The viewer is a fixed-height clipping window; panning moves studGrid via translate */
+.viewer-outer{width:100%;overflow:hidden;touch-action:none;
+  background:#111;position:relative;height:56vw;min-height:200px;max-height:400px;
+  cursor:grab;}
+.viewer-outer.edit-mode{cursor:crosshair;}
+.viewer-outer:active{cursor:grabbing;}
+.viewer-outer.edit-mode:active{cursor:crosshair;}
+#studGrid{display:inline-grid;line-height:0;transform-origin:0 0;
+  position:absolute;top:0;left:0;will-change:transform;}
+.stud{display:inline-block;position:relative;}
+.stud::after{content:'';position:absolute;inset:0;border-radius:inherit;
+  background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.24) 0%,transparent 58%);
+  pointer-events:none;}
+.stud.selected-stud{outline:2px solid #fff;outline-offset:-1px;z-index:2;
+  box-shadow:0 0 0 2px var(--yellow);}
+
+/* ── STUD EDITOR POPUP ── */
+.stud-editor{position:fixed;z-index:400;background:var(--panel);
+  border:1px solid var(--border);border-radius:12px;
+  padding:12px;width:220px;box-shadow:0 8px 32px rgba(0,0,0,.6);
+  display:none;}
+.stud-editor.open{display:block;}
+.stud-editor-title{font-family:'Space Grotesk',sans-serif;font-size:.75rem;
+  font-weight:700;color:var(--muted);margin-bottom:10px;
+  display:flex;align-items:center;justify-content:space-between;}
+.stud-editor-title button{background:none;border:none;color:var(--muted);
+  font-size:1rem;cursor:pointer;padding:0;line-height:1;}
+.color-swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;
+  margin-bottom:10px;}
+.color-swatch-btn{width:100%;aspect-ratio:1;border-radius:4px;border:2px solid transparent;
+  cursor:pointer;transition:transform .1s;}
+.color-swatch-btn:active{transform:scale(.9);}
+.color-swatch-btn.active-color{border-color:#fff;box-shadow:0 0 0 1px var(--yellow);}
+.stud-editor-piece{margin-top:4px;}
+.stud-editor-piece label{font-size:.7rem;color:var(--muted);display:block;margin-bottom:5px;}
+.stud-editor-piece select{font-size:.8rem;}
+
+/* ── BOM TABLE ── */
+.bom-wrap{padding:14px 16px;}
+table{width:100%;border-collapse:collapse;font-size:.78rem;}
+th{text-align:left;padding:5px 8px;font-family:'Space Grotesk',sans-serif;
+  font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:8px 8px;border-bottom:1px solid rgba(255,255,255,.04);
+  vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+.swatch{width:16px;height:16px;border-radius:3px;
+  display:inline-block;vertical-align:middle;
+  border:1px solid rgba(255,255,255,.12);}
+.part-tag{background:rgba(242,195,20,.12);color:var(--yellow);
+  border-radius:4px;padding:1px 5px;font-family:'Space Grotesk',sans-serif;
+  font-size:.62rem;font-weight:700;white-space:nowrap;}
+.bl-link{font-size:.65rem;color:var(--muted);text-decoration:none;
+  border:1px solid var(--border);border-radius:4px;padding:2px 5px;
+  white-space:nowrap;}
+.piece-select{background:var(--panel2);border:1px solid var(--border);
+  color:var(--text);border-radius:5px;padding:4px 6px;
+  font-size:.72rem;font-family:'Inter',sans-serif;
+  -webkit-appearance:none;appearance:none;
+  max-width:90px;}
+
+/* ── CROP OVERLAY ── */
+.crop-overlay{position:fixed;inset:0;background:#000;z-index:500;
+  display:none;flex-direction:column;}
+.crop-overlay.open{display:flex;}
+.crop-hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;background:rgba(0,0,0,.8);
+  border-bottom:1px solid #333;flex-shrink:0;}
+.crop-hdr h2{font-size:.9rem;font-weight:700;color:var(--yellow);}
+.crop-hint{font-size:.72rem;color:var(--muted);padding:8px 16px;
+  text-align:center;flex-shrink:0;}
+.crop-stage{flex:1;position:relative;overflow:hidden;touch-action:none;}
+#cropCanvas{display:block;position:absolute;}
+.crop-rect-el{position:absolute;border:2px solid var(--yellow);
+  box-shadow:0 0 0 9999px rgba(0,0,0,.5);pointer-events:none;}
+.crop-rect-el::before,.crop-rect-el::after{content:'';position:absolute;
+  border:2px solid rgba(255,255,255,.3);}
+.crop-rect-el::before{top:33%;left:0;right:0;border-top-width:0;
+  border-bottom-width:0;border-left:none;border-right:none;height:34%;}
+.crop-rect-el::after{left:33%;top:0;bottom:0;border-left-width:0;
+  border-right-width:0;border-top:none;border-bottom:none;width:34%;}
+/* corner grips */
+.crop-grip{position:absolute;width:22px;height:22px;pointer-events:none;}
+.crop-grip::before,.crop-grip::after{content:'';position:absolute;
+  background:var(--yellow);}
+.crop-grip.tl{top:-2px;left:-2px;}
+.crop-grip.tl::before{top:0;left:0;width:22px;height:3px;}
+.crop-grip.tl::after{top:0;left:0;width:3px;height:22px;}
+.crop-grip.tr{top:-2px;right:-2px;}
+.crop-grip.tr::before{top:0;right:0;width:22px;height:3px;}
+.crop-grip.tr::after{top:0;right:0;width:3px;height:22px;}
+.crop-grip.bl{bottom:-2px;left:-2px;}
+.crop-grip.bl::before{bottom:0;left:0;width:22px;height:3px;}
+.crop-grip.bl::after{bottom:0;left:0;width:3px;height:22px;}
+.crop-grip.br{bottom:-2px;right:-2px;}
+.crop-grip.br::before{bottom:0;right:0;width:22px;height:3px;}
+.crop-grip.br::after{bottom:0;right:0;width:3px;height:22px;}
+.crop-footer{display:flex;gap:10px;padding:14px 16px
+  calc(14px + var(--safe));background:rgba(0,0,0,.8);
+  border-top:1px solid #333;flex-shrink:0;}
+.crop-footer button{flex:1;padding:13px;border-radius:10px;
+  font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;
+  cursor:pointer;border:none;}
+.crop-ok{background:var(--yellow);color:#1C1C1E;}
+.crop-cancel{background:var(--panel2);color:var(--text);}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);
+  z-index:300;display:none;flex-direction:column;overflow:hidden;}
+.modal-overlay.open{display:flex;}
+.modal-bar{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:#1C1C1E;border-bottom:1px solid #333;
+  flex-shrink:0;}
+.modal-bar h3{color:var(--yellow);font-family:'Space Grotesk',sans-serif;
+  font-size:.85rem;font-weight:700;}
+.modal-bar-btns{display:flex;gap:8px;}
+.modal-bar-btns button{background:var(--yellow);border:none;border-radius:6px;
+  padding:8px 16px;font-family:'Space Grotesk',sans-serif;
+  font-size:.82rem;font-weight:700;cursor:pointer;color:#1C1C1E;}
+.modal-bar-btns .cl{background:#3A3A3C;color:#fff;}
+.modal-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#e8e8e8;}
+#bookletContent{width:100%;background:#e8e8e8;padding:12px;
+  display:flex;flex-direction:column;gap:12px;}
+
+/* ── PRINT TRIGGER ── */
+@media print{
+  body>*{display:none!important;}
+  #printBooklet{display:block!important;}
+  @page{size:A4 portrait;margin:0;}
+  .pb-page{page-break-after:always!important;
+    width:210mm!important;min-height:297mm!important;
+    border-radius:0!important;box-shadow:none!important;margin:0!important;}
+  .pb-page:last-child{page-break-after:auto!important;}
+  .pb-inner{padding:12mm 14mm!important;}
+  .pb-cover{padding:20mm 16mm!important;}
+}
+#printBooklet{display:none;}
+
+/* ── BOOKLET — fluid on screen, fixed on print ── */
+.pb-booklet{display:flex;flex-direction:column;gap:0;}
+.pb-page{
+  background:#fff;color:#1a1a1a;
+  border-radius:8px;overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,.25);
+  display:flex;flex-direction:column;
+  width:100%;                /* fluid on screen */
+  font-family:'Space Grotesk','Inter',sans-serif;
+}
+.pb-cover{background:#1C1C1E;color:#fff;flex:1;
+  display:flex;flex-direction:column;
+  align-items:flex-start;justify-content:space-between;
+  padding:clamp(16px,6vw,20mm) clamp(14px,5vw,16mm);}
+.pb-cover-logo{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.pb-cover-logo .dot{width:24px;height:24px;background:#F2C314;border-radius:5px;flex-shrink:0;}
+.pb-cover-logo span{font-size:clamp(.85rem,3vw,1rem);font-weight:700;color:#F2C314;}
+.pb-cover-title{font-size:clamp(1.4rem,6vw,2.2rem);font-weight:700;
+  letter-spacing:-.03em;line-height:1.15;margin-bottom:clamp(12px,4vw,12mm);}
+.pb-cover-mosaic{width:100%;display:flex;justify-content:center;
+  margin-bottom:clamp(10px,3vw,8mm);}
+.pb-cover-meta{display:flex;flex-wrap:wrap;gap:clamp(6px,3vw,8mm);
+  color:#8E8E93;font-size:clamp(.62rem,2.5vw,.72rem);
+  border-top:1px solid #333;padding-top:clamp(8px,3vw,5mm);width:100%;}
+.pb-cover-meta span strong{color:#F2C314;display:block;
+  font-size:clamp(.8rem,3.5vw,.95rem);}
+.pb-inner{padding:clamp(14px,5vw,12mm) clamp(14px,5vw,14mm);
+  flex:1;display:flex;flex-direction:column;gap:clamp(10px,3vw,6mm);}
+.pb-page-header{display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:clamp(6px,2vw,3mm);border-bottom:2px solid #F2C314;}
+.pb-page-header h2{font-size:clamp(.85rem,3.5vw,1rem);font-weight:700;}
+.pb-page-num{font-size:.65rem;color:#999;font-family:'Inter',sans-serif;}
+.pb-bom-table{width:100%;border-collapse:collapse;font-size:clamp(.62rem,2.2vw,.7rem);}
+.pb-bom-table th{background:#1C1C1E;color:#F2C314;
+  padding:clamp(3px,1.2vw,5px) clamp(4px,1.5vw,7px);
+  text-align:left;font-size:clamp(.52rem,1.8vw,.58rem);
+  text-transform:uppercase;letter-spacing:.07em;}
+.pb-bom-table td{padding:clamp(4px,1.5vw,5px) clamp(4px,1.5vw,7px);
+  border-bottom:1px solid #eee;vertical-align:middle;}
+.pb-bom-table tr:nth-child(even) td{background:#f8f8f8;}
+.pb-swatch{width:13px;height:13px;border-radius:2px;
+  display:inline-block;vertical-align:middle;border:1px solid rgba(0,0,0,.1);}
+.pb-part-tag{background:#1C1C1E;color:#F2C314;border-radius:3px;
+  padding:1px 5px;font-size:.58rem;font-weight:700;}
+.pb-bom-total{background:#1C1C1E;color:#fff;
+  padding:clamp(4px,1.5vw,5px) clamp(4px,1.5vw,7px);
+  font-weight:700;font-size:clamp(.62rem,2.2vw,.7rem);margin-top:1px;}
+.pb-steps{display:flex;flex-direction:column;gap:clamp(6px,2vw,4mm);}
+.pb-step{display:flex;gap:clamp(8px,3vw,4mm);align-items:flex-start;
+  padding:clamp(8px,3vw,3mm);background:#f8f8f8;border-radius:6px;}
+.pb-step-num{background:#F2C314;color:#1C1C1E;
+  min-width:clamp(20px,6vw,7mm);height:clamp(20px,6vw,7mm);
+  border-radius:4px;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.68rem;flex-shrink:0;}
+.pb-step-text{font-size:clamp(.68rem,2.5vw,.7rem);line-height:1.5;
+  font-family:'Inter',sans-serif;}
+.pb-step-text strong{font-family:'Space Grotesk',sans-serif;}
+.pb-stats{display:flex;flex-wrap:wrap;gap:clamp(6px,2vw,4mm);}
+.pb-stat{flex:1;min-width:60px;background:#1C1C1E;color:#fff;
+  border-radius:6px;padding:clamp(6px,2vw,3mm) clamp(8px,3vw,4mm);}
+.pb-stat .n{font-size:clamp(.9rem,4vw,1.1rem);font-weight:700;color:#F2C314;}
+.pb-stat .d{font-size:clamp(.55rem,2vw,.58rem);color:#8E8E93;margin-top:2px;}
+.pb-row-table{width:100%;border-collapse:collapse;
+  font-size:clamp(.58rem,2vw,.62rem);font-family:'Inter',sans-serif;}
+.pb-row-table th{background:#333;color:#fff;
+  padding:clamp(3px,1vw,3px) clamp(4px,1.5vw,5px);text-align:left;}
+.pb-row-table td{padding:clamp(3px,1vw,3px) clamp(4px,1.5vw,5px);
+  border-bottom:1px solid #eee;vertical-align:top;}
+.pb-row-table tr:nth-child(even) td{background:#f8f8f8;}
+.pb-row-piece{display:inline-flex;align-items:center;gap:3px;
+  background:#fff;border:1px solid #ddd;border-radius:2px;
+  padding:1px 4px;margin:1px;font-size:.56rem;white-space:nowrap;}
+.pb-row-dot{width:7px;height:7px;border-radius:1px;flex-shrink:0;}
+.pb-mosaic-img{width:100%;image-rendering:pixelated;
+  border:1px solid #eee;border-radius:4px;}
+.pb-photo-img{width:100%;border-radius:4px;border:1px solid #eee;
+  object-fit:contain;max-height:50vw;}
+/* Two-col becomes single-col on narrow screens */
+.pb-two-col{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,3vw,6mm);flex:1;}
+@media(max-width:480px){
+  .pb-two-col{grid-template-columns:1fr;}
+  .pb-cover-meta{gap:8px;}
+}
+.pb-col-label{font-size:.6rem;color:#999;text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;}
+.pb-footer{font-size:.55rem;color:#bbb;text-align:center;
+  padding:clamp(6px,2vw,4mm) 0;font-family:'Inter',sans-serif;
+  border-top:1px solid #eee;margin-top:auto;}
+.viewer-mode-bar{display:flex;gap:6px;padding:0 12px 10px;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.viewer-mode-bar::-webkit-scrollbar{display:none;}
+.mode-btn{flex:1;min-width:60px;padding:8px 4px;border-radius:8px;
+  background:var(--panel2);border:1.5px solid var(--border);
+  font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:700;
+  color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;}
+.mode-btn.active{background:rgba(242,195,20,.15);
+  border-color:var(--yellow);color:var(--yellow);}
+.mode-btn:disabled{opacity:.3;cursor:not-allowed;}
+.mode-btn:not(:disabled):active{opacity:.7;}
+
+/* ── PAINT PANEL ── */
+.paint-panel{background:var(--panel);border-bottom:1px solid var(--border);padding:10px 14px;}
+.paint-panel-label{font-size:.68rem;color:var(--muted);margin-bottom:8px;
+  font-family:'Space Grotesk',sans-serif;font-weight:600;}
+.paint-palette{display:flex;flex-wrap:wrap;gap:6px;}
+.paint-swatch{width:28px;height:28px;border-radius:5px;border:2px solid transparent;
+  cursor:pointer;transition:transform .1s,border-color .1s;flex-shrink:0;}
+.paint-swatch.active{border-color:#fff;box-shadow:0 0 0 2px var(--yellow);
+  transform:scale(1.15);}
+.paint-swatch:active{transform:scale(.9);}
+.paint-palette-divider{width:100%;height:1px;background:var(--border);margin:4px 0;}
+.paint-palette-label{width:100%;font-size:.6rem;color:var(--muted);
+  font-family:'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.08em;}
+.text-panel{background:var(--panel);border-bottom:1px solid var(--border);padding:10px 0 0;}
+.text-panel-row{display:flex;padding:0 14px 10px;gap:6px;}
+.text-panel-row input[type=text]{flex:1;background:var(--panel2);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:10px;font-size:.95rem;outline:none;}
+.text-panel-row input[type=text]:focus{border-color:var(--yellow);}
+.tp-group{display:flex;flex-direction:column;gap:4px;flex:1;}
+.tp-group label{font-size:.68rem;color:var(--muted);font-weight:500;}
+.tp-group input[type=number]{text-align:center;}
+.tp-color-row{display:flex;flex-wrap:wrap;gap:4px;}
+.tp-color-btn{width:20px;height:20px;border-radius:3px;border:2px solid transparent;
+  cursor:pointer;flex-shrink:0;}
+.tp-color-btn.active{border-color:#fff;box-shadow:0 0 0 1px var(--yellow);}
+.tp-toggle{background:var(--panel2);border:1.5px solid var(--border);color:var(--muted);
+  border-radius:6px;padding:8px 14px;font-family:'Space Grotesk',sans-serif;
+  font-size:.85rem;font-weight:700;cursor:pointer;width:100%;}
+.tp-toggle.active{border-color:var(--yellow);color:var(--yellow);background:rgba(242,195,20,.12);}
+.tp-action{flex:1;padding:11px 0;border:none;border-radius:8px;
+  font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;
+  cursor:pointer;background:var(--panel2);color:var(--text);}
+.tp-stamp{background:var(--yellow);color:#1C1C1E;}
+.tp-action:active{opacity:.8;}
+
+/* ── TEXT OVERLAY ON MOSAIC ── */
+#textOverlay{position:absolute;pointer-events:none;z-index:10;
+  border:2px dashed rgba(242,195,20,.8);touch-action:none;}
+#textOverlay.active{pointer-events:all;cursor:move;}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="hdr">
+  <div class="hdr-logo">
+    <svg viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="3" width="8" height="8" rx="1.5" fill="#1C1C1E"/>
+      <rect x="13" y="3" width="8" height="8" rx="1.5" fill="#1C1C1E"/>
+      <rect x="3" y="13" width="8" height="8" rx="1.5" fill="#1C1C1E"/>
+      <rect x="13" y="13" width="8" height="8" rx="1.5" fill="#1C1C1E"/>
+      <circle cx="7" cy="7" r="2" fill="#F2C314"/>
+      <circle cx="17" cy="7" r="2" fill="#F2C314"/>
+      <circle cx="7" cy="17" r="2" fill="#F2C314"/>
+      <circle cx="17" cy="17" r="2" fill="#F2C314"/>
+    </svg>
+  </div>
+  <h1>Brick Lab</h1>
+  <div class="hdr-actions">
+    <button class="icon-btn" id="exportBtn" style="display:none">PNG</button>
+    <button class="icon-btn" id="printBtn" style="display:none">📄 Print</button>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- 1. Photo -->
+  <div class="card">
+    <div class="card-title">Photo</div>
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" accept="image/*" id="fileInput"/>
+      <div id="uploadPrompt">
+        <div class="upload-icon">📷</div>
+        <p>Tap to choose a photo</p>
+      </div>
+      <div id="thumbArea" style="display:none">
+        <div class="thumb-wrap">
+          <img id="thumbImg"/>
+          <div class="thumb-crop-badge" id="cropBadge">✂ Adjust Crop</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Size -->
+  <div class="card">
+    <div class="card-title">Mosaic Size (studs)</div>
+    <div class="size-grid">
+      <div class="inp-group">
+        <label>Width</label>
+        <input type="number" id="studsW" value="48" inputmode="numeric"/>
+      </div>
+      <button class="lock-btn locked" id="lockBtn">
+        <svg id="lockIcon" viewBox="0 0 16 16" fill="none">
+          <rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" opacity=".7"/>
+          <path d="M5.5 7V5.5a2.5 2.5 0 0 1 5 0V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        </svg>
+      </button>
+      <div class="inp-group">
+        <label>Height</label>
+        <input type="number" id="studsH" value="48" inputmode="numeric"/>
+      </div>
+    </div>
+    <button class="set-btn" id="setSizeBtn">↵ Set Size</button>
+    <div class="ratio-hint" id="ratioHint"></div>
+  </div>
+
+  <!-- 3. Palette & Pieces -->
+  <div class="card">
+    <div class="card-title">Colours</div>
+    <select id="numColors">
+      <option value="4">4 colours</option>
+      <option value="6">6 colours</option>
+      <option value="8">8 colours</option>
+      <option value="12">12 colours</option>
+      <option value="16" selected>16 colours</option>
+      <option value="24">24 colours</option>
+      <option value="32">32 colours</option>
+    </select>
+  </div>
+
+  <!-- 4. Piece type -->
+  <div class="card">
+    <div class="card-title">Default Piece Type</div>
+    <div class="piece-grid" id="pieceGrid"></div>
+  </div>
+
+  <!-- 5. Baseplate -->
+  <div class="card">
+    <div class="card-title">Baseplate Size</div>
+    <select id="bpSize">
+      <option value="16">16×16 studs</option>
+      <option value="32" selected>32×32 studs</option>
+      <option value="48">48×48 studs</option>
+    </select>
+  </div>
+
+  <!-- 6. Border -->
+  <div class="card">
+    <div class="card-title">Border Style</div>
+    <div class="option-scroll" id="borderScroll"></div>
+    <div style="margin-top:10px">
+      <select id="borderColor">
+        <option value="Black" data-hex="#05131D">Border: Black</option>
+        <option value="White" data-hex="#F2F3F2">Border: White</option>
+        <option value="Dark Bluish Gray" data-hex="#6C6E68">Border: Dark Gray</option>
+        <option value="Red" data-hex="#C91A09">Border: Red</option>
+        <option value="Tan" data-hex="#E4CD9E">Border: Tan</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 7. Joining -->
+  <div class="card">
+    <div class="card-title">Joining Baseplates</div>
+    <div class="option-scroll" id="joinScroll"></div>
+  </div>
+
+  <!-- 8. Hanging -->
+  <div class="card">
+    <div class="card-title">Wall Hanging</div>
+    <div class="option-scroll" id="hangScroll"></div>
+  </div>
+
+  <!-- Generate -->
+  <button class="gen-btn" id="generateBtn" disabled>Generate Mosaic</button>
+
+  <!-- Mosaic viewer -->
+  <div class="viewer-card" id="viewerCard" style="display:none">
+    <div class="viewer-toolbar">
+      <h2>Mosaic</h2>
+      <div class="zoom-btns">
+        <button class="zoom-btn" id="zoomOut">−</button>
+        <span class="zoom-pct" id="zoomPct">100%</span>
+        <button class="zoom-btn" id="zoomIn">+</button>
+      </div>
+    </div>
+    <div class="viewer-mode-bar">
+      <button class="mode-btn" id="editToggle">✏ Edit</button>
+      <button class="mode-btn" id="paintToggle">🖌 Paint</button>
+      <button class="mode-btn" id="textToggle">Aa Text</button>
+      <button class="mode-btn" id="undoBtn" disabled>↩ Undo</button>
+    </div>
+    <div class="viewer-outer" id="viewerOuter">
+      <div id="studGrid"></div>
+      <div id="textOverlay"></div>
+    </div>
+  </div>
+
+  <!-- Stud editor popup -->
+  <div class="stud-editor" id="studEditor">
+    <div class="stud-editor-title">
+      <span>Change Colour</span>
+      <button id="editorClose">✕</button>
+    </div>
+    <div class="color-swatches" id="colorSwatches"></div>
+    <div class="stud-editor-piece">
+      <label>Piece type for this colour</label>
+      <select id="editorPiece" class="piece-select" style="width:100%;max-width:100%">
+      </select>
+    </div>
+  </div>
+
+  <!-- Paint palette panel -->
+  <div class="paint-panel" id="paintPanel" style="display:none">
+    <div class="paint-panel-label">Paint colour — tap studs to paint, drag to paint multiple</div>
+    <div class="paint-palette" id="paintPalette"></div>
+  </div>
+
+  <!-- Text overlay panel -->
+  <div class="text-panel" id="textPanel" style="display:none">
+    <div class="text-panel-row">
+      <input type="text" id="textInput" placeholder="Type text…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+    </div>
+    <div class="text-panel-row" style="gap:8px">
+      <div class="tp-group">
+        <label>Font</label>
+        <select id="textFont">
+          <option value="'Space Grotesk',sans-serif">Grotesk (chunky)</option>
+          <option value="'Courier New',monospace">Mono (pixel)</option>
+          <option value="Impact,sans-serif">Impact (bold)</option>
+          <option value="Georgia,serif">Georgia (serif)</option>
+          <option value="Arial Black,sans-serif">Arial Black</option>
+        </select>
+      </div>
+      <div class="tp-group">
+        <label>Size (studs tall)</label>
+        <input type="number" id="textSize" value="8" min="2" max="40"/>
+      </div>
+    </div>
+    <div class="text-panel-row" style="gap:8px;align-items:center">
+      <div class="tp-group" style="flex:1">
+        <label>Text colour</label>
+        <div class="tp-color-row" id="textColorRow"></div>
+      </div>
+      <div class="tp-group" style="flex:1">
+        <label>Bold</label>
+        <button class="tp-toggle" id="textBold">B</button>
+      </div>
+    </div>
+    <div class="text-panel-row" style="gap:8px">
+      <button class="tp-action" id="textPreview">Preview</button>
+      <button class="tp-action tp-stamp" id="textStamp">Stamp onto Mosaic</button>
+    </div>
+    <div style="font-size:.65rem;color:var(--muted);padding:0 14px 10px;line-height:1.4">
+      After preview: drag to reposition, pinch to resize. Tap Stamp to burn in permanently.
+    </div>
+  </div>
+  <div class="card" id="bomSection" style="display:none">
+    <div class="card-title">Bill of Materials — <span id="totalPieces" style="color:var(--yellow)">—</span> pieces</div>
+    <div class="bom-wrap" style="padding:0;overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Col</th><th>Name</th><th>Type</th><th>Part</th>
+            <th style="text-align:right">Pcs</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="bomBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="height:calc(20px + var(--safe))"></div>
+</div>
+
+<!-- Crop Overlay -->
+<div class="crop-overlay" id="cropOverlay">
+  <div class="crop-hdr">
+    <h2>Adjust Crop</h2>
+    <span id="cropRatioLabel" style="font-size:.8rem;color:var(--muted)">48×48</span>
+  </div>
+  <div class="crop-hint">Drag to move · Pinch or drag corners to resize</div>
+  <div class="crop-stage" id="cropStage">
+    <canvas id="cropCanvas"></canvas>
+    <div class="crop-rect-el" id="cropRectEl">
+      <div class="crop-grip tl"></div>
+      <div class="crop-grip tr"></div>
+      <div class="crop-grip bl"></div>
+      <div class="crop-grip br"></div>
+    </div>
+  </div>
+  <div class="crop-footer">
+    <button class="crop-ok" id="cropOk">✓ Use This Crop</button>
+    <button class="crop-cancel" id="cropCancel">Cancel</button>
+  </div>
+</div>
+
+<!-- Print preview modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-bar">
+    <h3>📄 Print Booklet</h3>
+    <div class="modal-bar-btns">
+      <button onclick="window.print()">🖨 Print</button>
+      <button class="cl" onclick="document.getElementById('modalOverlay').classList.remove('open')">✕ Close</button>
+    </div>
+  </div>
+  <div class="modal-scroll">
+    <div id="bookletContent" class="pb-booklet"></div>
+  </div>
+</div>
+<div id="printBooklet"></div>
+<canvas id="offscreen" style="display:none"></canvas>
+<canvas id="exportCanvas" style="display:none"></canvas>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════════════
+
+const LEGO_COLORS = [
+  {name:'White',             hex:'#F2F3F2',bl:'1'},
+  {name:'Black',             hex:'#05131D',bl:'11'},
+  {name:'Red',               hex:'#C91A09',bl:'5'},
+  {name:'Blue',              hex:'#0055BF',bl:'7'},
+  {name:'Yellow',            hex:'#F2CD37',bl:'3'},
+  {name:'Green',             hex:'#257A3E',bl:'6'},
+  {name:'Orange',            hex:'#FE8A18',bl:'4'},
+  {name:'Dark Red',          hex:'#720E0F',bl:'59'},
+  {name:'Dark Blue',         hex:'#0A3463',bl:'63'},
+  {name:'Lime',              hex:'#BBE90B',bl:'34'},
+  {name:'Bright Green',      hex:'#4B9F4A',bl:'36'},
+  {name:'Dark Orange',       hex:'#A95500',bl:'68'},
+  {name:'Reddish Brown',     hex:'#582A12',bl:'88'},
+  {name:'Dark Brown',        hex:'#352100',bl:'120'},
+  {name:'Tan',               hex:'#E4CD9E',bl:'2'},
+  {name:'Dark Tan',          hex:'#958A73',bl:'69'},
+  {name:'Medium Nougat',     hex:'#AA7D55',bl:'150'},
+  {name:'Nougat',            hex:'#D09168',bl:'28'},
+  {name:'Dark Bluish Gray',  hex:'#6C6E68',bl:'85'},
+  {name:'Light Bluish Gray', hex:'#A0A5A9',bl:'86'},
+  {name:'Dark Purple',       hex:'#3F3691',bl:'89'},
+  {name:'Magenta',           hex:'#923978',bl:'71'},
+  {name:'Bright Pink',       hex:'#E4ADC8',bl:'104'},
+  {name:'Medium Azure',      hex:'#36AEBF',bl:'156'},
+  {name:'Dark Turquoise',    hex:'#008F9B',bl:'39'},
+  {name:'Sand Green',        hex:'#A0BCAC',bl:'48'},
+  {name:'Olive Green',       hex:'#9B9A5A',bl:'155'},
+  {name:'Yellowish Green',   hex:'#DFEEA5',bl:'158'},
+  {name:'Sand Blue',         hex:'#6074A1',bl:'55'},
+  {name:'Bright Light Orange',hex:'#F8BB3D',bl:'110'},
+  {name:'Medium Lavender',   hex:'#AC78BA',bl:'157'},
+];
+
+const PIECE_TYPES = [
+  {id:'round1', label:'1×1 Round',part:'4073',studs:1,w:1,h:1,round:true},
+  {id:'square1',label:'1×1 Flat', part:'3024',studs:1,w:1,h:1,round:false},
+  {id:'flat12', label:'1×2 Flat', part:'3023',studs:2,w:2,h:1,round:false},
+  {id:'flat22', label:'2×2 Flat', part:'3022',studs:4,w:2,h:2,round:false},
+  {id:'flat24', label:'2×4 Flat', part:'3020',studs:8,w:4,h:2,round:false},
+];
+
+// Option cards — images are illustrative CC/public web images
+const BORDER_OPTIONS = [
+  {id:'none',    title:'None',              sub:'No border',
+   img:'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=200&q=60'},
+  {id:'flat1',   title:'1-stud flat',       sub:'Single row, flush surface (part 3023)',
+   img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=60'},
+  {id:'flat2',   title:'2-stud raised',     sub:'Double layer, picture-frame depth',
+   img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=60'},
+  {id:'technic', title:'Technic strip',     sub:'Pin-hole strip — also used for hanging',
+   img:'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=200&q=60'},
+];
+
+const JOIN_OPTIONS = [
+  {id:'bridge', title:'Bridge plates',      sub:'1×8 plates on back (part 3460) — most common',
+   img:'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=200&q=60'},
+  {id:'technic',title:'Technic pins',       sub:'Pins through baseplate holes — from LEGO Art sets',
+   img:'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=200&q=60'},
+  {id:'ties',   title:'Cable ties',         sub:'3mm ties through Technic holes — cheap & solid',
+   img:'https://images.unsplash.com/photo-1581093804475-577d72e38aa0?w=200&q=60'},
+  {id:'tape',   title:'Foam tape',          sub:'3M VHB on back face — easy, removable',
+   img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=60'},
+];
+
+const HANG_OPTIONS = [
+  {id:'command', title:'Command strips',    sub:'No drill, holds ~7 kg per pair',
+   img:'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=60'},
+  {id:'french',  title:'French cleat',      sub:'Best for heavy mosaics, lifts off easily',
+   img:'https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=200&q=60'},
+  {id:'dring',   title:'D-ring + wire',     sub:'Standard picture-frame hardware',
+   img:'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=60'},
+  {id:'wire',    title:'Wire through holes',sub:'Threaded through Technic holes in border',
+   img:'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=200&q=60'},
+  {id:'velcro',  title:'Heavy Velcro',      sub:'Dual-lock strips, repositionable',
+   img:'https://images.unsplash.com/photo-1581093804475-577d72e38aa0?w=200&q=60'},
+];
+
+// Selected option IDs
+let selectedBorder = 'flat1';
+let selectedJoin   = 'bridge';
+let selectedHang   = 'command';
+
+// ══════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════
+let imageData   = null;
+let originalSrc = null;
+let mosaicData  = null;
+let cropRect    = null;   // {sx,sy,sw,sh} in native px
+let ratioLocked = true;
+let defaultPiece= 'round1';
+let colorPieceMap = {};
+let zoomLevel   = 1;      // current zoom multiplier
+let panX = 0, panY = 0;   // pan offset in CSS px
+let editMode = false;
+let paintMode = false;
+let selectedStudIdx = null;
+const BASE_STUD = 8;      // px per stud at zoom=1
+
+// DOM
+const fileInput   = document.getElementById('fileInput');
+const uploadZone  = document.getElementById('uploadZone');
+const thumbArea   = document.getElementById('thumbArea');
+const thumbImg    = document.getElementById('thumbImg');
+const cropBadge   = document.getElementById('cropBadge');
+const studsWEl    = document.getElementById('studsW');
+const studsHEl    = document.getElementById('studsH');
+const lockBtn     = document.getElementById('lockBtn');
+const setSizeBtn  = document.getElementById('setSizeBtn');
+const ratioHint   = document.getElementById('ratioHint');
+const generateBtn = document.getElementById('generateBtn');
+const studGrid    = document.getElementById('studGrid');
+const bomSection  = document.getElementById('bomSection');
+const bomBody     = document.getElementById('bomBody');
+const totalPiecesEl = document.getElementById('totalPieces');
+const viewerCard  = document.getElementById('viewerCard');
+const viewerOuter = document.getElementById('viewerOuter');
+const exportBtn   = document.getElementById('exportBtn');
+const printBtn    = document.getElementById('printBtn');
+
+// ══════════════════════════════════════════════════════════════════════
+// OPTION CARD BUILDER
+// ══════════════════════════════════════════════════════════════════════
+function buildOptionCards(containerId, options, getSelected, setSelected) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  options.forEach(opt => {
+    const card = document.createElement('div');
+    card.className = 'opt-card' + (getSelected() === opt.id ? ' active' : '');
+    card.innerHTML = `<img src="${opt.img}" alt="${opt.title}" loading="lazy" onerror="this.style.background='#222';this.style.height='80px'"/>
+      <div class="opt-card-body">
+        <div class="opt-card-title">${opt.title}</div>
+        <div class="opt-card-sub">${opt.sub}</div>
+      </div>`;
+    card.addEventListener('click', () => {
+      setSelected(opt.id);
+      container.querySelectorAll('.opt-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+    });
+    container.appendChild(card);
+  });
+}
+
+buildOptionCardsWithRerender('borderScroll', BORDER_OPTIONS, ()=>selectedBorder, v=>{ selectedBorder=v; });
+buildOptionCards('joinScroll',   JOIN_OPTIONS,   ()=>selectedJoin,   v=>selectedJoin=v);
+buildOptionCards('hangScroll',   HANG_OPTIONS,   ()=>selectedHang,   v=>selectedHang=v);
+
+// ══════════════════════════════════════════════════════════════════════
+// PIECE TYPE BUTTONS
+// ══════════════════════════════════════════════════════════════════════
+function roundSVG(){return`<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="currentColor" opacity=".45"/><circle cx="12" cy="12" r="5" fill="currentColor"/></svg>`;}
+function squareSVG(w,h){const pw=w*9,ph=h*9;let d='';for(let r=0;r<h;r++)for(let c=0;c<w;c++)d+=`<circle cx="${c*9+4.5}" cy="${r*9+4.5}" r="2.2" fill="currentColor"/>`;return`<svg viewBox="-1 -1 ${pw+2} ${ph+2}" fill="none"><rect x="0" y="0" width="${pw}" height="${ph}" rx="1.5" fill="currentColor" opacity=".28" stroke="currentColor" stroke-width="1"/>${d}</svg>`;}
+
+(function buildPieceGrid(){
+  const pg=document.getElementById('pieceGrid');
+  PIECE_TYPES.forEach(pt=>{
+    const b=document.createElement('button');
+    b.className='piece-btn'+(pt.id===defaultPiece?' active':'');
+    b.innerHTML=(pt.round?roundSVG():squareSVG(pt.w,pt.h))+`<span>${pt.label}</span>`;
+    b.addEventListener('click',()=>{
+      defaultPiece=pt.id;
+      pg.querySelectorAll('.piece-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+    });
+    pg.appendChild(b);
+  });
+})();
+
+// ══════════════════════════════════════════════════════════════════════
+// RATIO LOCK
+// ══════════════════════════════════════════════════════════════════════
+function gcd(a,b){return b===0?a:gcd(b,a%b);}
+
+function updateLockIcon(){
+  lockBtn.classList.toggle('locked',ratioLocked);
+  document.getElementById('lockIcon').innerHTML = ratioLocked
+    ? `<rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" opacity=".7"/><path d="M5.5 7V5.5a2.5 2.5 0 0 1 5 0V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/>`
+    : `<rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" opacity=".35"/><path d="M5.5 7V5.5a2.5 2.5 0 0 1 5 0V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" stroke-dasharray="2 1.5"/>`;
+}
+function updateRatioHint(){
+  const w=parseInt(studsWEl.value)||48, h=parseInt(studsHEl.value)||48;
+  const g=gcd(w,h);
+  ratioHint.textContent = ratioLocked ? `🔗 ${w/g}:${h/g} ratio locked` : 'Ratio unlocked';
+}
+lockBtn.addEventListener('click',()=>{
+  ratioLocked=!ratioLocked; updateLockIcon(); updateRatioHint();
+  if(ratioLocked && imageData) snapCropToRatio();
+});
+updateLockIcon(); updateRatioHint();
+
+// ══════════════════════════════════════════════════════════════════════
+// SIZE — commit on Set button, blur, or Enter only
+// ══════════════════════════════════════════════════════════════════════
+function applySize(changedAxis){
+  let w=parseInt(studsWEl.value), h=parseInt(studsHEl.value);
+  const wOk=!isNaN(w)&&w>=1, hOk=!isNaN(h)&&h>=1;
+  if(!wOk && !hOk) return;
+  if(wOk) w=Math.max(8,Math.min(128,w));
+  if(hOk) h=Math.max(8,Math.min(128,h));
+
+  if(ratioLocked && imageData){
+    const cr=cropRect||{sx:0,sy:0,sw:imageData.naturalWidth,sh:imageData.naturalHeight};
+    const ratio=cr.sw/cr.sh;
+    if(changedAxis==='w' && wOk)      h=Math.max(8,Math.min(128,Math.round(w/ratio)));
+    else if(changedAxis==='h' && hOk) w=Math.max(8,Math.min(128,Math.round(h*ratio)));
+    else if(wOk)                      h=Math.max(8,Math.min(128,Math.round(w/ratio)));
+  }
+  if(wOk) studsWEl.value=w;
+  if(hOk) studsHEl.value=h;
+  updateRatioHint();
+  if(imageData) snapCropToRatio();
+}
+setSizeBtn.addEventListener('click',()=>applySize('w'));
+studsWEl.addEventListener('blur',()=>{if(studsWEl.value!=='')applySize('w');});
+studsHEl.addEventListener('blur',()=>{if(studsHEl.value!=='')applySize('h');});
+studsWEl.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applySize('w');studsWEl.blur();}});
+studsHEl.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applySize('h');studsHEl.blur();}});
+
+// ══════════════════════════════════════════════════════════════════════
+// FILE INPUT
+// ══════════════════════════════════════════════════════════════════════
+fileInput.addEventListener('change', e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    originalSrc=ev.target.result;
+    const img=new Image();
+    img.onload=()=>{
+      imageData=img; cropRect=null;
+      if(ratioLocked) snapCropToRatio();
+      updateThumb();
+      document.getElementById('uploadPrompt').style.display='none';
+      thumbArea.style.display='block';
+      uploadZone.classList.add('has-image');
+      generateBtn.disabled=false;
+      updateRatioHint();
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+function snapCropToRatio(){
+  if(!imageData) return;
+  const W=Math.max(8,parseInt(studsWEl.value)||48);
+  const H=Math.max(8,parseInt(studsHEl.value)||48);
+  const tar=W/H;
+  const iw=imageData.naturalWidth, ih=imageData.naturalHeight;
+  let sw,sh;
+  if(iw/ih>tar){sh=ih;sw=Math.round(ih*tar);}
+  else          {sw=iw;sh=Math.round(iw/tar);}
+  cropRect={sx:Math.round((iw-sw)/2),sy:Math.round((ih-sh)/2),sw,sh};
+  updateThumb();
+}
+
+function updateThumb(){
+  if(!imageData||!cropRect){thumbImg.src=originalSrc;return;}
+  const cv=document.createElement('canvas');
+  const maxT=400; const asp=cropRect.sw/cropRect.sh;
+  cv.width=asp>=1?maxT:Math.round(maxT*asp);
+  cv.height=asp>=1?Math.round(maxT/asp):maxT;
+  cv.getContext('2d').drawImage(imageData,cropRect.sx,cropRect.sy,cropRect.sw,cropRect.sh,0,0,cv.width,cv.height);
+  thumbImg.src=cv.toDataURL();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CROP TOOL — touch-native
+// ══════════════════════════════════════════════════════════════════════
+cropBadge.addEventListener('click', e=>{ e.stopPropagation(); openCrop(); });
+
+function openCrop(){
+  if(!imageData) return;
+  const W=Math.max(8,parseInt(studsWEl.value)||48);
+  const H=Math.max(8,parseInt(studsHEl.value)||48);
+  document.getElementById('cropRatioLabel').textContent=`${W}×${H} studs`;
+  const overlay=document.getElementById('cropOverlay');
+  const stage=document.getElementById('cropStage');
+  const cc=document.getElementById('cropCanvas');
+  overlay.classList.add('open');
+
+  // Size canvas to stage
+  const sw=stage.clientWidth, sh=stage.clientHeight;
+  const iw=imageData.naturalWidth, ih=imageData.naturalHeight;
+  const scale=Math.min(sw/iw, sh/ih, 1);
+  const dw=Math.round(iw*scale), dh=Math.round(ih*scale);
+  cc.width=dw; cc.height=dh;
+  cc.style.left=Math.round((sw-dw)/2)+'px';
+  cc.style.top=Math.round((sh-dh)/2)+'px';
+  cc.getContext('2d').drawImage(imageData,0,0,dw,dh);
+
+  const ox=parseFloat(cc.style.left), oy=parseFloat(cc.style.top);
+  const tar=W/H;
+
+  // Initial crop rect in canvas coords
+  const cr=cropRect||{sx:0,sy:0,sw:iw,sh:ih};
+  let rx=ox+cr.sx*scale, ry=oy+cr.sy*scale;
+  let rw=cr.sw*scale,    rh=cr.sh*scale;
+
+  const rectEl=document.getElementById('cropRectEl');
+  function placeRect(){
+    // Clamp
+    rw=Math.max(30, Math.min(dw, rw));
+    rh=Math.round(rw/tar);
+    rh=Math.max(20, Math.min(dh, rh));
+    rw=Math.round(rh*tar);
+    rx=Math.max(ox, Math.min(ox+dw-rw, rx));
+    ry=Math.max(oy, Math.min(oy+dh-rh, ry));
+    rectEl.style.left=rx+'px'; rectEl.style.top=ry+'px';
+    rectEl.style.width=rw+'px'; rectEl.style.height=rh+'px';
+  }
+  placeRect();
+
+  // ── Touch handling ────────────────────────────────────────────────
+  let t0=null; // first touch state for move
+  let pinch0=null; // two-finger pinch state
+
+  function getStagePos(touch){
+    const r=stage.getBoundingClientRect();
+    return {x:touch.clientX-r.left, y:touch.clientY-r.top};
+  }
+  function touchDist(t1,t2){
+    return Math.hypot(t1.clientX-t2.clientX, t1.clientY-t2.clientY);
+  }
+  function touchMid(t1,t2){
+    return {x:(t1.clientX+t2.clientX)/2, y:(t1.clientY+t2.clientY)/2};
+  }
+
+  function onTouchStart(e){
+    e.preventDefault();
+    const touches=e.touches;
+    if(touches.length===1){
+      const p=getStagePos(touches[0]);
+      // Check if inside rect → move, else nothing
+      if(p.x>=rx&&p.x<=rx+rw&&p.y>=ry&&p.y<=ry+rh){
+        t0={startX:p.x,startY:p.y,startRx:rx,startRy:ry};
+      } else {
+        // Tap outside → recentre crop on tap point
+        rx=p.x-rw/2; ry=p.y-rh/2; placeRect();
+      }
+      pinch0=null;
+    } else if(touches.length===2){
+      t0=null;
+      const d=touchDist(touches[0],touches[1]);
+      const m=touchMid(touches[0],touches[1]);
+      const sp=getStagePos({clientX:m.x,clientY:m.y});
+      pinch0={dist:d,rw,rh,rx,ry,midX:sp.x,midY:sp.y};
+    }
+  }
+
+  function onTouchMove(e){
+    e.preventDefault();
+    const touches=e.touches;
+    if(touches.length===1 && t0){
+      const p=getStagePos(touches[0]);
+      rx=t0.startRx+(p.x-t0.startX);
+      ry=t0.startRy+(p.y-t0.startY);
+      placeRect();
+    } else if(touches.length===2 && pinch0){
+      const d=touchDist(touches[0],touches[1]);
+      const factor=d/pinch0.dist;
+      rw=pinch0.rw*factor;
+      rh=Math.round(rw/tar);
+      // Keep centre stable
+      rx=pinch0.midX-rw/2;
+      ry=pinch0.midY-rh/2;
+      placeRect();
+    }
+  }
+
+  function onTouchEnd(e){
+    if(e.touches.length===0){ t0=null; pinch0=null; }
+    else if(e.touches.length===1){ pinch0=null; }
+  }
+
+  // Mouse fallback for desktop testing
+  let mouseDrag=null;
+  function onMouseDown(e){
+    const r=stage.getBoundingClientRect();
+    const px=e.clientX-r.left, py=e.clientY-r.top;
+    if(px>=rx&&px<=rx+rw&&py>=ry&&py<=ry+rh){
+      mouseDrag={startX:px,startY:py,startRx:rx,startRy:ry};
+    } else { rx=px-rw/2; ry=py-rh/2; placeRect(); }
+  }
+  function onMouseMove(e){
+    if(!mouseDrag) return;
+    const r=stage.getBoundingClientRect();
+    const px=e.clientX-r.left, py=e.clientY-r.top;
+    rx=mouseDrag.startRx+(px-mouseDrag.startX);
+    ry=mouseDrag.startRy+(py-mouseDrag.startY);
+    placeRect();
+  }
+  function onMouseUp(){ mouseDrag=null; }
+
+  // Resize with mouse wheel
+  function onWheel(e){
+    e.preventDefault();
+    rw *= e.deltaY<0 ? 1.08 : 0.93;
+    placeRect();
+  }
+
+  stage.addEventListener('touchstart',onTouchStart,{passive:false});
+  stage.addEventListener('touchmove',onTouchMove,{passive:false});
+  stage.addEventListener('touchend',onTouchEnd);
+  stage.addEventListener('mousedown',onMouseDown);
+  document.addEventListener('mousemove',onMouseMove);
+  document.addEventListener('mouseup',onMouseUp);
+  stage.addEventListener('wheel',onWheel,{passive:false});
+
+  function cleanup(){
+    stage.removeEventListener('touchstart',onTouchStart);
+    stage.removeEventListener('touchmove',onTouchMove);
+    stage.removeEventListener('touchend',onTouchEnd);
+    stage.removeEventListener('mousedown',onMouseDown);
+    document.removeEventListener('mousemove',onMouseMove);
+    document.removeEventListener('mouseup',onMouseUp);
+    stage.removeEventListener('wheel',onWheel);
+    overlay.classList.remove('open');
+  }
+
+  document.getElementById('cropOk').onclick=()=>{
+    cropRect={
+      sx:Math.max(0,Math.round((rx-ox)/scale)),
+      sy:Math.max(0,Math.round((ry-oy)/scale)),
+      sw:Math.max(1,Math.round(rw/scale)),
+      sh:Math.max(1,Math.round(rh/scale)),
+    };
+    cropRect.sw=Math.min(iw-cropRect.sx,cropRect.sw);
+    cropRect.sh=Math.min(ih-cropRect.sy,cropRect.sh);
+    cleanup(); updateThumb();
+  };
+  document.getElementById('cropCancel').onclick=cleanup;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// GENERATE
+// ══════════════════════════════════════════════════════════════════════
+generateBtn.addEventListener('click', generate);
+
+function generate(){
+  if(!imageData) return;
+  const W=Math.max(8,Math.min(128,parseInt(studsWEl.value)||48));
+  const H=Math.max(8,Math.min(128,parseInt(studsHEl.value)||48));
+  const nColors=parseInt(document.getElementById('numColors').value)||16;
+  const cr=cropRect||{sx:0,sy:0,sw:imageData.naturalWidth,sh:imageData.naturalHeight};
+
+  const cv=document.getElementById('offscreen');
+  cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.drawImage(imageData,cr.sx,cr.sy,cr.sw,cr.sh,0,0,W,H);
+  const raw=ctx.getImageData(0,0,W,H).data;
+
+  const allPx=[];
+  for(let i=0;i<W*H;i++) allPx.push({r:raw[i*4],g:raw[i*4+1],b:raw[i*4+2]});
+  const palette=kMeans(allPx,nColors);
+  const legoMapped=palette.map(c=>closestLego(c));
+  const pixels=allPx.map(px=>{
+    let best=0,bestD=Infinity;
+    palette.forEach((c,i)=>{const d=dist(px,c);if(d<bestD){bestD=d;best=i;}});
+    return legoMapped[best];
+  });
+
+  mosaicData={pixels,w:W,h:H};
+  colorPieceMap={};
+  [...new Set(pixels.map(p=>p.hex))].forEach(h=>{colorPieceMap[h]=defaultPiece;});
+
+  renderMosaic();
+  renderBOM();
+
+  viewerCard.style.display='block';
+  bomSection.style.display='block';
+  exportBtn.style.display='';
+  printBtn.style.display='';
+
+  // Scroll to viewer
+  setTimeout(()=>viewerCard.scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+function dist(a,b){return(a.r-b.r)**2+(a.g-b.g)**2+(a.b-b.b)**2;}
+function hexToRgb(h){return{r:parseInt(h.slice(1,3),16),g:parseInt(h.slice(3,5),16),b:parseInt(h.slice(5,7),16)};}
+function closestLego(rgb){
+  let best=LEGO_COLORS[0],bestD=Infinity;
+  LEGO_COLORS.forEach(lc=>{const lg=hexToRgb(lc.hex);const d=dist(rgb,lg);if(d<bestD){bestD=d;best=lc;}});
+  const lg=hexToRgb(best.hex);
+  return{r:lg.r,g:lg.g,b:lg.b,hex:best.hex,name:best.name,bl:best.bl};
+}
+function kMeans(pixels,k,maxIter=10){
+  const step=Math.floor(pixels.length/k);
+  let cents=Array.from({length:k},(_,i)=>({...pixels[Math.min(i*step,pixels.length-1)]}));
+  for(let it=0;it<maxIter;it++){
+    const s=Array.from({length:k},()=>({r:0,g:0,b:0,n:0}));
+    pixels.forEach(px=>{let best=0,bd=Infinity;cents.forEach((c,i)=>{const d=dist(px,c);if(d<bd){bd=d;best=i;}});s[best].r+=px.r;s[best].g+=px.g;s[best].b+=px.b;s[best].n++;});
+    cents=s.map((sv,i)=>sv.n>0?{r:sv.r/sv.n,g:sv.g/sv.n,b:sv.b/sv.n}:cents[i]);
+  }
+  return cents;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// MOSAIC RENDERER + PAN + ZOOM + EDIT
+// ══════════════════════════════════════════════════════════════════════
+
+// Pan/zoom state — declared in STATE block above
+// Edit state — declared in STATE block above
+
+// Populate editor piece select once
+(function(){
+  const sel=document.getElementById('editorPiece');
+  PIECE_TYPES.forEach(pt=>{
+    const o=document.createElement('option');
+    o.value=pt.id; o.textContent=pt.label; sel.appendChild(o);
+  });
+})();
+
+// Populate colour swatches in editor
+(function(){
+  const sw=document.getElementById('colorSwatches');
+  LEGO_COLORS.forEach(lc=>{
+    const b=document.createElement('button');
+    b.className='color-swatch-btn';
+    b.style.background=lc.hex;
+    b.title=lc.name;
+    b.dataset.hex=lc.hex;
+    b.addEventListener('click',()=>applyStudColor(lc));
+    sw.appendChild(b);
+  });
+})();
+
+function applyZoom(){
+  const thick=borderThickness();
+  const totalW=mosaicData.w+(thick*2);
+  const totalH=mosaicData.h+(thick*2);
+  const gridW=(BASE_STUD+1)*totalW;
+  const gridH=(BASE_STUD+1)*totalH;
+  const scaledW=gridW*zoomLevel;
+  const scaledH=gridH*zoomLevel;
+  const outerW=viewerOuter.clientWidth;
+  const outerH=viewerOuter.clientHeight;
+  // Clamp pan so grid never drifts fully off-screen
+  panX=Math.min(0, Math.max(panX, outerW-scaledW));
+  panY=Math.min(0, Math.max(panY, outerH-scaledH));
+  // If scaled smaller than container, centre it
+  if(scaledW<outerW) panX=(outerW-scaledW)/2;
+  if(scaledH<outerH) panY=(outerH-scaledH)/2;
+  studGrid.style.transform=`translate(${panX}px,${panY}px) scale(${zoomLevel})`;
+  studGrid.style.transformOrigin='0 0';
+  studGrid.style.width=gridW+'px';
+  studGrid.style.height=gridH+'px';
+  document.getElementById('zoomPct').textContent=Math.round(zoomLevel*100)+'%';
+}
+
+function renderMosaic(){
+  if(!mosaicData) return;
+  closeEditor();
+  selectedStudIdx=null;
+  const {pixels,w,h}=mosaicData;
+  const thick=borderThickness();
+  const totalW=w+(thick*2);
+  const totalH=h+(thick*2);
+  const bcEl=document.getElementById('borderColor');
+  const borderHex=bcEl.options[bcEl.selectedIndex].dataset.hex||'#05131D';
+  const isTechnic=selectedBorder==='technic';
+
+  studGrid.innerHTML='';
+  studGrid.style.gridTemplateColumns=`repeat(${totalW},${BASE_STUD}px)`;
+  studGrid.style.gap='1px';
+
+  for(let row=0;row<totalH;row++){
+    for(let col=0;col<totalW;col++){
+      const div=document.createElement('div');
+      div.className='stud';
+      const inBorder=thick>0&&(row<thick||row>=h+thick||col<thick||col>=w+thick);
+      if(inBorder){
+        if(isTechnic){
+          div.style.cssText=`width:${BASE_STUD}px;height:${BASE_STUD}px;background:${borderHex};border-radius:1px;display:flex;align-items:center;justify-content:center;`;
+          const hole=document.createElement('span');
+          hole.style.cssText=`width:${Math.max(2,BASE_STUD-4)}px;height:${Math.max(2,BASE_STUD-4)}px;border-radius:50%;background:rgba(0,0,0,.45);display:block;flex-shrink:0;`;
+          div.appendChild(hole);
+        } else {
+          div.style.cssText=`width:${BASE_STUD}px;height:${BASE_STUD}px;background:${borderHex};border-radius:1px;`;
+          if(selectedBorder==='flat2') div.style.boxShadow='inset 0 2px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.3)';
+        }
+      } else {
+        const imgIdx=(row-thick)*w+(col-thick);
+        const px=pixels[imgIdx];
+        const pt=PIECE_TYPES.find(p=>p.id===(colorPieceMap[px.hex]||defaultPiece))||PIECE_TYPES[0];
+        div.style.cssText=`width:${BASE_STUD}px;height:${BASE_STUD}px;background:${px.hex};border-radius:${pt.round?'50%':'1px'}`;
+        div.dataset.imgIdx=imgIdx;
+      }
+      studGrid.appendChild(div);
+    }
+  }
+
+  panX=0; panY=0; zoomLevel=1;
+  applyZoom();
+  initViewerGestures();
+}
+
+// ── Viewer touch/mouse gestures ────────────────────────────────────────
+function initViewerGestures(){
+  if(viewerOuter._gesturesBound) return;
+  viewerOuter._gesturesBound=true;
+
+  let lastDist=null, lastMidX=0, lastMidY=0;
+  let panStart=null;
+  let tapTimeout=null, tapPos=null;
+
+  viewerOuter.addEventListener('touchmove', e=>{
+    e.preventDefault();
+    if(e.touches.length===2 && lastDist!==null){
+      const r=viewerOuter.getBoundingClientRect();
+      const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      const midX=(e.touches[0].clientX+e.touches[1].clientX)/2-r.left;
+      const midY=(e.touches[0].clientY+e.touches[1].clientY)/2-r.top;
+      const factor=d/lastDist;
+      panX=midX-(midX-panX)*factor;
+      panY=midY-(midY-panY)*factor;
+      zoomLevel=Math.max(0.25,Math.min(12,zoomLevel*factor));
+      lastDist=d; lastMidX=midX; lastMidY=midY;
+      applyZoom();
+    } else if(e.touches.length===1){
+      if(paintMode && paintingActive){
+        // Paint drag
+        paintStudAt(e.touches[0].clientX, e.touches[0].clientY);
+      } else if(panStart && !editMode && !paintMode){
+        const r=viewerOuter.getBoundingClientRect();
+        const cx=e.touches[0].clientX-r.left;
+        const cy=e.touches[0].clientY-r.top;
+        panX=panStart.px+(cx-panStart.x);
+        panY=panStart.py+(cy-panStart.y);
+        if(Math.abs(cx-panStart.x)>4||Math.abs(cy-panStart.y)>4) panStart.moved=true;
+        applyZoom();
+      }
+    }
+  },{passive:false});
+
+  viewerOuter.addEventListener('touchend', e=>{
+    lastDist=null;
+    if(paintMode && paintingActive){
+      paintingActive=false;
+      lastPaintedIdx=-1;
+      renderBOM();
+    } else if(editMode && panStart && !panStart.moved && e.changedTouches.length===1){
+      const t=e.changedTouches[0];
+      handleStudTap(t.clientX, t.clientY);
+    }
+    panStart=null;
+  },{passive:true});
+
+  viewerOuter.addEventListener('touchstart', e=>{
+    closeEditor();
+    if(e.touches.length===2){
+      panStart=null;
+      lastDist=Math.hypot(
+        e.touches[0].clientX-e.touches[1].clientX,
+        e.touches[0].clientY-e.touches[1].clientY);
+      const r=viewerOuter.getBoundingClientRect();
+      lastMidX=(e.touches[0].clientX+e.touches[1].clientX)/2-r.left;
+      lastMidY=(e.touches[0].clientY+e.touches[1].clientY)/2-r.top;
+    } else if(e.touches.length===1){
+      if(paintMode){
+        paintingActive=true;
+        lastPaintedIdx=-1;
+        pushUndo();
+        paintStudAt(e.touches[0].clientX, e.touches[0].clientY);
+      }
+      const r=viewerOuter.getBoundingClientRect();
+      panStart={x:e.touches[0].clientX-r.left, y:e.touches[0].clientY-r.top, px:panX, py:panY, moved:false};
+      tapPos={x:e.touches[0].clientX, y:e.touches[0].clientY};
+    }
+  },{passive:true});
+
+  // Mouse pan
+  let mousePan=null;
+  viewerOuter.addEventListener('mousedown', e=>{
+    if(editMode){
+      handleStudTap(e.clientX, e.clientY);
+      return;
+    }
+    closeEditor();
+    mousePan={sx:e.clientX, sy:e.clientY, px:panX, py:panY};
+  });
+  document.addEventListener('mousemove', e=>{
+    if(!mousePan) return;
+    panX=mousePan.px+(e.clientX-mousePan.sx);
+    panY=mousePan.py+(e.clientY-mousePan.sy);
+    applyZoom();
+  });
+  document.addEventListener('mouseup',()=>{ mousePan=null; });
+
+  // Mouse wheel zoom
+  viewerOuter.addEventListener('wheel', e=>{
+    e.preventDefault();
+    const r=viewerOuter.getBoundingClientRect();
+    const mx=e.clientX-r.left, my=e.clientY-r.top;
+    const factor=e.deltaY<0?1.12:0.89;
+    panX=mx-(mx-panX)*factor;
+    panY=my-(my-panY)*factor;
+    zoomLevel=Math.max(0.25,Math.min(12,zoomLevel*factor));
+    applyZoom();
+  },{passive:false});
+}
+
+document.getElementById('zoomIn').addEventListener('click',()=>{
+  const cx=viewerOuter.clientWidth/2, cy=viewerOuter.clientHeight/2;
+  const f=1.5;
+  panX=cx-(cx-panX)*f; panY=cy-(cy-panY)*f;
+  zoomLevel=Math.min(12,zoomLevel*f); applyZoom();
+});
+document.getElementById('zoomOut').addEventListener('click',()=>{
+  const cx=viewerOuter.clientWidth/2, cy=viewerOuter.clientHeight/2;
+  const f=1/1.5;
+  panX=cx-(cx-panX)*f; panY=cy-(cy-panY)*f;
+  zoomLevel=Math.max(0.25,zoomLevel*f); applyZoom();
+});
+
+// ── Undo stack ────────────────────────────────────────────────────────
+const UNDO_LIMIT = 30;
+let undoStack = [];
+
+function pushUndo(){
+  undoStack.push(mosaicData.pixels.map(p=>({...p})));
+  if(undoStack.length>UNDO_LIMIT) undoStack.shift();
+  updateUndoBtn();
+}
+
+function updateUndoBtn(){
+  const btn=document.getElementById('undoBtn');
+  btn.disabled=undoStack.length===0;
+  btn.textContent=`↩ Undo${undoStack.length?` (${undoStack.length})`:''}`;
+}
+
+document.getElementById('undoBtn').addEventListener('click',()=>{
+  if(!undoStack.length) return;
+  mosaicData.pixels=undoStack.pop();
+  updateUndoBtn();
+  renderMosaic();
+  renderBOM();
+});
+
+// ── Mode management ───────────────────────────────────────────────────
+// editMode and paintMode are mutually exclusive; textMode is separate
+// (paintMode declared in state block above)
+let paintColor = null; // currently selected LEGO color object for painting
+let paintingActive = false; // true while finger/mouse is held down painting
+let lastPaintedIdx = -1; // avoid re-painting same stud during drag
+
+const editToggle  = document.getElementById('editToggle');
+const paintToggle = document.getElementById('paintToggle');
+const paintPanel  = document.getElementById('paintPanel');
+
+function setMode(mode){
+  // mode: 'none' | 'edit' | 'paint'
+  editMode  = mode==='edit';
+  paintMode = mode==='paint';
+  editToggle.classList.toggle('active', editMode);
+  paintToggle.classList.toggle('active', paintMode);
+  viewerOuter.classList.toggle('edit-mode', editMode||paintMode);
+  if(!editMode){ closeEditor(); clearStudHighlight(); }
+  if(!paintMode){ paintPanel.style.display='none'; paintingActive=false; }
+  else          { openPaintPanel(); }
+}
+
+editToggle.addEventListener('click',()=>{
+  // If text mode is on, close it first
+  if(textMode){ textMode=false; document.getElementById('textToggle').classList.remove('active'); document.getElementById('textPanel').style.display='none'; clearTextOverlay(); }
+  setMode(editMode?'none':'edit');
+});
+
+paintToggle.addEventListener('click',()=>{
+  if(textMode){ textMode=false; document.getElementById('textToggle').classList.remove('active'); document.getElementById('textPanel').style.display='none'; clearTextOverlay(); }
+  setMode(paintMode?'none':'paint');
+});
+
+// ── Paint palette ─────────────────────────────────────────────────────
+function openPaintPanel(){
+  paintPanel.style.display='block';
+  buildPaintPalette();
+}
+
+function buildPaintPalette(){
+  const palette=document.getElementById('paintPalette');
+  palette.innerHTML='';
+
+  // Section 1: colours already in this mosaic
+  const usedHexes=[...new Set(mosaicData.pixels.map(p=>p.hex))];
+  const usedColors=usedHexes.map(h=>LEGO_COLORS.find(c=>c.hex===h)||{hex:h,name:h,bl:'1'});
+
+  const lbl1=document.createElement('div');
+  lbl1.className='paint-palette-label'; lbl1.textContent='In mosaic';
+  palette.appendChild(lbl1);
+
+  usedColors.forEach(lc=>addSwatch(palette, lc));
+
+  // Divider
+  const div=document.createElement('div');
+  div.className='paint-palette-divider'; palette.appendChild(div);
+
+  // Section 2: all LEGO colours not yet in mosaic
+  const lbl2=document.createElement('div');
+  lbl2.className='paint-palette-label'; lbl2.textContent='All colours';
+  palette.appendChild(lbl2);
+
+  LEGO_COLORS.filter(lc=>!usedHexes.includes(lc.hex))
+    .forEach(lc=>addSwatch(palette, lc));
+
+  // Auto-select first used colour
+  if(!paintColor && usedColors.length){
+    paintColor=usedColors[0];
+    palette.querySelector('.paint-swatch').classList.add('active');
+  } else if(paintColor){
+    palette.querySelectorAll('.paint-swatch').forEach(b=>{
+      b.classList.toggle('active', b.dataset.hex===paintColor.hex);
+    });
+  }
+}
+
+function addSwatch(parent, lc){
+  const b=document.createElement('button');
+  b.className='paint-swatch'+(paintColor&&paintColor.hex===lc.hex?' active':'');
+  b.style.background=lc.hex;
+  b.title=lc.name;
+  b.dataset.hex=lc.hex;
+  b.addEventListener('click',()=>{
+    paintColor=lc;
+    document.getElementById('paintPalette').querySelectorAll('.paint-swatch')
+      .forEach(s=>s.classList.toggle('active', s.dataset.hex===lc.hex));
+  });
+  parent.appendChild(b);
+}
+
+// ── Paint a stud at screen coords ────────────────────────────────────
+function paintStudAt(clientX, clientY){
+  if(!paintColor||!mosaicData) return;
+  const r=viewerOuter.getBoundingClientRect();
+  const lx=(clientX-r.left-panX)/zoomLevel;
+  const ly=(clientY-r.top-panY)/zoomLevel;
+  const cell=BASE_STUD+1;
+  const thick=borderThickness();
+  const col=Math.floor(lx/cell)-thick;
+  const row=Math.floor(ly/cell)-thick;
+  if(col<0||row<0||col>=mosaicData.w||row>=mosaicData.h) return;
+  const idx=row*mosaicData.w+col;
+  if(idx===lastPaintedIdx) return; // don't repaint same stud during drag
+  lastPaintedIdx=idx;
+  if(mosaicData.pixels[idx].hex===paintColor.hex) return; // already this colour
+  // Actually paint
+  mosaicData.pixels[idx]={
+    r:parseInt(paintColor.hex.slice(1,3),16),
+    g:parseInt(paintColor.hex.slice(3,5),16),
+    b:parseInt(paintColor.hex.slice(5,7),16),
+    hex:paintColor.hex, name:paintColor.name, bl:paintColor.bl
+  };
+  if(!colorPieceMap[paintColor.hex]) colorPieceMap[paintColor.hex]=defaultPiece;
+  // Update just that stud in DOM
+  const totalW=mosaicData.w+(thick*2);
+  const gridIdx=(row+thick)*totalW+(col+thick);
+  const el=studGrid.children[gridIdx];
+  if(el){
+    const pt=PIECE_TYPES.find(p=>p.id===(colorPieceMap[paintColor.hex]||defaultPiece))||PIECE_TYPES[0];
+    el.style.background=paintColor.hex;
+    el.style.borderRadius=pt.round?'50%':'1px';
+    el.dataset.imgIdx=idx;
+  }
+}
+
+function handleStudTap(clientX, clientY){
+  if(paintMode){
+    pushUndo();
+    paintStudAt(clientX, clientY);
+    renderBOM();
+    return;
+  }
+  // Edit mode — open colour picker popup
+  const r=viewerOuter.getBoundingClientRect();
+  const lx=(clientX-r.left-panX)/zoomLevel;
+  const ly=(clientY-r.top-panY)/zoomLevel;
+  const cell=BASE_STUD+1;
+  const thick=borderThickness();
+  const col=Math.floor(lx/cell)-thick;
+  const row=Math.floor(ly/cell)-thick;
+  if(col<0||row<0||col>=mosaicData.w||row>=mosaicData.h) return;
+  const idx=row*mosaicData.w+col;
+  openEditor(idx, clientX, clientY);
+}
+
+function openEditor(idx, clientX, clientY){
+  selectedStudIdx=idx;
+  clearStudHighlight();
+  // Highlight just the tapped stud
+  const thick=borderThickness();
+  const totalW=mosaicData.w+(thick*2);
+  const imgRow=Math.floor(idx/mosaicData.w), imgCol=idx%mosaicData.w;
+  const gridIdx=(imgRow+thick)*totalW+(imgCol+thick);
+  const studEl=studGrid.children[gridIdx];
+  if(studEl) studEl.classList.add('selected-stud');
+
+  const hex=mosaicData.pixels[idx].hex;
+
+  // Position editor popup near tap but inside viewport
+  const editor=document.getElementById('studEditor');
+  editor.classList.add('open');
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const ew=224, eh=220;
+  let ex=clientX+8, ey=clientY+8;
+  if(ex+ew>vw-8) ex=clientX-ew-8;
+  if(ey+eh>vh-8) ey=clientY-eh-8;
+  if(ex<8) ex=8;
+  if(ey<8) ey=8;
+  editor.style.left=ex+'px'; editor.style.top=ey+'px';
+
+  // Mark active colour
+  document.getElementById('colorSwatches').querySelectorAll('.color-swatch-btn').forEach(b=>{
+    b.classList.toggle('active-color', b.dataset.hex===hex);
+  });
+
+  // Set piece type for this colour
+  document.getElementById('editorPiece').value=colorPieceMap[hex]||defaultPiece;
+}
+
+function closeEditor(){
+  document.getElementById('studEditor').classList.remove('open');
+}
+document.getElementById('editorClose').addEventListener('click', closeEditor);
+
+function clearStudHighlight(){
+  studGrid.querySelectorAll('.selected-stud').forEach(el=>el.classList.remove('selected-stud'));
+}
+
+function applyStudColor(legoColor){
+  if(selectedStudIdx===null) return;
+  const oldHex=mosaicData.pixels[selectedStudIdx].hex;
+  const newHex=legoColor.hex;
+  if(oldHex===newHex){ closeEditor(); return; }
+
+  pushUndo(); // save state before edit
+  const oldPieceId=colorPieceMap[oldHex]||defaultPiece;
+  mosaicData.pixels[selectedStudIdx]={
+    r:parseInt(newHex.slice(1,3),16),
+    g:parseInt(newHex.slice(3,5),16),
+    b:parseInt(newHex.slice(5,7),16),
+    hex:newHex, name:legoColor.name, bl:legoColor.bl
+  };
+  // Carry piece type to new colour if not already set
+  if(!colorPieceMap[newHex]) colorPieceMap[newHex]=oldPieceId;
+
+  // Clean up orphaned colour entries
+  const usedHexes=new Set(mosaicData.pixels.map(p=>p.hex));
+  Object.keys(colorPieceMap).forEach(h=>{ if(!usedHexes.has(h)) delete colorPieceMap[h]; });
+
+  // Re-render just that one stud visually (fast, no full re-render)
+  const thick=borderThickness();
+  const totalW=mosaicData.w+(thick*2);
+  const imgIdx=selectedStudIdx;
+  const imgRow=Math.floor(imgIdx/mosaicData.w), imgCol=imgIdx%mosaicData.w;
+  const gridRow=imgRow+thick, gridCol=imgCol+thick;
+  const gridIdx=gridRow*totalW+gridCol;
+  const studEl=studGrid.children[gridIdx];
+  if(studEl){
+    const pt=PIECE_TYPES.find(p=>p.id===(colorPieceMap[newHex]||defaultPiece))||PIECE_TYPES[0];
+    studEl.style.background=newHex;
+    studEl.style.borderRadius=pt.round?'50%':'1px';
+    studEl.dataset.imgIdx=imgIdx;
+  }
+
+  closeEditor();
+  clearStudHighlight();
+  selectedStudIdx=null;
+  renderBOM();
+}
+
+// Piece type change from editor also updates colourPieceMap and re-renders BOM
+document.getElementById('editorPiece').addEventListener('change', e=>{
+  if(selectedStudIdx===null) return;
+  const hex=mosaicData.pixels[selectedStudIdx].hex;
+  colorPieceMap[hex]=e.target.value;
+  // Update shape of all studs with this colour in grid
+  const thick=borderThickness();
+  const totalW=mosaicData.w+(thick*2);
+  const pt=PIECE_TYPES.find(p=>p.id===e.target.value)||PIECE_TYPES[0];
+  studGrid.querySelectorAll('.stud[data-img-idx]').forEach(el=>{
+    const i=parseInt(el.dataset.imgIdx);
+    if(mosaicData.pixels[i].hex===hex){
+      el.style.borderRadius=pt.round?'50%':'1px';
+    }
+  });
+  renderBOM();
+});
+
+// Border thickness in studs per side
+function borderThickness(){
+  if(selectedBorder==='none') return 0;
+  if(selectedBorder==='flat1') return 1;
+  if(selectedBorder==='flat2') return 2;
+  if(selectedBorder==='technic') return 1;
+  return 0;
+}
+
+// Re-render when border style or colour changes
+function buildOptionCardsWithRerender(containerId, options, getSelected, setSelected){
+  const container=document.getElementById(containerId);
+  container.innerHTML='';
+  options.forEach(opt=>{
+    const card=document.createElement('div');
+    card.className='opt-card'+(getSelected()===opt.id?' active':'');
+    card.innerHTML=`<img src="${opt.img}" alt="${opt.title}" loading="lazy" onerror="this.style.background='#222';this.style.height='80px'"/>
+      <div class="opt-card-body"><div class="opt-card-title">${opt.title}</div><div class="opt-card-sub">${opt.sub}</div></div>`;
+    card.addEventListener('click',()=>{
+      setSelected(opt.id);
+      container.querySelectorAll('.opt-card').forEach(c=>c.classList.remove('active'));
+      card.classList.add('active');
+      if(containerId==='borderScroll') renderMosaic();
+    });
+    container.appendChild(card);
+  });
+}
+
+document.getElementById('borderColor').addEventListener('change',()=>{ if(mosaicData) renderMosaic(); });
+
+// ══════════════════════════════════════════════════════════════════════
+// BOM
+// ══════════════════════════════════════════════════════════════════════
+function getColorCounts(){
+  const cc={};
+  mosaicData.pixels.forEach(px=>{
+    if(!cc[px.hex]) cc[px.hex]={name:px.name,bl:px.bl,count:0};
+    cc[px.hex].count++;
+  });
+  return cc;
+}
+
+function renderBOM(){
+  const cc=getColorCounts();
+  bomBody.innerHTML='';
+  let total=0;
+  Object.entries(cc).sort((a,b)=>b[1].count-a[1].count).forEach(([hex,info])=>{
+    const pid=colorPieceMap[hex]||defaultPiece;
+    const pt=PIECE_TYPES.find(p=>p.id===pid)||PIECE_TYPES[0];
+    const n=Math.ceil(info.count/pt.studs);
+    total+=n;
+    const blUrl=`https://www.bricklink.com/v2/catalog/catalogitem.page?P=${pt.part}&idColor=${info.bl}`;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><span class="swatch" style="background:${hex}"></span></td>
+      <td style="font-size:.72rem">${info.name}</td>
+      <td><select class="piece-select" data-hex="${hex}">${PIECE_TYPES.map(p=>`<option value="${p.id}"${p.id===pid?' selected':''}>${p.label}</option>`).join('')}</select></td>
+      <td><span class="part-tag">${pt.part}</span></td>
+      <td style="text-align:right;font-weight:600">${n.toLocaleString()}</td>
+      <td><a class="bl-link" href="${blUrl}" target="_blank">BL↗</a></td>
+    `;
+    tr.querySelector('.piece-select').addEventListener('change',e=>{
+      colorPieceMap[hex]=e.target.value; renderBOM();
+    });
+    bomBody.appendChild(tr);
+  });
+  totalPiecesEl.textContent=total.toLocaleString();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// EXPORT PNG
+// ══════════════════════════════════════════════════════════════════════
+exportBtn.addEventListener('click',()=>{
+  if(!mosaicData) return;
+  const {pixels,w,h}=mosaicData;
+  const scale=14;
+  const cv=document.getElementById('exportCanvas');
+  cv.width=w*scale; cv.height=h*scale;
+  const ctx=cv.getContext('2d');
+  pixels.forEach((px,i)=>{
+    const x=(i%w)*scale,y=Math.floor(i/w)*scale;
+    ctx.fillStyle=px.hex; ctx.fillRect(x,y,scale,scale);
+    ctx.fillStyle='rgba(255,255,255,.13)';
+    ctx.beginPath(); ctx.arc(x+scale*.36,y+scale*.3,scale*.21,0,Math.PI*2); ctx.fill();
+  });
+  const a=document.createElement('a');
+  a.download='brick-lab-mosaic.png'; a.href=cv.toDataURL(); a.click();
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// JOIN / HANG / BORDER info for booklet
+// ══════════════════════════════════════════════════════════════════════
+const JOIN_INFO={
+  bridge:{label:'Bridge plates on back',text:(bW,bH)=>`Flip the assembled baseplates over. Run <strong>1×8 Flat Plates (part 3460)</strong> horizontally across every vertical seam and vertically across every horizontal seam — at least 3 plates per seam edge. This mechanically locks the array and prevents racking.`},
+  technic:{label:'Technic pins',text:(bW,bH)=>`Align baseplates so Technic pin holes line up at each seam. Push <strong>Technic Pins (part 3673)</strong> through paired holes on adjacent plates, securing each with a <strong>Pin Stop Bush (part 32054)</strong>. Gives a rigid, flat join with nothing protruding.`},
+  ties:{label:'Cable ties',text:()=>`Thread 3mm cable ties through opposing Technic holes on adjacent baseplate edges. Pull tight and trim flush. Use at least 2 ties per seam.`},
+  tape:{label:'Foam tape',text:()=>`Apply strips of heavy-duty double-sided foam tape (3M VHB) bridging each seam on the back face. Press firmly for 30 seconds; allow 24 h cure before hanging.`},
+};
+const HANG_INFO={
+  command:{label:'Command strips',text:()=>`Attach two or more <strong>3M Command Large strips</strong> to each baseplate's back. Clean the surface first, press for 30 s, wait 1 h before hanging. Rate: ~7 kg per pair. <em>No drilling.</em>`},
+  french:{label:'French cleat',text:()=>`Cut a 45° French cleat from 18 mm ply — one piece for the wall, one for the mosaic back. Screw wall piece to studs; attach matching cleat to baseplates. Mosaic lifts off cleanly. Best for large or heavy builds.`},
+  dring:{label:'D-ring + picture wire',text:()=>`Screw two D-ring plate brackets to the mosaic back, one-third in from each side, near the top. Thread picture wire between them with 50–75 mm of slack. Hang on a hook rated above the mosaic's weight.`},
+  wire:{label:'Wire through Technic holes',text:()=>`Thread braided picture wire through Technic holes near the top edge of the border. Tie a knot behind each hole so it can't pull through. Bring both ends to a central loop or two hooks.`},
+  velcro:{label:'Heavy Velcro',text:()=>`Apply industrial Velcro (3M Dual Lock or Velcro Extreme) to the back of each baseplate and the matching wall area. Press firmly. Rated ~8 kg per strip pair. Easy to reposition.`},
+};
+const BORDER_INFO={
+  none:{label:'None',stepText:()=>null},
+  flat1:{label:'1-stud flat border',stepText:(col)=>`<strong>1-stud flat border.</strong> Run a single row of <strong>1×2 Flat Plates (part 3023)</strong> in <strong>${col}</strong> around the perimeter — flush with the mosaic surface.`},
+  flat2:{label:'2-stud raised border',stepText:(col)=>`<strong>2-stud raised border.</strong> Place two rows of <strong>1×4 Flat Plates (part 3710)</strong> in <strong>${col}</strong> around the perimeter, then stack a second layer of <strong>1×2 Plates (part 3023)</strong> on top — ~6.4 mm proud of the surface.`},
+  technic:{label:'Technic pin-hole strip',stepText:(col)=>`<strong>Technic strip border.</strong> Surround with <strong>Technic Bricks 1×2 with Holes (part 3700)</strong> in <strong>${col}</strong>, two bricks high. The exposed Technic holes allow picture wire to be threaded directly through for hanging.`},
+};
+
+// ══════════════════════════════════════════════════════════════════════
+// PRINT BOOKLET
+// ══════════════════════════════════════════════════════════════════════
+printBtn.addEventListener('click',()=>{
+  const html=buildBooklet();
+  document.getElementById('bookletContent').innerHTML=html;
+  document.getElementById('printBooklet').innerHTML=html;
+  document.getElementById('modalOverlay').classList.add('open');
+});
+
+function buildBooklet(){
+  if(!mosaicData) return '';
+  const {pixels,w,h}=mosaicData;
+  const bpSize=parseInt(document.getElementById('bpSize').value)||32;
+  const bpW=Math.ceil(w/bpSize), bpH=Math.ceil(h/bpSize), totalBP=bpW*bpH;
+  const borderCol=document.getElementById('borderColor').value;
+  const borderInf=BORDER_INFO[selectedBorder];
+  const joinInf=JOIN_INFO[selectedJoin];
+  const hangInf=HANG_INFO[selectedHang];
+  const borderStep=borderInf.stepText(borderCol);
+
+  const cc=getColorCounts();
+  let totalPieces=0;
+  const bomRows=Object.entries(cc).sort((a,b)=>b[1].count-a[1].count).map(([hex,info])=>{
+    const pid=colorPieceMap[hex]||defaultPiece;
+    const pt=PIECE_TYPES.find(p=>p.id===pid)||PIECE_TYPES[0];
+    const n=Math.ceil(info.count/pt.studs);
+    totalPieces+=n;
+    const blUrl=`https://www.bricklink.com/v2/catalog/catalogitem.page?P=${pt.part}&idColor=${info.bl}`;
+    return `<tr><td><span class="pb-swatch" style="background:${hex}"></span></td><td>${info.name}</td><td><span class="pb-part-tag">${pt.part}</span></td><td>${pt.label}</td><td style="text-align:right;font-weight:600">${n.toLocaleString()}</td><td style="text-align:right;color:#999">${info.count.toLocaleString()}</td><td><a href="${blUrl}" style="font-size:.56rem;color:#F2C314" target="_blank">BL↗</a></td></tr>`;
+  }).join('');
+
+  const scale=6;
+  const tc=document.createElement('canvas');
+  tc.width=w*scale; tc.height=h*scale;
+  const tCtx=tc.getContext('2d');
+  pixels.forEach((px,i)=>{tCtx.fillStyle=px.hex;tCtx.fillRect((i%w)*scale,Math.floor(i/w)*scale,scale,scale);});
+  const mUrl=tc.toDataURL();
+
+  const maxRows=48, rowStep=h<=maxRows?1:Math.ceil(h/maxRows);
+  let rowRows='';
+  for(let row=0;row<h;row+=rowStep){
+    const slice=pixels.slice(row*w,(row+rowStep)*w);
+    const rc={};
+    slice.forEach(px=>{if(!rc[px.hex])rc[px.hex]={name:px.name,count:0};rc[px.hex].count++;});
+    const lbl=rowStep>1&&row+rowStep<=h?`${row+1}–${Math.min(row+rowStep,h)}`:`${row+1}`;
+    const pcs=Object.entries(rc).sort((a,b)=>b[1].count-a[1].count).map(([hex,info])=>{
+      const pt=PIECE_TYPES.find(p=>p.id===(colorPieceMap[hex]||defaultPiece))||PIECE_TYPES[0];
+      const n=Math.ceil(info.count/pt.studs);
+      return `<span class="pb-row-piece"><span class="pb-row-dot" style="background:${hex};border-radius:${pt.round?'50%':'1px'}"></span>${n}× ${info.name}</span>`;
+    }).join('');
+    rowRows+=`<tr><td style="font-weight:600;white-space:nowrap">Row ${lbl}</td><td>${pcs}</td></tr>`;
+  }
+
+  const now=new Date().toLocaleDateString('en-NZ',{year:'numeric',month:'long',day:'numeric'});
+  let sn=1; const pbStep=t=>`<div class="pb-step"><div class="pb-step-num">${sn++}</div><div class="pb-step-text">${t}</div></div>`;
+
+  return `<div class="pb-booklet">
+<div class="pb-page"><div class="pb-cover">
+  <div class="pb-cover-logo"><div class="dot"></div><span>BRICK LAB</span></div>
+  <div class="pb-cover-title">LEGO® Mosaic Instructions</div>
+  <div class="pb-cover-mosaic"><img src="${mUrl}" style="max-width:140mm;max-height:90mm;image-rendering:pixelated;border:2px solid #333;border-radius:2mm"/></div>
+  <div class="pb-cover-meta">
+    <span><strong>${w}×${h}</strong>studs</span>
+    <span><strong>${totalBP}</strong>baseplate${totalBP!==1?'s':''}</span>
+    <span><strong>${totalPieces.toLocaleString()}</strong>pieces</span>
+    <span><strong>${Object.keys(cc).length}</strong>colours</span>
+    <span style="margin-left:auto">${now}</span>
+  </div>
+</div></div>
+
+<div class="pb-page"><div class="pb-inner">
+  <div class="pb-page-header"><h2>Reference Images</h2><span class="pb-page-num">Page 2</span></div>
+  <div class="pb-two-col">
+    <div><div class="pb-col-label">Original Photo</div>${originalSrc?`<img class="pb-photo-img" src="${originalSrc}" style="max-height:200mm;object-fit:contain"/>`:'<p style="color:#ccc;font-size:.8rem">No photo</p>'}</div>
+    <div><div class="pb-col-label">LEGO Mosaic (${w}×${h})</div><img class="pb-mosaic-img" src="${mUrl}" style="max-height:200mm"/></div>
+  </div>
+  <div class="pb-footer">BRICK LAB · ${now}</div>
+</div></div>
+
+<div class="pb-page"><div class="pb-inner">
+  <div class="pb-page-header"><h2>Bill of Materials</h2><span class="pb-page-num">Page 3</span></div>
+  <div class="pb-stats">
+    <div class="pb-stat"><div class="n">${totalPieces.toLocaleString()}</div><div class="d">Total pieces</div></div>
+    <div class="pb-stat"><div class="n">${Object.keys(cc).length}</div><div class="d">Colours</div></div>
+    <div class="pb-stat"><div class="n">${totalBP}</div><div class="d">Baseplates (${bpSize}×${bpSize})</div></div>
+    <div class="pb-stat"><div class="n">${w}×${h}</div><div class="d">Stud size</div></div>
+  </div>
+  <table class="pb-bom-table"><thead><tr><th>Col</th><th>Name</th><th>Part</th><th>Type</th><th style="text-align:right">Pcs</th><th style="text-align:right">Studs</th><th>Buy</th></tr></thead><tbody>${bomRows}</tbody></table>
+  <div class="pb-bom-total">Total: ${totalPieces.toLocaleString()} pieces · bricklink.com or lego.com/pick-a-brick</div>
+  <p style="font-size:.58rem;color:#999;margin-top:3mm;font-family:Inter,sans-serif">Round 1×1=4073 · Flat 1×1=3024 · Flat 1×2=3023 · Flat 2×2=3022 · Flat 2×4=3020</p>
+  <div class="pb-footer">BRICK LAB · ${now}</div>
+</div></div>
+
+<div class="pb-page"><div class="pb-inner">
+  <div class="pb-page-header"><h2>Build Instructions</h2><span class="pb-page-num">Page 4</span></div>
+  <div class="pb-steps">
+    ${pbStep(`<strong>Prepare baseplates.</strong> Lay ${totalBP} baseplate${totalBP!==1?'s':''} (${bpSize}×${bpSize} studs) in a ${bpW}×${bpH} grid on a flat surface. Check all edges are flush.`)}
+    ${pbStep(`<strong>Mark column guides.</strong> Place a contrasting 1×1 tile (part 3070) every ${bpSize} studs along the top row. Remove after each row.`)}
+    ${pbStep(`<strong>Build row by row, top to bottom, left to right.</strong> Press each piece firmly before placing the next. See row breakdown on next page.`)}
+    ${borderStep ? pbStep(borderStep) : ''}
+    ${pbStep(`<strong>Join baseplates — ${joinInf.label}.</strong> ${joinInf.text(bpW,bpH)}`)}
+    ${pbStep(`<strong>Wall hanging — ${hangInf.label}.</strong> ${hangInf.text()}`)}
+  </div>
+  <p style="font-size:.62rem;color:#999;font-family:Inter,sans-serif;line-height:1.5;margin-top:auto">LEGO® is a trademark of the LEGO Group, which does not sponsor or endorse this document. Part numbers from BrickLink Reference Catalog.</p>
+  <div class="pb-footer">BRICK LAB · ${now}</div>
+</div></div>
+
+<div class="pb-page"><div class="pb-inner">
+  <div class="pb-page-header"><h2>Row-by-Row Breakdown</h2><span class="pb-page-num">Page 5</span></div>
+  <p style="font-size:.68rem;color:#666;margin-bottom:4mm;font-family:Inter,sans-serif">Left to right, top to bottom.</p>
+  <table class="pb-row-table"><thead><tr><th style="width:18mm">Row</th><th>Pieces by Colour</th></tr></thead><tbody>${rowRows}</tbody></table>
+  <div class="pb-footer">BRICK LAB · ${now}</div>
+</div></div>
+</div>`;
+}
+// ══════════════════════════════════════════════════════════════════════
+// TEXT → STUDS OVERLAY
+// ══════════════════════════════════════════════════════════════════════
+
+// Text state
+let textMode = false;
+let textLegoColor = LEGO_COLORS.find(c=>c.name==='Black') || LEGO_COLORS[1];
+let textBoldOn = false;
+// Overlay position/size in mosaic stud coordinates (image area, no border)
+let textOv = null; // {studX, studY, studW, studH, pixels:[]} — stud-space
+
+const textToggle = document.getElementById('textToggle');
+const textPanel  = document.getElementById('textPanel');
+const textOverlay = document.getElementById('textOverlay');
+
+// Populate text colour swatches (a reduced set for quick pick)
+(function(){
+  const row = document.getElementById('textColorRow');
+  // Show a subset of solid colours for the colour row
+  const subset = LEGO_COLORS.filter(c => !c.name.startsWith('Trans'));
+  subset.forEach(lc => {
+    const b = document.createElement('button');
+    b.className = 'tp-color-btn' + (lc.hex === textLegoColor.hex ? ' active' : '');
+    b.style.background = lc.hex;
+    b.title = lc.name;
+    b.addEventListener('click', () => {
+      textLegoColor = lc;
+      row.querySelectorAll('.tp-color-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+    });
+    row.appendChild(b);
+  });
+})();
+
+// Bold toggle
+document.getElementById('textBold').addEventListener('click', function(){
+  textBoldOn = !textBoldOn;
+  this.classList.toggle('active', textBoldOn);
+});
+
+// Text toggle
+document.getElementById('textToggle').addEventListener('click', () => {
+  setMode('none');
+  textMode = !textMode;
+  document.getElementById('textToggle').classList.toggle('active', textMode);
+  document.getElementById('textPanel').style.display = textMode ? 'block' : 'none';
+  if(!textMode) clearTextOverlay();
+});
+
+// Edit and paint toggles are now handled by setMode() calls above
+
+function clearTextOverlay(){
+  textOverlay.style.display = 'none';
+  textOverlay.classList.remove('active');
+  textOv = null;
+}
+
+// Preview button — render text to stud grid, place overlay
+document.getElementById('textPreview').addEventListener('click', previewText);
+
+function previewText(){
+  if(!mosaicData) return;
+  const txt = document.getElementById('textInput').value.trim();
+  if(!txt) return;
+
+  const targetH = Math.max(2, Math.min(40, parseInt(document.getElementById('textSize').value) || 8));
+  const font = document.getElementById('textFont').value;
+  const bold = textBoldOn;
+
+  // Render text to offscreen canvas at high res then downsample
+  const cv = document.createElement('canvas');
+  const fontSize = targetH * 16; // render big, sample down
+  cv.height = fontSize * 2;
+  cv.width = fontSize * txt.length * 1.2;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, cv.width, cv.height);
+  ctx.fillStyle = '#fff';
+  ctx.font = `${bold?'bold ':''} ${fontSize}px ${font}`;
+  ctx.textBaseline = 'top';
+  ctx.fillText(txt, 4, fontSize * 0.1);
+
+  // Find bounding box of white pixels
+  const raw = ctx.getImageData(0, 0, cv.width, cv.height);
+  let minX=cv.width, maxX=0, minY=cv.height, maxY=0;
+  for(let y=0;y<cv.height;y++) for(let x=0;x<cv.width;x++){
+    if(raw.data[(y*cv.width+x)*4]>64){ // red channel — white text
+      if(x<minX)minX=x; if(x>maxX)maxX=x;
+      if(y<minY)minY=y; if(y>maxY)maxY=y;
+    }
+  }
+  if(maxX<=minX||maxY<=minY){ alert('No text rendered — try a different font or text.'); return; }
+
+  const srcW=maxX-minX+1, srcH=maxY-minY+1;
+  const studW=Math.round(srcW/srcH*targetH);
+  const studH=targetH;
+
+  // Sample down to stud grid
+  const pixels=[];
+  for(let sy=0;sy<studH;sy++){
+    for(let sx=0;sx<studW;sx++){
+      const imgX=Math.round(minX+sx/studW*srcW);
+      const imgY=Math.round(minY+sy/studH*srcH);
+      const idx=(imgY*cv.width+imgX)*4;
+      const bright=raw.data[idx]>96;
+      pixels.push(bright);
+    }
+  }
+
+  // Centre horizontally in mosaic, top quarter vertically
+  const startX = Math.max(0, Math.round((mosaicData.w - studW) / 2));
+  const startY = Math.max(0, Math.round(mosaicData.h * 0.15));
+  textOv = { studX:startX, studY:startY, studW, studH, pixels };
+  placeTextOverlay();
+  enableTextDrag();
+}
+
+function placeTextOverlay(){
+  if(!textOv||!mosaicData) return;
+  const thick = borderThickness();
+  const cell = (BASE_STUD + 1) * zoomLevel;
+  const ox = panX + (textOv.studX + thick) * cell;
+  const oy = panY + (textOv.studY + thick) * cell;
+  const ow = textOv.studW * cell;
+  const oh = textOv.studH * cell;
+  textOverlay.style.cssText=`
+    display:block; position:absolute;
+    left:${ox}px; top:${oy}px;
+    width:${ow}px; height:${oh}px;
+    border:2px dashed rgba(242,195,20,.85);
+    background:rgba(242,195,20,.08);
+    touch-action:none; z-index:10;
+  `;
+  textOverlay.classList.add('active');
+  // Draw a tiny preview of the text pattern inside overlay
+  renderTextOverlayPreview();
+}
+
+function renderTextOverlayPreview(){
+  if(!textOv) return;
+  // Draw tiny stud dots inside the overlay box as a visual hint
+  const existingCv = textOverlay.querySelector('canvas');
+  if(existingCv) textOverlay.removeChild(existingCv);
+  const cv = document.createElement('canvas');
+  const cell = (BASE_STUD+1)*zoomLevel;
+  cv.width = textOv.studW * cell;
+  cv.height = textOv.studH * cell;
+  cv.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;';
+  const ctx = cv.getContext('2d');
+  const r = Math.max(1.5, cell*0.38);
+  for(let sy=0;sy<textOv.studH;sy++){
+    for(let sx=0;sx<textOv.studW;sx++){
+      if(textOv.pixels[sy*textOv.studW+sx]){
+        ctx.fillStyle = textLegoColor.hex;
+        const cx2 = sx*cell + cell/2;
+        const cy2 = sy*cell + cell/2;
+        ctx.beginPath();
+        ctx.arc(cx2, cy2, r, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+  }
+  textOverlay.appendChild(cv);
+}
+
+function enableTextDrag(){
+  let drag=null, pinch0=null;
+
+  textOverlay.addEventListener('touchstart', e=>{
+    e.preventDefault(); e.stopPropagation();
+    if(e.touches.length===2){
+      drag=null;
+      const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+      pinch0={dist:d, studW:textOv.studW, studH:textOv.studH};
+    } else if(e.touches.length===1){
+      pinch0=null;
+      const r=viewerOuter.getBoundingClientRect();
+      drag={startX:e.touches[0].clientX-r.left, startY:e.touches[0].clientY-r.top,
+            startStudX:textOv.studX, startStudY:textOv.studY};
+    }
+  },{passive:false});
+
+  textOverlay.addEventListener('touchmove', e=>{
+    e.preventDefault(); e.stopPropagation();
+    const cell=(BASE_STUD+1)*zoomLevel;
+    const r=viewerOuter.getBoundingClientRect();
+    if(e.touches.length===1 && drag){
+      const dx=(e.touches[0].clientX-r.left)-drag.startX;
+      const dy=(e.touches[0].clientY-r.top)-drag.startY;
+      textOv.studX=Math.max(0,Math.min(mosaicData.w-textOv.studW, Math.round(drag.startStudX+dx/cell)));
+      textOv.studY=Math.max(0,Math.min(mosaicData.h-textOv.studH, Math.round(drag.startStudY+dy/cell)));
+      placeTextOverlay();
+    } else if(e.touches.length===2 && pinch0){
+      const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+      const factor=d/pinch0.dist;
+      const aspect=pinch0.studW/pinch0.studH;
+      textOv.studH=Math.max(2,Math.min(mosaicData.h,Math.round(pinch0.studH*factor)));
+      textOv.studW=Math.max(2,Math.min(mosaicData.w,Math.round(textOv.studH*aspect)));
+      // Re-sample pixels at new size
+      resampleTextPixels(textOv.studW, textOv.studH);
+      placeTextOverlay();
+    }
+  },{passive:false});
+
+  textOverlay.addEventListener('touchend', ()=>{ drag=null; pinch0=null; },{passive:true});
+
+  // Mouse drag for desktop
+  let md=null;
+  textOverlay.addEventListener('mousedown', e=>{
+    e.stopPropagation();
+    const r=viewerOuter.getBoundingClientRect();
+    md={startX:e.clientX-r.left,startY:e.clientY-r.top,startStudX:textOv.studX,startStudY:textOv.studY};
+  });
+  document.addEventListener('mousemove', e=>{
+    if(!md) return;
+    const cell=(BASE_STUD+1)*zoomLevel;
+    const r=viewerOuter.getBoundingClientRect();
+    const dx=(e.clientX-r.left)-md.startX;
+    const dy=(e.clientY-r.top)-md.startY;
+    textOv.studX=Math.max(0,Math.min(mosaicData.w-textOv.studW,Math.round(md.startStudX+dx/cell)));
+    textOv.studY=Math.max(0,Math.min(mosaicData.h-textOv.studH,Math.round(md.startStudY+dy/cell)));
+    placeTextOverlay();
+  });
+  document.addEventListener('mouseup',()=>{ md=null; });
+}
+
+// Keep a copy of the original high-res pixel grid for resampling
+let textOrigPixels=null, textOrigW=0, textOrigH=0;
+
+// Override previewText to also save originals
+const _origPreview = previewText;
+document.getElementById('textPreview').removeEventListener('click', previewText);
+document.getElementById('textPreview').addEventListener('click', ()=>{
+  previewText();
+  if(textOv){ textOrigPixels=[...textOv.pixels]; textOrigW=textOv.studW; textOrigH=textOv.studH; }
+});
+
+function resampleTextPixels(newW, newH){
+  if(!textOrigPixels) return;
+  const pixels=[];
+  for(let sy=0;sy<newH;sy++){
+    for(let sx=0;sx<newW;sx++){
+      const ox=Math.round(sx/newW*textOrigW);
+      const oy=Math.round(sy/newH*textOrigH);
+      pixels.push(textOrigPixels[Math.min(oy,textOrigH-1)*textOrigW+Math.min(ox,textOrigW-1)]||false);
+    }
+  }
+  textOv.pixels=pixels;
+}
+
+// Stamp — burn text pixels into mosaicData.pixels
+document.getElementById('textStamp').addEventListener('click', ()=>{
+  if(!textOv||!mosaicData) return;
+  pushUndo(); // save before stamping
+  const {studX,studY,studW,studH,pixels}=textOv;
+  const {w,h}=mosaicData;
+  for(let sy=0;sy<studH;sy++){
+    for(let sx=0;sx<studW;sx++){
+      if(!pixels[sy*studW+sx]) continue;
+      const mx=studX+sx, my=studY+sy;
+      if(mx<0||my<0||mx>=w||my>=h) continue;
+      mosaicData.pixels[my*w+mx]={
+        r:parseInt(textLegoColor.hex.slice(1,3),16),
+        g:parseInt(textLegoColor.hex.slice(3,5),16),
+        b:parseInt(textLegoColor.hex.slice(5,7),16),
+        hex:textLegoColor.hex,
+        name:textLegoColor.name,
+        bl:textLegoColor.bl
+      };
+      if(!colorPieceMap[textLegoColor.hex]) colorPieceMap[textLegoColor.hex]=defaultPiece;
+    }
+  }
+  clearTextOverlay();
+  renderMosaic();
+  renderBOM();
+  // Keep text mode on so they can add another line
+});
+</script>
+</body>
+</html>
