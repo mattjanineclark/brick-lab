@@ -425,6 +425,31 @@ tr:last-child td{border-bottom:none;}
 #textOverlay{position:absolute;pointer-events:none;z-index:10;
   border:2px dashed rgba(242,195,20,.8);touch-action:none;}
 #textOverlay.active{pointer-events:all;cursor:move;}
+/* ── IMAGE EFFECTS ── */
+.effects-card{background:var(--panel);border-bottom:1px solid var(--border);
+  padding:14px 16px;display:none;}
+.effects-card.visible{display:block;}
+.effects-grid{display:flex;flex-direction:column;gap:10px;}
+.effect-row{display:grid;grid-template-columns:auto 1fr auto;
+  align-items:center;gap:10px;}
+.effect-toggle{display:flex;align-items:center;gap:6px;cursor:pointer;
+  user-select:none;min-width:110px;}
+.effect-toggle input[type=checkbox]{
+  width:16px;height:16px;accent-color:var(--yellow);
+  cursor:pointer;flex-shrink:0;}
+.effect-name{font-size:.78rem;font-weight:500;color:var(--muted);
+  font-family:'Space Grotesk',sans-serif;transition:color .15s;}
+.effect-toggle:has(input:checked) .effect-name{color:var(--text);}
+.effect-slider{flex:1;accent-color:var(--yellow);height:3px;cursor:pointer;}
+.effect-val{font-size:.68rem;color:var(--muted);min-width:28px;
+  text-align:right;font-family:'Space Grotesk',sans-serif;}
+.effects-preview{width:100%;aspect-ratio:4/3;object-fit:cover;
+  border-radius:8px;margin-bottom:10px;display:block;background:#111;}
+.effects-reset{width:100%;padding:8px;margin-top:4px;
+  background:var(--panel2);border:1px solid var(--border);
+  color:var(--muted);border-radius:7px;font-family:'Space Grotesk',sans-serif;
+  font-size:.75rem;font-weight:600;cursor:pointer;}
+.effects-reset:active{opacity:.7;}
 </style>
 </head>
 <body>
@@ -468,6 +493,16 @@ tr:last-child td{border-bottom:none;}
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Image Effects (shown after photo loaded) -->
+  <div class="card effects-card" id="effectsCard">
+    <div class="card-title">Image Effects</div>
+    <img class="effects-preview" id="effectsPreview"/>
+    <div class="effects-grid" id="effectsGrid">
+      <!-- populated by JS -->
+    </div>
+    <button class="effects-reset" id="effectsReset">Reset all effects</button>
   </div>
 
   <!-- 2. Size -->
@@ -738,46 +773,272 @@ const PIECE_TYPES = [
   {id:'flat24', label:'2×4 Flat', part:'3020',studs:8,w:4,h:2,round:false},
 ];
 
-// Option cards — images are illustrative CC/public web images
+// ── Inline SVG illustrations for option cards ──────────────────────────
+// These show exactly what each method looks like, load offline, never break.
+
+function svgImg(svgContent){
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 80">'+svgContent+'</svg>')}`;
+}
+
+// Border illustrations
+const BORDER_SVG = {
+  none: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <rect x="20" y="10" width="100" height="60" fill="#2a2a2a" rx="2"/>
+    ${[...Array(6)].map((_,r)=>[...Array(10)].map((_,c)=>`<circle cx="${25+c*10}" cy="${15+r*10}" r="3.5" fill="#${['C91A09','0055BF','F2CD37','257A3E','F2F3F2','FE8A18','582A12','A0A5A9','BBE90B','3F3691'][Math.floor(Math.random()*10)]}"/>`).join('')).join('')}
+    <text x="70" y="76" text-anchor="middle" font-size="7" fill="#666" font-family="sans-serif">No border</text>
+  `),
+  flat1: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- border row -->
+    ${[...Array(12)].map((_,i)=>`<rect x="${8+i*10}" y="8" width="8" height="8" rx="1" fill="#05131D"/>`).join('')}
+    ${[...Array(12)].map((_,i)=>`<rect x="${8+i*10}" y="64" width="8" height="8" rx="1" fill="#05131D"/>`).join('')}
+    ${[...Array(5)].map((_,i)=>`<rect x="8" y="${18+i*10}" width="8" height="8" rx="1" fill="#05131D"/>`).join('')}
+    ${[...Array(5)].map((_,i)=>`<rect x="118" y="${18+i*10}" width="8" height="8" rx="1" fill="#05131D"/>`).join('')}
+    <!-- image studs -->
+    ${[...Array(5)].map((_,r)=>[...Array(10)].map((_,c)=>`<circle cx="${22+c*10}" cy="${22+r*10}" r="3.5" fill="#${['C91A09','0055BF','F2CD37','257A3E','F2F3F2','FE8A18','582A12','A0A5A9','BBE90B','AA7D55'][Math.floor(Math.random()*10)]}"/>`).join('')).join('')}
+    <text x="70" y="78" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">1-stud flat border (part 3023)</text>
+  `),
+  flat2: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- raised border - 2 rows deep with shadow -->
+    ${[...Array(12)].map((_,i)=>`<rect x="${8+i*10}" y="5" width="8" height="8" rx="1" fill="#222" stroke="#444" stroke-width="0.5"/><rect x="${8+i*10}" y="5" width="8" height="3" rx="1" fill="#05131D"/><rect x="${8+i*10}" y="13" width="8" height="8" rx="1" fill="#05131D"/>`).join('')}
+    ${[...Array(12)].map((_,i)=>`<rect x="${8+i*10}" y="59" width="8" height="8" rx="1" fill="#05131D"/><rect x="${8+i*10}" y="67" width="8" height="8" rx="1" fill="#222"/>`).join('')}
+    ${[...Array(4)].map((_,i)=>`<rect x="8" y="${21+i*10}" width="8" height="8" rx="1" fill="#05131D"/><rect x="18" y="${21+i*10}" width="8" height="8" rx="1" fill="#05131D"/>`).join('')}
+    ${[...Array(4)].map((_,i)=>`<rect x="108" y="${21+i*10}" width="8" height="8" rx="1" fill="#05131D"/><rect x="118" y="${21+i*10}" width="8" height="8" rx="1" fill="#05131D"/>`).join('')}
+    ${[...Array(4)].map((_,r)=>[...Array(8)].map((_,c)=>`<circle cx="${32+c*10}" cy="${25+r*10}" r="3.5" fill="#${['C91A09','0055BF','F2CD37','257A3E','F2F3F2','FE8A18'][Math.floor(Math.random()*6)]}"/>`).join('')).join('')}
+    <text x="70" y="78" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">2-stud raised border</text>
+  `),
+  technic: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- Technic bricks with holes as border -->
+    ${[...Array(12)].map((_,i)=>`<rect x="${8+i*10}" y="8" width="8" height="8" rx="1" fill="#333"/><circle cx="${8+i*10+4}" cy="12" r="2.5" fill="#111"/>`).join('')}
+    ${[...Array(12)].map((_,i)=>`<rect x="${8+i*10}" y="64" width="8" height="8" rx="1" fill="#333"/><circle cx="${8+i*10+4}" cy="68" r="2.5" fill="#111"/>`).join('')}
+    ${[...Array(5)].map((_,i)=>`<rect x="8" y="${18+i*10}" width="8" height="8" rx="1" fill="#333"/><circle cx="12" cy="${22+i*10}" r="2.5" fill="#111"/>`).join('')}
+    ${[...Array(5)].map((_,i)=>`<rect x="118" y="${18+i*10}" width="8" height="8" rx="1" fill="#333"/><circle cx="122" cy="${22+i*10}" r="2.5" fill="#111"/>`).join('')}
+    ${[...Array(5)].map((_,r)=>[...Array(10)].map((_,c)=>`<circle cx="${22+c*10}" cy="${22+r*10}" r="3.5" fill="#${['C91A09','0055BF','F2CD37','257A3E','A0A5A9'][Math.floor(Math.random()*5)]}"/>`).join('')).join('')}
+    <!-- wire thread indication -->
+    <line x1="12" y1="8" x2="12" y2="2" stroke="#F2C314" stroke-width="1.5" stroke-dasharray="2,1"/>
+    <text x="70" y="78" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">Technic border — holes allow wire hanging</text>
+  `),
+};
+
+// Joining illustrations
+const JOIN_SVG = {
+  bridge: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- Two baseplates side by side, viewed from back -->
+    <rect x="10" y="15" width="54" height="50" rx="2" fill="#2a5a2a" stroke="#3a7a3a" stroke-width="1"/>
+    <rect x="66" y="15" width="54" height="50" rx="2" fill="#2a5a2a" stroke="#3a7a3a" stroke-width="1"/>
+    <text x="37" y="44" text-anchor="middle" font-size="8" fill="#5a9a5a" font-family="sans-serif">Back</text>
+    <text x="93" y="44" text-anchor="middle" font-size="8" fill="#5a9a5a" font-family="sans-serif">Back</text>
+    <!-- 1x8 bridge plates across seam -->
+    <rect x="36" y="22" width="64" height="6" rx="1" fill="#F2C314" stroke="#D4A800" stroke-width="0.5"/>
+    <rect x="36" y="34" width="64" height="6" rx="1" fill="#F2C314" stroke="#D4A800" stroke-width="0.5"/>
+    <rect x="36" y="46" width="64" height="6" rx="1" fill="#F2C314" stroke="#D4A800" stroke-width="0.5"/>
+    <rect x="36" y="52" width="64" height="6" rx="1" fill="#F2C314" stroke="#D4A800" stroke-width="0.5"/>
+    <!-- seam line -->
+    <line x1="64" y1="15" x2="64" y2="65" stroke="#F2C314" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="70" y="76" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">1×8 plates span the seam (part 3460)</text>
+  `),
+  technic: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- Two Technic baseplates (like LEGO Art 65803) with pin holes on edges -->
+    <rect x="10" y="20" width="54" height="42" rx="2" fill="#222" stroke="#444" stroke-width="1"/>
+    <rect x="66" y="20" width="54" height="42" rx="2" fill="#222" stroke="#444" stroke-width="1"/>
+    <!-- Technic holes on edges -->
+    ${[0,10,20,30].map(y=>`<circle cx="64" cy="${27+y}" r="3" fill="#111" stroke="#555" stroke-width="0.5"/>
+      <circle cx="66" cy="${27+y}" r="3" fill="#111" stroke="#555" stroke-width="0.5"/>`).join('')}
+    <!-- Pin going through -->
+    ${[0,10,20,30].map(y=>`<rect x="60" y="${25.5+y}" width="20" height="3" rx="1.5" fill="#A0A5A9"/>`).join('')}
+    <text x="37" y="44" text-anchor="middle" font-size="7" fill="#666" font-family="sans-serif">Plate A</text>
+    <text x="93" y="44" text-anchor="middle" font-size="7" fill="#666" font-family="sans-serif">Plate B</text>
+    <text x="70" y="76" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">Technic pins through side holes (part 3673)</text>
+  `),
+  wood: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- MDF/ply backing board -->
+    <rect x="8" y="12" width="124" height="56" rx="2" fill="#8B6914" stroke="#A07820" stroke-width="1"/>
+    <!-- Wood grain lines -->
+    ${[0,1,2,3,4].map(i=>`<line x1="8" y1="${20+i*10}" x2="132" y2="${22+i*10}" stroke="#7A5C10" stroke-width="0.5" opacity="0.6"/>`).join('')}
+    <!-- Baseplates on top -->
+    <rect x="12" y="16" width="54" height="44" rx="1" fill="#2a5a2a" stroke="#3a7a3a" stroke-width="0.5" opacity="0.9"/>
+    <rect x="68" y="16" width="54" height="44" rx="1" fill="#2a5a2a" stroke="#3a7a3a" stroke-width="0.5" opacity="0.9"/>
+    <!-- Screws -->
+    <circle cx="20" cy="24" r="3" fill="#888" stroke="#aaa" stroke-width="0.5"/>
+    <line x1="18" y1="24" x2="22" y2="24" stroke="#555" stroke-width="0.8"/>
+    <line x1="20" y1="22" x2="20" y2="26" stroke="#555" stroke-width="0.8"/>
+    <circle cx="58" cy="24" r="3" fill="#888" stroke="#aaa" stroke-width="0.5"/>
+    <circle cx="20" cy="52" r="3" fill="#888" stroke="#aaa" stroke-width="0.5"/>
+    <circle cx="58" cy="52" r="3" fill="#888" stroke="#aaa" stroke-width="0.5"/>
+    <circle cx="74" cy="24" r="3" fill="#888" stroke="#aaa" stroke-width="0.5"/>
+    <circle cx="118" cy="24" r="3" fill="#888" stroke="#aaa" stroke-width="0.5"/>
+    <circle cx="74" cy="52" r="3" fill="#888" stroke="#aaa" stroke-width="0.5"/>
+    <circle cx="118" cy="52" r="3" fill="#888" stroke="#aaa" stroke-width="0.5"/>
+    <text x="70" y="76" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">Screwed to MDF/ply backing board</text>
+  `),
+  glue: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- MDF backing -->
+    <rect x="8" y="20" width="124" height="44" rx="2" fill="#8B6914" stroke="#A07820" stroke-width="1"/>
+    <!-- Glue dots/strips -->
+    ${[0,1,2,3,4,5].map(i=>`<ellipse cx="${22+i*20}" cy="20" rx="6" ry="3" fill="#f0f0c0" opacity="0.7"/>`).join('')}
+    <!-- Baseplates -->
+    <rect x="12" y="16" width="54" height="40" rx="1" fill="#2a5a2a" stroke="#3a7a3a" stroke-width="0.5"/>
+    <rect x="68" y="16" width="54" height="40" rx="1" fill="#2a5a2a" stroke="#3a7a3a" stroke-width="0.5"/>
+    <!-- gap between plates (important!) -->
+    <line x1="66" y1="16" x2="66" y2="56" stroke="#F2C314" stroke-width="1.5"/>
+    <!-- callout for gap -->
+    <text x="65" y="12" text-anchor="middle" font-size="6" fill="#F2C314" font-family="sans-serif">gap</text>
+    <text x="70" y="74" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">Contact cement to MDF — leave stud-width gap</text>
+  `),
+};
+
+// Hanging illustrations
+const HANG_SVG = {
+  lego_hanger: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- Wall -->
+    <rect x="0" y="0" width="140" height="18" fill="#555"/>
+    <line x1="0" y1="18" x2="140" y2="18" stroke="#888" stroke-width="1"/>
+    <!-- Nail/screw in wall -->
+    <rect x="68" y="10" width="4" height="14" rx="1" fill="#ccc"/>
+    <circle cx="70" cy="10" r="4" fill="#aaa" stroke="#888" stroke-width="0.5"/>
+    <!-- Technic hanger bracket on back of mosaic -->
+    <rect x="20" y="22" width="100" height="52" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+    <!-- Hanger element (part 67139 style) -->
+    <rect x="58" y="18" width="24" height="8" rx="2" fill="#A0A5A9"/>
+    <circle cx="70" cy="22" r="4" fill="#888"/>
+    <circle cx="70" cy="22" r="2" fill="#555"/>
+    <!-- Stud pattern on front -->
+    ${[...Array(4)].map((_,r)=>[...Array(8)].map((_,c)=>`<circle cx="${28+c*12}" cy="${32+r*12}" r="4" fill="#${['C91A09','0055BF','F2CD37','257A3E','F2F3F2','A0A5A9','FE8A18','582A12'][c%8]}"/>`).join('')).join('')}
+    <text x="70" y="78" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">LEGO Art hanger bracket (part 67139)</text>
+  `),
+  command: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- Wall -->
+    <rect x="0" y="0" width="140" height="16" fill="#555"/>
+    <!-- Command strip pair - wall side -->
+    <rect x="40" y="10" width="22" height="10" rx="2" fill="#e8e8e8" stroke="#ccc" stroke-width="0.5"/>
+    <rect x="78" y="10" width="22" height="10" rx="2" fill="#e8e8e8" stroke="#ccc" stroke-width="0.5"/>
+    <!-- velcro texture -->
+    <text x="51" y="17" text-anchor="middle" font-size="5" fill="#999" font-family="sans-serif">≋≋≋</text>
+    <text x="89" y="17" text-anchor="middle" font-size="5" fill="#999" font-family="sans-serif">≋≋≋</text>
+    <!-- Mosaic back -->
+    <rect x="20" y="20" width="100" height="52" rx="2" fill="#2a5a2a" stroke="#3a7a3a" stroke-width="1"/>
+    <!-- Command strip - mosaic side -->
+    <rect x="40" y="20" width="22" height="8" rx="1" fill="#e8e8e8" stroke="#ccc" stroke-width="0.5"/>
+    <rect x="78" y="20" width="22" height="8" rx="1" fill="#e8e8e8" stroke="#ccc" stroke-width="0.5"/>
+    <!-- Pull tab -->
+    <rect x="56" y="28" width="6" height="6" rx="0.5" fill="#cc0000"/>
+    <rect x="94" y="28" width="6" height="6" rx="0.5" fill="#cc0000"/>
+    <text x="70" y="76" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">3M Command strips — no drill needed</text>
+  `),
+  french: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- Wall -->
+    <rect x="0" y="0" width="140" height="14" fill="#555"/>
+    <!-- French cleat on wall (45° bevel, pointing up) -->
+    <polygon points="10,14 130,14 130,24 10,24" fill="#8B6914"/>
+    <polygon points="10,14 130,14 130,20" fill="#A07820"/>
+    <text x="70" y="21" text-anchor="middle" font-size="6" fill="#5a3a00" font-family="sans-serif">Wall cleat (screwed to studs)</text>
+    <!-- Mosaic with matching cleat on back -->
+    <rect x="20" y="24" width="100" height="46" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+    <!-- Matching cleat on back of mosaic (pointing down, hooks over wall cleat) -->
+    <polygon points="25,24 115,24 115,32 25,32" fill="#8B6914"/>
+    <polygon points="25,30 115,30 115,32 25,32" fill="#6a4a00"/>
+    <text x="70" y="30" text-anchor="middle" font-size="5.5" fill="#3a2000" font-family="sans-serif">Mosaic cleat</text>
+    <!-- Studs on front -->
+    ${[...Array(3)].map((_,r)=>[...Array(8)].map((_,c)=>`<circle cx="${28+c*12}" cy="${40+r*10}" r="3.5" fill="#${['C91A09','0055BF','F2CD37','257A3E','F2F3F2','A0A5A9','FE8A18','582A12'][c%8]}"/>`).join('')).join('')}
+    <text x="70" y="76" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">French cleat — lifts off, perfectly level</text>
+  `),
+  wire: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- Wall with picture hook -->
+    <rect x="0" y="0" width="140" height="14" fill="#555"/>
+    <polygon points="65,6 75,6 73,14 67,14" fill="#ccc"/>
+    <line x1="70" y1="14" x2="70" y2="6" stroke="#aaa" stroke-width="1"/>
+    <!-- Wire -->
+    <path d="M 38 24 Q 70 14 102 24" stroke="#A0A5A9" stroke-width="2" fill="none"/>
+    <!-- Mosaic back -->
+    <rect x="20" y="24" width="100" height="48" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+    <!-- D-rings -->
+    <rect x="32" y="24" width="10" height="6" rx="1" fill="#888" stroke="#aaa" stroke-width="0.5"/>
+    <circle cx="37" cy="24" r="3" fill="none" stroke="#aaa" stroke-width="1.5"/>
+    <rect x="98" y="24" width="10" height="6" rx="1" fill="#888" stroke="#aaa" stroke-width="0.5"/>
+    <circle cx="103" cy="24" r="3" fill="none" stroke="#aaa" stroke-width="1.5"/>
+    <!-- Studs -->
+    ${[...Array(3)].map((_,r)=>[...Array(8)].map((_,c)=>`<circle cx="${28+c*12}" cy="${36+r*10}" r="3.5" fill="#${['C91A09','0055BF','F2CD37','257A3E','F2F3F2','A0A5A9'][c%6]}"/>`).join('')).join('')}
+    <text x="70" y="78" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">D-ring brackets + picture wire</text>
+  `),
+  magnet: svgImg(`
+    <rect width="140" height="80" fill="#1a1a1a"/>
+    <!-- Metal strip on wall -->
+    <rect x="10" y="8" width="120" height="8" rx="1" fill="#888" stroke="#aaa" stroke-width="0.5"/>
+    <text x="70" y="14" text-anchor="middle" font-size="5.5" fill="#333" font-family="sans-serif">Steel/IKEA rail screwed to wall</text>
+    <!-- Mosaic -->
+    <rect x="20" y="18" width="100" height="54" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+    <!-- Neodymium magnets on back (small circles) -->
+    ${[0,1,2,3].map(i=>`<circle cx="${35+i*25}" cy="18" r="5" fill="#B0C4DE" stroke="#789" stroke-width="0.5"/>
+      <text x="${35+i*25}" y="21" text-anchor="middle" font-size="5" fill="#456" font-family="sans-serif">N</text>`).join('')}
+    <!-- Studs on front -->
+    ${[...Array(3)].map((_,r)=>[...Array(7)].map((_,c)=>`<circle cx="${30+c*13}" cy="${30+r*13}" r="4" fill="#${['C91A09','0055BF','F2CD37','257A3E','FE8A18','A0A5A9','BBE90B'][c%7]}"/>`).join('')).join('')}
+    <text x="70" y="78" text-anchor="middle" font-size="7" fill="#888" font-family="sans-serif">Neodymium magnets — rearrangeable!</text>
+  `),
+};
+
 const BORDER_OPTIONS = [
-  {id:'none',    title:'None',              sub:'No border',
-   img:'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=200&q=60'},
-  {id:'flat1',   title:'1-stud flat',       sub:'Single row, flush surface (part 3023)',
-   img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=60'},
-  {id:'flat2',   title:'2-stud raised',     sub:'Double layer, picture-frame depth',
-   img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=60'},
-  {id:'technic', title:'Technic strip',     sub:'Pin-hole strip — also used for hanging',
-   img:'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=200&q=60'},
+  {id:'none',    title:'No border',
+   sub:'Mosaic edge exposed — works well with a separate picture frame',
+   img: BORDER_SVG.none},
+  {id:'flat1',   title:'1-stud flat',
+   sub:'Single row of 1×2 plates flush with surface (part 3023) — most common DIY finish',
+   img: BORDER_SVG.flat1},
+  {id:'flat2',   title:'2-stud raised',
+   sub:'Double-row brick border stands ~6mm proud — picture-frame look (parts 3023 + 3710)',
+   img: BORDER_SVG.flat2},
+  {id:'technic', title:'Technic strip',
+   sub:'Technic 1×2 bricks (part 3700) — holes allow wire hanging without D-rings',
+   img: BORDER_SVG.technic},
 ];
 
 const JOIN_OPTIONS = [
-  {id:'bridge', title:'Bridge plates',      sub:'1×8 plates on back (part 3460) — most common',
-   img:'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=200&q=60'},
-  {id:'technic',title:'Technic pins',       sub:'Pins through baseplate holes — from LEGO Art sets',
-   img:'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=200&q=60'},
-  {id:'ties',   title:'Cable ties',         sub:'3mm ties through Technic holes — cheap & solid',
-   img:'https://images.unsplash.com/photo-1581093804475-577d72e38aa0?w=200&q=60'},
-  {id:'tape',   title:'Foam tape',          sub:'3M VHB on back face — easy, removable',
-   img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=60'},
+  {id:'bridge', title:'Bridge plates',
+   sub:'1×8 flat plates across seams on back (part 3460) — simple, strong, reversible',
+   img: JOIN_SVG.bridge},
+  {id:'technic',title:'Technic pins',
+   sub:'As used in official LEGO Art sets (65803 bases + part 3673 pins) — most rigid',
+   img: JOIN_SVG.technic},
+  {id:'wood',   title:'Screw to board',
+   sub:'Baseplates screwed directly onto MDF or ply — best for large permanent displays',
+   img: JOIN_SVG.wood},
+  {id:'glue',   title:'Glue to board',
+   sub:'Contact cement to MDF backing — leave a stud-width gap between plates at each seam',
+   img: JOIN_SVG.glue},
 ];
 
 const HANG_OPTIONS = [
-  {id:'command', title:'Command strips',    sub:'No drill, holds ~7 kg per pair',
-   img:'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=60'},
-  {id:'french',  title:'French cleat',      sub:'Best for heavy mosaics, lifts off easily',
-   img:'https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=200&q=60'},
-  {id:'dring',   title:'D-ring + wire',     sub:'Standard picture-frame hardware',
-   img:'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=60'},
-  {id:'wire',    title:'Wire through holes',sub:'Threaded through Technic holes in border',
-   img:'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=200&q=60'},
-  {id:'velcro',  title:'Heavy Velcro',      sub:'Dual-lock strips, repositionable',
-   img:'https://images.unsplash.com/photo-1581093804475-577d72e38aa0?w=200&q=60'},
+  {id:'lego_hanger', title:'LEGO Art bracket',
+   sub:'Official hanger element (part 67139) built into Technic frame — just needs a nail',
+   img: HANG_SVG.lego_hanger},
+  {id:'command', title:'Command strips',
+   sub:'3M Command Large strips on back of each baseplate — no drill, holds ~3 kg per pair',
+   img: HANG_SVG.command},
+  {id:'french',  title:'French cleat',
+   sub:'45° wood rail on wall + matching rail on mosaic back — levels itself, lifts off easily',
+   img: HANG_SVG.french},
+  {id:'wire',    title:'D-ring + wire',
+   sub:'Standard picture wire between two D-ring brackets — works with any picture hook',
+   img: HANG_SVG.wire},
+  {id:'magnet',  title:'Magnets on rail',
+   sub:'Neodymium magnets epoxied to back + steel IKEA SKÅDIS rail — fully rearrangeable',
+   img: HANG_SVG.magnet},
 ];
 
 // Selected option IDs
 let selectedBorder = 'flat1';
 let selectedJoin   = 'bridge';
-let selectedHang   = 'command';
+let selectedHang   = 'lego_hanger';
 
 // ══════════════════════════════════════════════════════════════════════
 // STATE
@@ -933,6 +1194,10 @@ fileInput.addEventListener('change', e=>{
       uploadZone.classList.add('has-image');
       generateBtn.disabled=false;
       updateRatioHint();
+      // Show effects card and initial preview
+      document.getElementById('effectsCard').classList.add('visible');
+      document.getElementById('effectsPreview').src = thumbImg.src;
+      refreshEffectsPreview();
     };
     img.src=ev.target.result;
   };
@@ -961,6 +1226,250 @@ function updateThumb(){
   cv.getContext('2d').drawImage(imageData,cropRect.sx,cropRect.sy,cropRect.sw,cropRect.sh,0,0,cv.width,cv.height);
   thumbImg.src=cv.toDataURL();
 }
+
+// ══════════════════════════════════════════════════════════════════════
+// IMAGE EFFECTS
+// ══════════════════════════════════════════════════════════════════════
+
+const EFFECTS = [
+  { id:'brightness',  label:'Brightness',   min:-100, max:100,  default:0,   unit:''},
+  { id:'contrast',    label:'Contrast',     min:-100, max:100,  default:0,   unit:''},
+  { id:'saturation',  label:'Saturation',   min:-100, max:100,  default:0,   unit:''},
+  { id:'sharpness',   label:'Sharpness',    min:0,    max:100,  default:0,   unit:''},
+  { id:'greyscale',   label:'Greyscale',    min:0,    max:100,  default:100, unit:'%'},
+  { id:'sepia',       label:'Sepia',        min:0,    max:100,  default:100, unit:'%'},
+  { id:'posterise',   label:'Posterise',    min:2,    max:16,   default:4,   unit:' levels'},
+  { id:'invert',      label:'Invert',       min:0,    max:100,  default:100, unit:'%'},
+  { id:'warm',        label:'Warm',         min:0,    max:100,  default:0,   unit:''},
+  { id:'cool',        label:'Cool',         min:0,    max:100,  default:0,   unit:''},
+  { id:'vignette',    label:'Vignette',     min:0,    max:100,  default:50,  unit:''},
+  { id:'pixelate',    label:'Pixelate pre', min:1,    max:20,   default:1,   unit:'px'},
+];
+
+// State: which effects are on and their intensity
+let effectState = {};
+EFFECTS.forEach(e => { effectState[e.id] = { on: false, val: e.default }; });
+
+// Build the effects UI
+(function buildEffectsUI(){
+  const grid = document.getElementById('effectsGrid');
+  grid.innerHTML = '';
+  EFFECTS.forEach(ef => {
+    const row = document.createElement('div');
+    row.className = 'effect-row';
+
+    const lbl = document.createElement('label');
+    lbl.className = 'effect-toggle';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.id = 'efx_cb_' + ef.id;
+    const nm = document.createElement('span');
+    nm.className = 'effect-name';
+    nm.textContent = ef.label;
+    lbl.appendChild(cb); lbl.appendChild(nm);
+
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.className = 'effect-slider';
+    slider.min = ef.min; slider.max = ef.max;
+    slider.value = ef.default;
+    slider.id = 'efx_sl_' + ef.id;
+
+    const val = document.createElement('span');
+    val.className = 'effect-val';
+    val.id = 'efx_val_' + ef.id;
+    val.textContent = ef.default + ef.unit;
+
+    row.appendChild(lbl);
+    row.appendChild(slider);
+    row.appendChild(val);
+    grid.appendChild(row);
+
+    cb.addEventListener('change', () => {
+      effectState[ef.id].on = cb.checked;
+      refreshEffectsPreview();
+    });
+    slider.addEventListener('input', () => {
+      effectState[ef.id].val = parseFloat(slider.value);
+      val.textContent = slider.value + ef.unit;
+      // Auto-enable effect when slider moved
+      if(!effectState[ef.id].on){
+        effectState[ef.id].on = true;
+        cb.checked = true;
+      }
+      refreshEffectsPreview();
+    });
+  });
+})();
+
+document.getElementById('effectsReset').addEventListener('click', () => {
+  EFFECTS.forEach(ef => {
+    effectState[ef.id] = { on: false, val: ef.default };
+    document.getElementById('efx_cb_' + ef.id).checked = false;
+    document.getElementById('efx_sl_' + ef.id).value = ef.default;
+    document.getElementById('efx_val_' + ef.id).textContent = ef.default + ef.unit;
+  });
+  refreshEffectsPreview();
+});
+
+function refreshEffectsPreview(){
+  if(!imageData || !cropRect) return;
+  const cr = cropRect;
+  const maxP = 300;
+  const asp = cr.sw / cr.sh;
+  const pw = asp >= 1 ? maxP : Math.round(maxP * asp);
+  const ph = asp >= 1 ? Math.round(maxP / asp) : maxP;
+  const cv = document.createElement('canvas');
+  cv.width = pw; cv.height = ph;
+  const ctx = cv.getContext('2d');
+  ctx.drawImage(imageData, cr.sx, cr.sy, cr.sw, cr.sh, 0, 0, pw, ph);
+  applyEffectsToContext(ctx, pw, ph);
+  document.getElementById('effectsPreview').src = cv.toDataURL();
+}
+
+// Apply all active effects to a canvas context in-place
+function applyEffectsToContext(ctx, w, h){
+  const s = effectState;
+
+  // Pixelate pre (apply first so other effects work on pixelated image)
+  if(s.pixelate.on && s.pixelate.val > 1){
+    const sz = Math.round(s.pixelate.val);
+    const tmpCv = document.createElement('canvas');
+    tmpCv.width = Math.max(1, Math.floor(w/sz));
+    tmpCv.height = Math.max(1, Math.floor(h/sz));
+    const t = tmpCv.getContext('2d');
+    t.drawImage(ctx.canvas, 0, 0, tmpCv.width, tmpCv.height);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(tmpCv, 0, 0, w, h);
+    ctx.imageSmoothingEnabled = true;
+  }
+
+  // Sharpness (unsharp mask via repeated draw)
+  if(s.sharpness.on && s.sharpness.val > 0){
+    const amount = s.sharpness.val / 100;
+    const blur = document.createElement('canvas');
+    blur.width = w; blur.height = h;
+    const bc = blur.getContext('2d');
+    bc.filter = `blur(${Math.max(0.5, s.sharpness.val/50)}px)`;
+    bc.drawImage(ctx.canvas, 0, 0);
+    const orig = ctx.getImageData(0, 0, w, h);
+    const blurred = bc.getImageData(0, 0, w, h);
+    const out = ctx.createImageData(w, h);
+    for(let i = 0; i < orig.data.length; i += 4){
+      for(let c = 0; c < 3; c++){
+        out.data[i+c] = clamp(orig.data[i+c] + amount * (orig.data[i+c] - blurred.data[i+c]) * 3);
+      }
+      out.data[i+3] = orig.data[i+3];
+    }
+    ctx.putImageData(out, 0, 0);
+  }
+
+  // Pixel-level effects
+  const anyPixel = ['brightness','contrast','saturation','greyscale','sepia',
+    'posterise','invert','warm','cool'].some(id => s[id].on);
+
+  if(anyPixel){
+    const img = ctx.getImageData(0, 0, w, h);
+    const d = img.data;
+
+    for(let i = 0; i < d.length; i += 4){
+      let r = d[i], g = d[i+1], b = d[i+2];
+
+      // Brightness (-100 to +100)
+      if(s.brightness.on){
+        const br = s.brightness.val * 2.55;
+        r += br; g += br; b += br;
+      }
+
+      // Contrast (-100 to +100) — S-curve via factor
+      if(s.contrast.on){
+        const f = (259 * (s.contrast.val + 255)) / (255 * (259 - s.contrast.val));
+        r = f * (r - 128) + 128;
+        g = f * (g - 128) + 128;
+        b = f * (b - 128) + 128;
+      }
+
+      // Saturation (-100 to +100)
+      if(s.saturation.on){
+        const lum = 0.299*r + 0.587*g + 0.114*b;
+        const sat = (s.saturation.val + 100) / 100;
+        r = lum + (r - lum) * sat;
+        g = lum + (g - lum) * sat;
+        b = lum + (b - lum) * sat;
+      }
+
+      // Greyscale (0–100%)
+      if(s.greyscale.on){
+        const t = s.greyscale.val / 100;
+        const grey = 0.299*r + 0.587*g + 0.114*b;
+        r = r + (grey - r) * t;
+        g = g + (grey - g) * t;
+        b = b + (grey - b) * t;
+      }
+
+      // Sepia (0–100%)
+      if(s.sepia.on){
+        const t = s.sepia.val / 100;
+        const sr = clamp(r*0.393 + g*0.769 + b*0.189);
+        const sg = clamp(r*0.349 + g*0.686 + b*0.168);
+        const sb = clamp(r*0.272 + g*0.534 + b*0.131);
+        r = r + (sr - r) * t;
+        g = g + (sg - g) * t;
+        b = b + (sb - b) * t;
+      }
+
+      // Posterise (2–16 levels)
+      if(s.posterise.on){
+        const lvl = Math.max(2, Math.round(s.posterise.val));
+        r = Math.round(Math.round(r / 255 * (lvl-1)) * 255 / (lvl-1));
+        g = Math.round(Math.round(g / 255 * (lvl-1)) * 255 / (lvl-1));
+        b = Math.round(Math.round(b / 255 * (lvl-1)) * 255 / (lvl-1));
+      }
+
+      // Invert (0–100%)
+      if(s.invert.on){
+        const t = s.invert.val / 100;
+        r = r + (255 - r - r) * t;
+        g = g + (255 - g - g) * t;
+        b = b + (255 - b - b) * t;
+      }
+
+      // Warm (push red up, blue down)
+      if(s.warm.on){
+        const t = s.warm.val / 100;
+        r += t * 30;
+        g += t * 5;
+        b -= t * 20;
+      }
+
+      // Cool (push blue up, red down)
+      if(s.cool.on){
+        const t = s.cool.val / 100;
+        b += t * 30;
+        g += t * 5;
+        r -= t * 20;
+      }
+
+      d[i]   = clamp(r);
+      d[i+1] = clamp(g);
+      d[i+2] = clamp(b);
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  // Vignette (radial darkening from edges)
+  if(s.vignette.on && s.vignette.val > 0){
+    const strength = s.vignette.val / 100;
+    const grad = ctx.createRadialGradient(w/2, h/2, Math.min(w,h)*0.3,
+                                           w/2, h/2, Math.max(w,h)*0.75);
+    grad.addColorStop(0, 'rgba(0,0,0,0)');
+    grad.addColorStop(1, `rgba(0,0,0,${strength * 0.85})`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+  }
+}
+
+function clamp(v){ return Math.min(255, Math.max(0, Math.round(v))); }
 
 // ══════════════════════════════════════════════════════════════════════
 // CROP TOOL — touch-native
@@ -1125,7 +1634,7 @@ function openCrop(){
     };
     cropRect.sw=Math.min(iw-cropRect.sx,cropRect.sw);
     cropRect.sh=Math.min(ih-cropRect.sy,cropRect.sh);
-    cleanup(); updateThumb();
+    cleanup(); updateThumb(); refreshEffectsPreview();
   };
   document.getElementById('cropCancel').onclick=cleanup;
 }
@@ -1778,16 +2287,16 @@ exportBtn.addEventListener('click',()=>{
 // ══════════════════════════════════════════════════════════════════════
 const JOIN_INFO={
   bridge:{label:'Bridge plates on back',text:(bW,bH)=>`Flip the assembled baseplates over. Run <strong>1×8 Flat Plates (part 3460)</strong> horizontally across every vertical seam and vertically across every horizontal seam — at least 3 plates per seam edge. This mechanically locks the array and prevents racking.`},
-  technic:{label:'Technic pins',text:(bW,bH)=>`Align baseplates so Technic pin holes line up at each seam. Push <strong>Technic Pins (part 3673)</strong> through paired holes on adjacent plates, securing each with a <strong>Pin Stop Bush (part 32054)</strong>. Gives a rigid, flat join with nothing protruding.`},
-  ties:{label:'Cable ties',text:()=>`Thread 3mm cable ties through opposing Technic holes on adjacent baseplate edges. Pull tight and trim flush. Use at least 2 ties per seam.`},
-  tape:{label:'Foam tape',text:()=>`Apply strips of heavy-duty double-sided foam tape (3M VHB) bridging each seam on the back face. Press firmly for 30 seconds; allow 24 h cure before hanging.`},
+  technic:{label:'Technic pins (LEGO Art method)',text:(bW,bH)=>`Align baseplates so Technic pin holes line up at each seam. Push <strong>Technic Pins (part 3673)</strong> through paired holes on adjacent plates, securing each with a <strong>Pin Stop Bush (part 32054)</strong>. This is the method used in official LEGO Art sets — rigid, flat, nothing protruding on the back.`},
+  wood:{label:'Screwed to MDF/ply backing',text:(bW,bH)=>`Cut a piece of 9–12mm MDF or plywood to the mosaic's exact footprint. Position the baseplates on it, leaving a small gap (one stud-width, ~8mm) between each plate for correct LEGO spacing. Pre-drill through the baseplate corners and screw through into the board. The backing gives a rigid frame to hang from and prevents any flex.`},
+  glue:{label:'Contact cement to MDF backing',text:(bW,bH)=>`Cut MDF or ply to size. Apply contact cement to both the MDF surface and the back of each baseplate. Leave to go tacky (approx 10 min), then press plates into position. <strong>Important:</strong> leave a 1-stud gap (~8mm) between adjacent plates — LEGO spacing requires this gap. Clamp or press flat for 30 minutes. Once cured this is extremely strong but not reversible.`},
 };
 const HANG_INFO={
-  command:{label:'Command strips',text:()=>`Attach two or more <strong>3M Command Large strips</strong> to each baseplate's back. Clean the surface first, press for 30 s, wait 1 h before hanging. Rate: ~7 kg per pair. <em>No drilling.</em>`},
-  french:{label:'French cleat',text:()=>`Cut a 45° French cleat from 18 mm ply — one piece for the wall, one for the mosaic back. Screw wall piece to studs; attach matching cleat to baseplates. Mosaic lifts off cleanly. Best for large or heavy builds.`},
-  dring:{label:'D-ring + picture wire',text:()=>`Screw two D-ring plate brackets to the mosaic back, one-third in from each side, near the top. Thread picture wire between them with 50–75 mm of slack. Hang on a hook rated above the mosaic's weight.`},
-  wire:{label:'Wire through Technic holes',text:()=>`Thread braided picture wire through Technic holes near the top edge of the border. Tie a knot behind each hole so it can't pull through. Bring both ends to a central loop or two hooks.`},
-  velcro:{label:'Heavy Velcro',text:()=>`Apply industrial Velcro (3M Dual Lock or Velcro Extreme) to the back of each baseplate and the matching wall area. Press firmly. Rated ~8 kg per strip pair. Easy to reposition.`},
+  lego_hanger:{label:'LEGO Art hanger bracket',text:()=>`Build the <strong>official LEGO hanger element (part 67139)</strong> into the Technic frame on the back of the mosaic — exactly as LEGO Art sets are designed. The bracket hooks directly over a standard picture nail or screw. One nail per mosaic; no drilling required beyond the wall hook.`},
+  command:{label:'3M Command strips (no drill)',text:()=>`Attach two or more <strong>3M Command Large Picture Hanging Strips</strong> to the back of each baseplate. Clean the surface first, press for 30 seconds, wait 1 hour before hanging. Rated ~3 kg per strip pair. Remove damage-free using the red pull tab. Best for lighter mosaics under ~2 kg.`},
+  french:{label:'French cleat rail',text:()=>`Rip a 45° bevel along one edge of 18mm plywood — one strip for the wall, one for the mosaic back. Screw the wall strip horizontally into studs. Attach the matching strip to the MDF backing of the mosaic. The two cleats interlock; the mosaic is perfectly level, can be lifted off easily, and redistributes weight along the full width rather than two points.`},
+  wire:{label:'D-ring brackets + picture wire',text:()=>`Screw two <strong>D-ring plate brackets</strong> to the MDF backing, one-third of the way in from each side near the top edge. Thread <strong>braided picture wire</strong> between them with 50–75mm of slack. Hang on a hook or nail rated above the mosaic's total weight. Check the rating — a 96×64 stud mosaic can weigh 3–5 kg.`},
+  magnet:{label:'Neodymium magnets on steel rail',text:()=>`Screw a thin steel strip or IKEA SKÅDIS rail horizontally into wall studs. Epoxy small <strong>neodymium magnets</strong> to the back of each baseplate (4–6 per plate). The mosaic snaps to the rail and can be repositioned or rearranged freely. Ideal for displaying multiple mosaics on one rail.`},
 };
 const BORDER_INFO={
   none:{label:'None',stepText:()=>null},
