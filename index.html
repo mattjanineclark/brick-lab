@@ -1223,13 +1223,12 @@ fileInput.addEventListener('change', e=>{
     const img=new Image();
     img.onload=()=>{
       imageData=img; cropRect=null;
-      if(ratioLocked) snapCropToRatio();
+      snapCropToRatio();
       updateThumb();
       document.getElementById('uploadPrompt').style.display='none';
       thumbArea.style.display='block';
       uploadZone.classList.add('has-image');
       generateBtn.disabled=false;
-      updateRatioHint();
       // Show effects card and initial preview
       document.getElementById('effectsCard').classList.add('visible');
       document.getElementById('effectsPreview').src = thumbImg.src;
