@@ -272,7 +272,16 @@ tr:last-child td{border-bottom:none;}
 #bookletContent{width:100%;background:#e8e8e8;padding:12px;
   display:flex;flex-direction:column;gap:12px;}
 
-/* ── PRINT TRIGGER ── */
+
+/* ══════════════════════════════════════════════════════
+   LEGO-STYLE INSTRUCTION BOOKLET CSS
+   ══════════════════════════════════════════════════════ */
+:root{
+  --lego-yellow:#F2C314;--lego-dark:#1C1C1E;
+  --lego-red:#C91A09;--lego-blue:#0055BF;
+  --lego-white:#FFFFFF;--lego-light:#F5F5F0;
+  --lego-border:#E0DDD5;--lego-text:#1a1a1a;--lego-muted:#666;
+}
 @media print{
   body>*{display:none!important;}
   #printBooklet{display:block!important;}
@@ -281,99 +290,188 @@ tr:last-child td{border-bottom:none;}
     width:210mm!important;min-height:297mm!important;
     border-radius:0!important;box-shadow:none!important;margin:0!important;}
   .pb-page:last-child{page-break-after:auto!important;}
-  .pb-inner{padding:12mm 14mm!important;}
-  .pb-cover{padding:20mm 16mm!important;}
 }
 #printBooklet{display:none;}
+.pb-booklet{display:flex;flex-direction:column;gap:0;
+  font-family:'Space Grotesk','Inter',sans-serif;}
 
-/* ── BOOKLET — fluid on screen, fixed on print ── */
-.pb-booklet{display:flex;flex-direction:column;gap:0;}
-.pb-page{
-  background:#fff;color:#1a1a1a;
-  border-radius:8px;overflow:hidden;
-  box-shadow:0 2px 12px rgba(0,0,0,.25);
-  display:flex;flex-direction:column;
-  width:100%;                /* fluid on screen */
-  font-family:'Space Grotesk','Inter',sans-serif;
-}
-.pb-cover{background:#1C1C1E;color:#fff;flex:1;
-  display:flex;flex-direction:column;
-  align-items:flex-start;justify-content:space-between;
-  padding:clamp(16px,6vw,20mm) clamp(14px,5vw,16mm);}
-.pb-cover-logo{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-.pb-cover-logo .dot{width:24px;height:24px;background:#F2C314;border-radius:5px;flex-shrink:0;}
-.pb-cover-logo span{font-size:clamp(.85rem,3vw,1rem);font-weight:700;color:#F2C314;}
-.pb-cover-title{font-size:clamp(1.4rem,6vw,2.2rem);font-weight:700;
-  letter-spacing:-.03em;line-height:1.15;margin-bottom:clamp(12px,4vw,12mm);}
-.pb-cover-mosaic{width:100%;display:flex;justify-content:center;
-  margin-bottom:clamp(10px,3vw,8mm);}
-.pb-cover-meta{display:flex;flex-wrap:wrap;gap:clamp(6px,3vw,8mm);
-  color:#8E8E93;font-size:clamp(.62rem,2.5vw,.72rem);
-  border-top:1px solid #333;padding-top:clamp(8px,3vw,5mm);width:100%;}
-.pb-cover-meta span strong{color:#F2C314;display:block;
-  font-size:clamp(.8rem,3.5vw,.95rem);}
-.pb-inner{padding:clamp(14px,5vw,12mm) clamp(14px,5vw,14mm);
-  flex:1;display:flex;flex-direction:column;gap:clamp(10px,3vw,6mm);}
-.pb-page-header{display:flex;align-items:center;justify-content:space-between;
-  padding-bottom:clamp(6px,2vw,3mm);border-bottom:2px solid #F2C314;}
-.pb-page-header h2{font-size:clamp(.85rem,3.5vw,1rem);font-weight:700;}
-.pb-page-num{font-size:.65rem;color:#999;font-family:'Inter',sans-serif;}
-.pb-bom-table{width:100%;border-collapse:collapse;font-size:clamp(.62rem,2.2vw,.7rem);}
-.pb-bom-table th{background:#1C1C1E;color:#F2C314;
-  padding:clamp(3px,1.2vw,5px) clamp(4px,1.5vw,7px);
-  text-align:left;font-size:clamp(.52rem,1.8vw,.58rem);
-  text-transform:uppercase;letter-spacing:.07em;}
-.pb-bom-table td{padding:clamp(4px,1.5vw,5px) clamp(4px,1.5vw,7px);
-  border-bottom:1px solid #eee;vertical-align:middle;}
-.pb-bom-table tr:nth-child(even) td{background:#f8f8f8;}
-.pb-swatch{width:13px;height:13px;border-radius:2px;
-  display:inline-block;vertical-align:middle;border:1px solid rgba(0,0,0,.1);}
-.pb-part-tag{background:#1C1C1E;color:#F2C314;border-radius:3px;
-  padding:1px 5px;font-size:.58rem;font-weight:700;}
-.pb-bom-total{background:#1C1C1E;color:#fff;
-  padding:clamp(4px,1.5vw,5px) clamp(4px,1.5vw,7px);
-  font-weight:700;font-size:clamp(.62rem,2.2vw,.7rem);margin-top:1px;}
-.pb-steps{display:flex;flex-direction:column;gap:clamp(6px,2vw,4mm);}
-.pb-step{display:flex;gap:clamp(8px,3vw,4mm);align-items:flex-start;
-  padding:clamp(8px,3vw,3mm);background:#f8f8f8;border-radius:6px;}
-.pb-step-num{background:#F2C314;color:#1C1C1E;
-  min-width:clamp(20px,6vw,7mm);height:clamp(20px,6vw,7mm);
-  border-radius:4px;display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:.68rem;flex-shrink:0;}
-.pb-step-text{font-size:clamp(.68rem,2.5vw,.7rem);line-height:1.5;
-  font-family:'Inter',sans-serif;}
-.pb-step-text strong{font-family:'Space Grotesk',sans-serif;}
-.pb-stats{display:flex;flex-wrap:wrap;gap:clamp(6px,2vw,4mm);}
-.pb-stat{flex:1;min-width:60px;background:#1C1C1E;color:#fff;
-  border-radius:6px;padding:clamp(6px,2vw,3mm) clamp(8px,3vw,4mm);}
-.pb-stat .n{font-size:clamp(.9rem,4vw,1.1rem);font-weight:700;color:#F2C314;}
-.pb-stat .d{font-size:clamp(.55rem,2vw,.58rem);color:#8E8E93;margin-top:2px;}
-.pb-row-table{width:100%;border-collapse:collapse;
-  font-size:clamp(.58rem,2vw,.62rem);font-family:'Inter',sans-serif;}
-.pb-row-table th{background:#333;color:#fff;
-  padding:clamp(3px,1vw,3px) clamp(4px,1.5vw,5px);text-align:left;}
-.pb-row-table td{padding:clamp(3px,1vw,3px) clamp(4px,1.5vw,5px);
-  border-bottom:1px solid #eee;vertical-align:top;}
-.pb-row-table tr:nth-child(even) td{background:#f8f8f8;}
-.pb-row-piece{display:inline-flex;align-items:center;gap:3px;
-  background:#fff;border:1px solid #ddd;border-radius:2px;
-  padding:1px 4px;margin:1px;font-size:.56rem;white-space:nowrap;}
-.pb-row-dot{width:7px;height:7px;border-radius:1px;flex-shrink:0;}
-.pb-mosaic-img{width:100%;image-rendering:pixelated;
-  border:1px solid #eee;border-radius:4px;}
-.pb-photo-img{width:100%;border-radius:4px;border:1px solid #eee;
-  object-fit:contain;max-height:50vw;}
-/* Two-col becomes single-col on narrow screens */
-.pb-two-col{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,3vw,6mm);flex:1;}
-@media(max-width:480px){
-  .pb-two-col{grid-template-columns:1fr;}
-  .pb-cover-meta{gap:8px;}
-}
-.pb-col-label{font-size:.6rem;color:#999;text-transform:uppercase;
-  letter-spacing:.08em;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;}
-.pb-footer{font-size:.55rem;color:#bbb;text-align:center;
-  padding:clamp(6px,2vw,4mm) 0;font-family:'Inter',sans-serif;
-  border-top:1px solid #eee;margin-top:auto;}
+/* Every page */
+.pb-page{background:var(--lego-white);color:var(--lego-text);
+  border-radius:8px;overflow:hidden;box-shadow:0 3px 16px rgba(0,0,0,.28);
+  display:flex;flex-direction:column;width:100%;position:relative;}
+
+/* ── COVER ── */
+.pb-cover{background:var(--lego-dark);color:#fff;
+  flex:1;display:flex;flex-direction:column;
+  padding:clamp(14px,5vw,18mm) clamp(14px,5vw,16mm);
+  position:relative;overflow:hidden;min-height:60vw;}
+.pb-cover::before{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,.04) 2px,transparent 2px);
+  background-size:12px 12px;pointer-events:none;}
+.pb-cover::after{content:'';position:absolute;bottom:-40px;right:-40px;
+  width:130px;height:130px;background:var(--lego-yellow);
+  transform:rotate(45deg);opacity:.12;pointer-events:none;}
+.pb-cover-logo-row{display:flex;align-items:center;gap:8px;
+  margin-bottom:clamp(10px,3vw,10mm);}
+.pb-cover-logo-box{background:var(--lego-yellow);
+  width:clamp(28px,6vw,36px);height:clamp(28px,6vw,36px);
+  border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pb-cover-logo-box svg{width:60%;height:60%;}
+.pb-cover-brand{font-size:clamp(.75rem,2.8vw,.9rem);font-weight:700;
+  color:var(--lego-yellow);letter-spacing:.08em;}
+.pb-cover-set{font-size:clamp(.55rem,2vw,.65rem);
+  color:rgba(255,255,255,.35);letter-spacing:.12em;margin-left:auto;}
+.pb-cover-title{font-size:clamp(1.6rem,7vw,2.6rem);font-weight:700;
+  line-height:1.05;letter-spacing:-.03em;position:relative;z-index:1;
+  margin-bottom:clamp(4px,2vw,4mm);}
+.pb-cover-title em{color:var(--lego-yellow);font-style:normal;}
+.pb-cover-subtitle{font-size:clamp(.72rem,2.5vw,.88rem);
+  color:rgba(255,255,255,.45);font-weight:500;
+  margin-bottom:clamp(8px,2.5vw,8mm);letter-spacing:.01em;}
+.pb-cover-mosaic-wrap{position:relative;width:100%;
+  display:flex;justify-content:center;margin-bottom:clamp(8px,2.5vw,8mm);}
+.pb-cover-mosaic-wrap img{max-width:clamp(140px,68vw,128mm);
+  max-height:clamp(100px,38vw,78mm);image-rendering:pixelated;
+  border:3px solid rgba(255,255,255,.12);border-radius:4px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.pb-cover-mosaic-wrap::before{content:'● ● ●';
+  position:absolute;top:-8px;left:4px;
+  font-size:5px;color:var(--lego-yellow);opacity:.5;letter-spacing:5px;}
+.pb-cover-mosaic-wrap::after{content:'● ● ●';
+  position:absolute;bottom:-8px;right:4px;
+  font-size:5px;color:var(--lego-yellow);opacity:.5;letter-spacing:5px;}
+.pb-cover-meta{display:flex;flex-wrap:wrap;gap:clamp(8px,3vw,10mm);
+  border-top:1px solid rgba(255,255,255,.1);
+  padding-top:clamp(6px,2vw,5mm);position:relative;z-index:1;}
+.pb-cover-stat strong{font-size:clamp(.9rem,3.5vw,1.1rem);
+  color:var(--lego-yellow);font-weight:700;display:block;line-height:1;}
+.pb-cover-stat span{font-size:clamp(.52rem,1.8vw,.6rem);
+  color:rgba(255,255,255,.4);margin-top:2px;display:block;}
+
+/* ── INNER PAGE YELLOW TOP BAR ── */
+.pb-topbar{background:var(--lego-yellow);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(5px,2vw,3.5mm) clamp(10px,4vw,12mm);flex-shrink:0;}
+.pb-topbar-title{font-size:clamp(.68rem,2.5vw,.8rem);font-weight:700;
+  color:var(--lego-dark);letter-spacing:.05em;text-transform:uppercase;}
+.pb-page-circle{width:clamp(20px,5vw,24px);height:clamp(20px,5vw,24px);
+  border-radius:50%;background:var(--lego-dark);color:var(--lego-yellow);
+  font-size:clamp(.52rem,1.8vw,.62rem);font-weight:700;
+  display:flex;align-items:center;justify-content:center;}
+
+/* ── INNER CONTENT AREA ── */
+.pb-inner{padding:clamp(8px,3.5vw,9mm) clamp(10px,4vw,12mm);
+  flex:1;display:flex;flex-direction:column;gap:clamp(6px,2vw,4mm);}
+
+/* Section sub-header */
+.pb-section-head{display:flex;align-items:center;gap:7px;
+  margin:clamp(2px,1vw,2mm) 0 clamp(2px,0.8vw,1.5mm);}
+.pb-section-rule{flex:1;height:3px;background:var(--lego-yellow);border-radius:2px;}
+.pb-section-label{font-size:clamp(.58rem,2vw,.68rem);font-weight:700;
+  color:var(--lego-dark);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;}
+
+/* ── STATS BAR ── */
+.pb-stats{display:flex;flex-wrap:wrap;gap:clamp(3px,1.2vw,2.5mm);}
+.pb-stat{flex:1;min-width:52px;background:var(--lego-dark);color:#fff;
+  border-radius:6px;padding:clamp(4px,1.5vw,2.5mm) clamp(6px,2vw,3.5mm);
+  position:relative;overflow:hidden;}
+.pb-stat::after{content:'●';position:absolute;bottom:2px;right:4px;
+  font-size:5px;color:rgba(255,255,255,.08);}
+.pb-stat .n{font-size:clamp(.82rem,3.2vw,.98rem);font-weight:700;
+  color:var(--lego-yellow);line-height:1;}
+.pb-stat .d{font-size:clamp(.48rem,1.7vw,.56rem);
+  color:rgba(255,255,255,.45);margin-top:2px;}
+
+/* ── BUILD STEPS ── */
+.pb-steps{display:flex;flex-direction:column;gap:clamp(4px,1.5vw,2.5mm);}
+.pb-step{display:flex;gap:0;background:var(--lego-light);
+  border-radius:5px;overflow:hidden;border:1px solid var(--lego-border);}
+.pb-step-num{background:var(--lego-yellow);color:var(--lego-dark);
+  min-width:clamp(22px,6vw,28px);
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(.7rem,2.5vw,.85rem);font-weight:700;
+  flex-shrink:0;padding:clamp(5px,1.8vw,2.5mm) 0;
+  box-shadow:inset -2px 0 0 rgba(0,0,0,.12);}
+.pb-step-icon{display:flex;align-items:center;
+  padding:0 clamp(4px,1.5vw,3mm);font-size:clamp(.9rem,3vw,1.2rem);
+  flex-shrink:0;}
+.pb-step-body{padding:clamp(5px,1.8vw,2.5mm) clamp(5px,1.8vw,2.5mm) clamp(5px,1.8vw,2.5mm) 0;
+  flex:1;}
+.pb-step-body p{font-size:clamp(.62rem,2.1vw,.7rem);line-height:1.5;
+  font-family:'Inter',sans-serif;margin:0;}
+.pb-step-body strong{font-family:'Space Grotesk',sans-serif;color:var(--lego-dark);}
+
+/* ── BOM TABLE ── */
+.pb-bom-table{width:100%;border-collapse:collapse;
+  font-size:clamp(.56rem,1.9vw,.66rem);}
+.pb-bom-table thead tr{background:var(--lego-dark);}
+.pb-bom-table th{color:var(--lego-yellow);
+  padding:clamp(3px,1.1vw,4px) clamp(4px,1.4vw,6px);
+  text-align:left;font-size:clamp(.48rem,1.6vw,.56rem);
+  text-transform:uppercase;letter-spacing:.08em;font-weight:700;}
+.pb-bom-table td{padding:clamp(3px,1.1vw,4px) clamp(4px,1.4vw,6px);
+  border-bottom:1px solid var(--lego-border);vertical-align:middle;}
+.pb-bom-table tr:nth-child(even) td{background:#f8f7f2;}
+.pb-bom-cat td{background:var(--lego-yellow)!important;color:var(--lego-dark)!important;
+  font-weight:700!important;font-size:clamp(.5rem,1.7vw,.58rem)!important;
+  text-transform:uppercase!important;letter-spacing:.08em!important;}
+.pb-swatch{width:12px;height:12px;border-radius:2px;
+  display:inline-block;vertical-align:middle;
+  border:1px solid rgba(0,0,0,.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.25);}
+.pb-part-tag{background:var(--lego-dark);color:var(--lego-yellow);
+  border-radius:3px;padding:1px 4px;font-size:clamp(.48rem,1.7vw,.56rem);
+  font-weight:700;letter-spacing:.02em;}
+.pb-bom-total{background:var(--lego-dark);color:#fff;
+  padding:clamp(3px,1.1vw,4px) clamp(4px,1.4vw,6px);
+  font-weight:700;font-size:clamp(.58rem,1.9vw,.66rem);margin-top:1px;
+  display:flex;align-items:center;gap:6px;}
+
+/* ── REFERENCE PAGE ── */
+.pb-two-col{display:grid;grid-template-columns:1fr 1fr;
+  gap:clamp(6px,2.5vw,6mm);flex:1;}
+@media(max-width:480px){.pb-two-col{grid-template-columns:1fr;}}
+.pb-col-label{font-size:clamp(.52rem,1.8vw,.6rem);font-weight:700;
+  color:var(--lego-muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;}
+.pb-img-frame{background:var(--lego-light);border-radius:5px;
+  padding:clamp(4px,1.8vw,3mm);border:2px solid var(--lego-border);}
+.pb-img-caption{text-align:center;font-size:clamp(.5rem,1.8vw,.58rem);
+  color:var(--lego-muted);margin-top:3px;font-weight:600;}
+.pb-mosaic-img{width:100%;image-rendering:pixelated;border-radius:3px;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);}
+.pb-photo-img{width:100%;border-radius:3px;object-fit:contain;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);}
+
+/* ── SECTION GRID PAGES ── */
+.pb-section-topbar{background:var(--lego-dark);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(4px,1.8vw,3mm) clamp(8px,3vw,10mm);flex-shrink:0;}
+.pb-section-id{font-size:clamp(.68rem,2.3vw,.8rem);font-weight:700;
+  color:var(--lego-yellow);letter-spacing:.04em;}
+.pb-section-coords{font-size:clamp(.52rem,1.8vw,.62rem);color:rgba(255,255,255,.45);}
+.pb-section-pagenum{background:var(--lego-yellow);color:var(--lego-dark);
+  border-radius:50%;width:clamp(18px,4.5vw,22px);height:clamp(18px,4.5vw,22px);
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(.48rem,1.7vw,.58rem);font-weight:700;flex-shrink:0;}
+.pb-mini-key{display:flex;flex-wrap:wrap;gap:clamp(2px,0.8vw,1.5mm);
+  padding:clamp(3px,1.2vw,2mm) clamp(8px,3vw,10mm);
+  background:var(--lego-light);border-bottom:2px solid var(--lego-border);
+  flex-shrink:0;}
+.pb-key-chip{display:inline-flex;align-items:center;gap:3px;
+  border-radius:3px;padding:1.5px 5px;
+  font-size:clamp(.5rem,1.7vw,.58rem);font-weight:700;
+  border:1px solid rgba(0,0,0,.15);white-space:nowrap;
+  box-shadow:0 1px 2px rgba(0,0,0,.08);}
+.pb-grid-wrap{flex:1;padding:clamp(3px,1.5vw,2.5mm) clamp(8px,3vw,10mm);
+  overflow:hidden;display:flex;align-items:flex-start;}
+
+/* ── FOOTER ── */
+.pb-footer{display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(3px,1.2vw,2.5mm) clamp(8px,3vw,10mm);
+  background:var(--lego-dark);flex-shrink:0;}
+.pb-footer-brand{font-size:clamp(.48rem,1.7vw,.56rem);
+  color:var(--lego-yellow);font-weight:700;letter-spacing:.06em;}
+.pb-footer-info{font-size:clamp(.44rem,1.5vw,.52rem);color:rgba(255,255,255,.3);}
+.pb-footer-dots{font-size:4px;color:var(--lego-yellow);letter-spacing:3px;opacity:.55;}
 .viewer-mode-bar{display:flex;gap:6px;padding:0 12px 10px;overflow-x:auto;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .viewer-mode-bar::-webkit-scrollbar{display:none;}
@@ -483,6 +581,46 @@ tr:last-child td{border-bottom:none;}
   color:var(--muted);border-radius:7px;font-family:'Space Grotesk',sans-serif;
   font-size:.75rem;font-weight:600;cursor:pointer;}
 .effects-reset:active{opacity:.7;}
+/* ── ACCORDION SECTIONS ── */
+.ac{background:var(--panel);border-bottom:1px solid var(--border);}
+.ac-hdr{display:flex;align-items:center;gap:10px;padding:14px 16px;
+  cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
+.ac-hdr:active{background:var(--panel2);}
+.ac-num{width:24px;height:24px;border-radius:50%;background:var(--yellow);
+  color:#1C1C1E;font-family:'Space Grotesk',sans-serif;font-size:.72rem;
+  font-weight:700;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;}
+.ac-num.done{background:var(--panel2);color:var(--yellow);
+  border:1.5px solid var(--yellow);}
+.ac-title{font-family:'Space Grotesk',sans-serif;font-size:.88rem;font-weight:700;flex:1;}
+.ac-summary{font-size:.7rem;color:var(--muted);font-family:'Inter',sans-serif;
+  margin-right:4px;text-align:right;flex:1;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;}
+.ac-arrow{color:var(--muted);font-size:.9rem;flex-shrink:0;
+  transition:transform .2s;}
+.ac-arrow.open{transform:rotate(180deg);}
+.ac-body{overflow:hidden;transition:max-height .25s ease;max-height:0;}
+.ac-body.open{max-height:2000px;}
+.ac-inner{padding:0 16px 16px;}
+
+/* ── STICKY BOTTOM BAR ── */
+.sticky-bar{position:sticky;bottom:0;z-index:50;
+  display:none;flex-direction:column;gap:8px;
+  padding:12px 16px calc(12px + var(--safe));
+  background:var(--panel);border-top:2px solid var(--yellow);
+  box-shadow:0 -4px 20px rgba(0,0,0,.4);}
+.sticky-bar.visible{display:flex;}
+.sticky-print{width:100%;padding:16px;background:var(--yellow);color:#1C1C1E;
+  border:none;border-radius:var(--radius);
+  font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;
+  cursor:pointer;letter-spacing:-.01em;}
+.sticky-print:active{background:var(--yellow2);}
+.sticky-secondary{display:flex;gap:8px;}
+.sticky-png{flex:1;padding:11px;background:var(--panel2);color:var(--text);
+  border:1.5px solid var(--border);border-radius:var(--radius);
+  font-family:'Space Grotesk',sans-serif;font-size:.85rem;font-weight:700;
+  cursor:pointer;}
+.sticky-png:active{background:var(--border);}
 </style>
 </head>
 <body>
@@ -510,128 +648,218 @@ tr:last-child td{border-bottom:none;}
 
 <div class="app">
 
-  <!-- 1. Photo -->
-  <div class="card">
-    <div class="card-title">Photo</div>
-    <div class="upload-zone" id="uploadZone">
-      <input type="file" accept="image/*" id="fileInput"/>
-      <div id="uploadPrompt">
-        <div class="upload-icon">📷</div>
-        <p>Tap to choose a photo</p>
-      </div>
-      <div id="thumbArea" style="display:none">
-        <div class="thumb-wrap">
-          <img id="thumbImg"/>
-          <div class="thumb-crop-badge" id="cropBadge">✂ Adjust Crop</div>
+  <!-- ① Photo -->
+  <div class="ac" id="ac1">
+    <div class="ac-hdr" onclick="toggleAc(1)">
+      <div class="ac-num" id="ac1num">1</div>
+      <span class="ac-title">Photo</span>
+      <span class="ac-summary" id="ac1sum">Tap to choose</span>
+      <span class="ac-arrow open" id="ac1arr">▾</span>
+    </div>
+    <div class="ac-body open" id="ac1body">
+      <div class="ac-inner">
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" accept="image/*" id="fileInput"/>
+          <div id="uploadPrompt">
+            <div class="upload-icon">📷</div>
+            <p>Tap to choose a photo</p>
+          </div>
+          <div id="thumbArea" style="display:none">
+            <div class="thumb-wrap">
+              <img id="thumbImg"/>
+              <div class="thumb-crop-badge" id="cropBadge">✂ Adjust Crop</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Image Effects (shown after photo loaded) -->
-  <div class="card effects-card" id="effectsCard">
-    <div class="card-title">Image Effects</div>
-    <img class="effects-preview" id="effectsPreview"/>
-    <div class="effects-grid" id="effectsGrid">
-      <!-- populated by JS -->
+  <!-- ② Layout -->
+  <div class="ac" id="ac2">
+    <div class="ac-hdr" onclick="toggleAc(2)">
+      <div class="ac-num" id="ac2num">2</div>
+      <span class="ac-title">Layout</span>
+      <span class="ac-summary" id="ac2sum">32×32 · 2×2 = 64×64 studs</span>
+      <span class="ac-arrow open" id="ac2arr">▾</span>
     </div>
-    <button class="effects-reset" id="effectsReset">Reset all effects</button>
-  </div>
-
-  <!-- 2. Baseplate Grid -->
-  <div class="card">
-    <div class="card-title">Baseplate Layout</div>
-    <div class="bp-size-row">
-      <span class="bp-size-label">Plate size</span>
-      <div class="bp-size-btns" id="bpSizeBtns">
-        <button class="bp-size-btn" data-size="16">16×16</button>
-        <button class="bp-size-btn active" data-size="32">32×32</button>
-        <button class="bp-size-btn" data-size="48">48×48</button>
+    <div class="ac-body open" id="ac2body">
+      <div class="ac-inner">
+        <div class="bp-size-row">
+          <span class="bp-size-label">Plate size</span>
+          <div class="bp-size-btns" id="bpSizeBtns">
+            <button class="bp-size-btn" data-size="16">16×16</button>
+            <button class="bp-size-btn active" data-size="32">32×32</button>
+            <button class="bp-size-btn" data-size="48">48×48</button>
+          </div>
+        </div>
+        <div class="bp-grid-label">Tap to set grid &nbsp;<span id="bpGridDims" style="color:var(--yellow)">2×2</span> <span id="bpStudDims" style="color:var(--muted)">= 64×64 studs</span></div>
+        <div class="bp-grid-wrap" id="bpGridWrap"></div>
+        <input type="hidden" id="studsW" value="64"/>
+        <input type="hidden" id="studsH" value="64"/>
+        <input type="hidden" id="bpSize" value="32"/>
       </div>
     </div>
-    <div class="bp-grid-label">Tap to set grid size <span id="bpGridDims" style="color:var(--yellow)">2 × 2</span> <span style="color:var(--muted)">= 64×64 studs</span></div>
-    <div class="bp-grid-wrap" id="bpGridWrap">
-      <!-- 8×6 tappable grid, populated by JS -->
+  </div>
+
+  <!-- ③ Effects -->
+  <div class="ac" id="ac3">
+    <div class="ac-hdr" onclick="toggleAc(3)">
+      <div class="ac-num" id="ac3num">3</div>
+      <span class="ac-title">Image Effects</span>
+      <span class="ac-summary" id="ac3sum">All off</span>
+      <span class="ac-arrow" id="ac3arr">▾</span>
     </div>
-    <!-- hidden inputs kept for JS compatibility -->
-    <input type="hidden" id="studsW" value="64"/>
-    <input type="hidden" id="studsH" value="64"/>
-    <input type="hidden" id="bpSize" value="32"/>
-  </div>
-
-  <!-- 3. Palette & Pieces -->
-  <div class="card">
-    <div class="card-title">Colours</div>
-    <select id="numColors">
-      <option value="4">4 colours</option>
-      <option value="6">6 colours</option>
-      <option value="8">8 colours</option>
-      <option value="12">12 colours</option>
-      <option value="16" selected>16 colours</option>
-      <option value="24">24 colours</option>
-      <option value="32">32 colours</option>
-    </select>
-  </div>
-
-  <!-- 4. Piece type -->
-  <div class="card">
-    <div class="card-title">Default Piece Type</div>
-    <div class="piece-grid" id="pieceGrid"></div>
-  </div>
-
-  <!-- 6. Border -->
-  <div class="card">
-    <div class="card-title">Border Style</div>
-    <div class="option-scroll" id="borderScroll"></div>
-    <div style="margin-top:10px">
-      <select id="borderColor">
-        <option value="Black" data-hex="#05131D">Border: Black</option>
-        <option value="White" data-hex="#F2F3F2">Border: White</option>
-        <option value="Dark Bluish Gray" data-hex="#6C6E68">Border: Dark Gray</option>
-        <option value="Red" data-hex="#C91A09">Border: Red</option>
-        <option value="Tan" data-hex="#E4CD9E">Border: Tan</option>
-      </select>
+    <div class="ac-body" id="ac3body">
+      <div class="ac-inner">
+        <img class="effects-preview" id="effectsPreview"/>
+        <div class="effects-grid" id="effectsGrid"></div>
+        <button class="effects-reset" id="effectsReset">Reset all effects</button>
+      </div>
     </div>
   </div>
 
-  <!-- 7. Joining -->
-  <div class="card">
-    <div class="card-title">Joining Baseplates</div>
-    <div class="option-scroll" id="joinScroll"></div>
+  <!-- ④ Style -->
+  <div class="ac" id="ac4">
+    <div class="ac-hdr" onclick="toggleAc(4)">
+      <div class="ac-num" id="ac4num">4</div>
+      <span class="ac-title">Mosaic Style</span>
+      <span class="ac-summary" id="ac4sum">16 colours · 1×1 Round</span>
+      <span class="ac-arrow" id="ac4arr">▾</span>
+    </div>
+    <div class="ac-body" id="ac4body">
+      <div class="ac-inner" style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <div class="card-title" style="margin-bottom:8px">Colours</div>
+          <select id="numColors">
+            <option value="4">4 colours</option>
+            <option value="6">6 colours</option>
+            <option value="8">8 colours</option>
+            <option value="12">12 colours</option>
+            <option value="16" selected>16 colours</option>
+            <option value="24">24 colours</option>
+            <option value="32">32 colours</option>
+          </select>
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:8px">Default Piece Type</div>
+          <div class="piece-grid" id="pieceGrid"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- 8. Hanging -->
-  <div class="card">
-    <div class="card-title">Wall Hanging</div>
-    <div class="option-scroll" id="hangScroll"></div>
+  <!-- ⑤ Finish -->
+  <div class="ac" id="ac5">
+    <div class="ac-hdr" onclick="toggleAc(5)">
+      <div class="ac-num" id="ac5num">5</div>
+      <span class="ac-title">Finish</span>
+      <span class="ac-summary" id="ac5sum">Flat border · Bridge plates · Command strips</span>
+      <span class="ac-arrow" id="ac5arr">▾</span>
+    </div>
+    <div class="ac-body" id="ac5body">
+      <div class="ac-inner" style="display:flex;flex-direction:column;gap:16px">
+        <div>
+          <div class="card-title" style="margin-bottom:8px">Border Style</div>
+          <div class="option-scroll" id="borderScroll"></div>
+          <select id="borderColor" style="margin-top:10px">
+            <option value="Black" data-hex="#05131D">Border: Black</option>
+            <option value="White" data-hex="#F2F3F2">Border: White</option>
+            <option value="Dark Bluish Gray" data-hex="#6C6E68">Border: Dark Gray</option>
+            <option value="Red" data-hex="#C91A09">Border: Red</option>
+            <option value="Tan" data-hex="#E4CD9E">Border: Tan</option>
+          </select>
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:8px">Joining Baseplates</div>
+          <div class="option-scroll" id="joinScroll"></div>
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:8px">Wall Hanging</div>
+          <div class="option-scroll" id="hangScroll"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Generate -->
-  <button class="gen-btn" id="generateBtn" disabled>Generate Mosaic</button>
+  <button class="gen-btn" id="generateBtn" disabled>⚡ Generate Mosaic</button>
 
-  <!-- Mosaic viewer -->
-  <div class="viewer-card" id="viewerCard" style="display:none">
-    <div class="viewer-toolbar">
-      <h2>Mosaic</h2>
-      <div class="zoom-btns">
-        <button class="zoom-btn" id="zoomOut">−</button>
-        <span class="zoom-pct" id="zoomPct">100%</span>
-        <button class="zoom-btn" id="zoomIn">+</button>
+  <!-- ⑥ Preview -->
+  <div class="ac" id="ac6" style="display:none">
+    <div class="ac-hdr" onclick="toggleAc(6)">
+      <div class="ac-num done" id="ac6num">6</div>
+      <span class="ac-title">Mosaic Preview</span>
+      <span class="ac-summary" id="ac6sum"></span>
+      <span class="ac-arrow open" id="ac6arr">▾</span>
+    </div>
+    <div class="ac-body open" id="ac6body">
+      <div class="viewer-toolbar" style="padding:10px 12px 0">
+        <h2 style="font-size:.85rem;font-weight:600;flex:1">Preview</h2>
+        <div class="zoom-btns">
+          <button class="zoom-btn" id="zoomOut">−</button>
+          <span class="zoom-pct" id="zoomPct">100%</span>
+          <button class="zoom-btn" id="zoomIn">+</button>
+        </div>
       </div>
-    </div>
-    <div class="viewer-mode-bar">
-      <button class="mode-btn" id="editToggle">✏ Edit</button>
-      <button class="mode-btn" id="paintToggle">🖌 Paint</button>
-      <button class="mode-btn" id="textToggle">Aa Text</button>
-      <button class="mode-btn" id="undoBtn" disabled>↩ Undo</button>
-    </div>
-    <div class="viewer-outer" id="viewerOuter">
-      <div id="studGrid"></div>
-      <div id="textOverlay"></div>
+      <div class="viewer-mode-bar">
+        <button class="mode-btn" id="editToggle">✏ Edit</button>
+        <button class="mode-btn" id="paintToggle">🖌 Paint</button>
+        <button class="mode-btn" id="textToggle">Aa Text</button>
+        <button class="mode-btn" id="undoBtn" disabled>↩ Undo</button>
+      </div>
+      <div class="viewer-outer" id="viewerOuter">
+        <div id="studGrid"></div>
+        <div id="textOverlay"></div>
+      </div>
+      <!-- Paint panel -->
+      <div class="paint-panel" id="paintPanel" style="display:none">
+        <div class="paint-panel-label">Paint colour — tap to paint, drag for multiple</div>
+        <div class="paint-palette" id="paintPalette"></div>
+      </div>
+      <!-- Text panel -->
+      <div class="text-panel" id="textPanel" style="display:none">
+        <div class="text-panel-row">
+          <input type="text" id="textInput" placeholder="Type text…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+        </div>
+        <div class="text-panel-row" style="gap:8px">
+          <div class="tp-group">
+            <label>Font</label>
+            <select id="textFont">
+              <option value="'Space Grotesk',sans-serif">Grotesk (chunky)</option>
+              <option value="'Courier New',monospace">Mono (pixel)</option>
+              <option value="Impact,sans-serif">Impact (bold)</option>
+              <option value="Georgia,serif">Georgia (serif)</option>
+              <option value="Arial Black,sans-serif">Arial Black</option>
+            </select>
+          </div>
+          <div class="tp-group">
+            <label>Size (studs tall)</label>
+            <input type="number" id="textSize" value="8" min="2" max="40"/>
+          </div>
+        </div>
+        <div class="text-panel-row" style="gap:8px;align-items:center">
+          <div class="tp-group" style="flex:1">
+            <label>Text colour</label>
+            <div class="tp-color-row" id="textColorRow"></div>
+          </div>
+          <div class="tp-group" style="flex:1">
+            <label>Bold</label>
+            <button class="tp-toggle" id="textBold">B</button>
+          </div>
+        </div>
+        <div class="text-panel-row" style="gap:8px">
+          <button class="tp-action" id="textPreview">Preview</button>
+          <button class="tp-action tp-stamp" id="textStamp">Stamp onto Mosaic</button>
+        </div>
+        <div style="font-size:.65rem;color:var(--muted);padding:0 14px 10px;line-height:1.4">
+          After preview: drag to reposition, pinch to resize.
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Stud editor popup -->
+  <!-- Stud editor popup (outside accordion, fixed position) -->
   <div class="stud-editor" id="studEditor">
     <div class="stud-editor-title">
       <span>Change Colour</span>
@@ -640,75 +868,39 @@ tr:last-child td{border-bottom:none;}
     <div class="color-swatches" id="colorSwatches"></div>
     <div class="stud-editor-piece">
       <label>Piece type for this colour</label>
-      <select id="editorPiece" class="piece-select" style="width:100%;max-width:100%">
-      </select>
+      <select id="editorPiece" class="piece-select" style="width:100%;max-width:100%"></select>
     </div>
   </div>
 
-  <!-- Paint palette panel -->
-  <div class="paint-panel" id="paintPanel" style="display:none">
-    <div class="paint-panel-label">Paint colour — tap studs to paint, drag to paint multiple</div>
-    <div class="paint-palette" id="paintPalette"></div>
-  </div>
-
-  <!-- Text overlay panel -->
-  <div class="text-panel" id="textPanel" style="display:none">
-    <div class="text-panel-row">
-      <input type="text" id="textInput" placeholder="Type text…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+  <!-- ⑦ Parts List -->
+  <div class="ac" id="ac7" style="display:none">
+    <div class="ac-hdr" onclick="toggleAc(7)">
+      <div class="ac-num done" id="ac7num">7</div>
+      <span class="ac-title">Parts List</span>
+      <span class="ac-summary" id="ac7sum"><span id="totalPieces">—</span> pieces</span>
+      <span class="ac-arrow open" id="ac7arr">▾</span>
     </div>
-    <div class="text-panel-row" style="gap:8px">
-      <div class="tp-group">
-        <label>Font</label>
-        <select id="textFont">
-          <option value="'Space Grotesk',sans-serif">Grotesk (chunky)</option>
-          <option value="'Courier New',monospace">Mono (pixel)</option>
-          <option value="Impact,sans-serif">Impact (bold)</option>
-          <option value="Georgia,serif">Georgia (serif)</option>
-          <option value="Arial Black,sans-serif">Arial Black</option>
-        </select>
+    <div class="ac-body open" id="ac7body">
+      <div class="ac-inner" style="padding-top:8px;overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Col</th><th>Name</th><th>Type</th><th>Part</th>
+              <th style="text-align:right">Pcs</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="bomBody"></tbody>
+        </table>
       </div>
-      <div class="tp-group">
-        <label>Size (studs tall)</label>
-        <input type="number" id="textSize" value="8" min="2" max="40"/>
-      </div>
-    </div>
-    <div class="text-panel-row" style="gap:8px;align-items:center">
-      <div class="tp-group" style="flex:1">
-        <label>Text colour</label>
-        <div class="tp-color-row" id="textColorRow"></div>
-      </div>
-      <div class="tp-group" style="flex:1">
-        <label>Bold</label>
-        <button class="tp-toggle" id="textBold">B</button>
-      </div>
-    </div>
-    <div class="text-panel-row" style="gap:8px">
-      <button class="tp-action" id="textPreview">Preview</button>
-      <button class="tp-action tp-stamp" id="textStamp">Stamp onto Mosaic</button>
-    </div>
-    <div style="font-size:.65rem;color:var(--muted);padding:0 14px 10px;line-height:1.4">
-      After preview: drag to reposition, pinch to resize. Tap Stamp to burn in permanently.
-    </div>
-  </div>
-  <div class="card" id="bomSection" style="display:none">
-    <div class="card-title">Bill of Materials — <span id="totalPieces" style="color:var(--yellow)">—</span> pieces</div>
-    <div class="bom-wrap" style="padding:0;overflow-x:auto">
-      <table>
-        <thead>
-          <tr>
-            <th>Col</th><th>Name</th><th>Type</th><th>Part</th>
-            <th style="text-align:right">Pcs</th><th></th>
-          </tr>
-        </thead>
-        <tbody id="bomBody"></tbody>
-      </table>
     </div>
   </div>
 
-  <!-- Bottom action buttons -->
-  <div class="bottom-actions" id="bottomActions" style="display:none">
-    <button class="big-print-btn" id="printBtnBottom">📄 Print Instruction Booklet</button>
-    <button class="big-export-btn" id="exportBtnBottom">⬇ Save Mosaic PNG</button>
+  <!-- Sticky bottom bar -->
+  <div class="sticky-bar" id="stickyBar">
+    <button class="sticky-print" id="printBtnBottom">📄 Print Instruction Booklet</button>
+    <div class="sticky-secondary">
+      <button class="sticky-png" id="exportBtnBottom">⬇ Save PNG</button>
+    </div>
   </div>
 
   <div style="height:calc(24px + var(--safe))"></div>
@@ -755,8 +947,35 @@ tr:last-child td{border-bottom:none;}
 
 <script>
 // ══════════════════════════════════════════════════════════════════════
-// DATA
+// ACCORDION
 // ══════════════════════════════════════════════════════════════════════
+function toggleAc(n){
+  const body=document.getElementById('ac'+n+'body');
+  const arr=document.getElementById('ac'+n+'arr');
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  arr.classList.toggle('open',!isOpen);
+}
+
+function openAc(n){
+  document.getElementById('ac'+n+'body').classList.add('open');
+  document.getElementById('ac'+n+'arr').classList.add('open');
+}
+function closeAc(n){
+  document.getElementById('ac'+n+'body').classList.remove('open');
+  document.getElementById('ac'+n+'arr').classList.remove('open');
+}
+
+function setAcSummary(n, text){
+  document.getElementById('ac'+n+'sum').textContent=text;
+}
+function setAcDone(n){
+  const num=document.getElementById('ac'+n+'num');
+  num.classList.add('done');
+  num.textContent='✓';
+}
+
+
 
 const LEGO_COLORS = [
   {name:'White',             hex:'#F2F3F2',bl:'1'},
@@ -1093,10 +1312,8 @@ const studsWEl    = document.getElementById('studsW'); // hidden input
 const studsHEl    = document.getElementById('studsH'); // hidden input
 const generateBtn = document.getElementById('generateBtn');
 const studGrid    = document.getElementById('studGrid');
-const bomSection  = document.getElementById('bomSection');
 const bomBody     = document.getElementById('bomBody');
 const totalPiecesEl = document.getElementById('totalPieces');
-const viewerCard  = document.getElementById('viewerCard');
 const viewerOuter = document.getElementById('viewerOuter');
 const exportBtn   = document.getElementById('exportBtn');
 const printBtn    = document.getElementById('printBtn');
@@ -1124,9 +1341,24 @@ function buildOptionCards(containerId, options, getSelected, setSelected) {
   });
 }
 
-buildOptionCardsWithRerender('borderScroll', BORDER_OPTIONS, ()=>selectedBorder, v=>{ selectedBorder=v; });
-buildOptionCards('joinScroll',   JOIN_OPTIONS,   ()=>selectedJoin,   v=>selectedJoin=v);
-buildOptionCards('hangScroll',   HANG_OPTIONS,   ()=>selectedHang,   v=>selectedHang=v);
+function updateStyleSummary(){
+  const nc=document.getElementById('numColors').value;
+  const pt=PIECE_TYPES.find(p=>p.id===defaultPiece)||PIECE_TYPES[0];
+  setAcSummary(4,`${nc} colours · ${pt.label}`);
+}
+
+function updateFinishSummary(){
+  const bStyle=BORDER_OPTIONS.find(o=>o.id===selectedBorder)||BORDER_OPTIONS[0];
+  const jStyle=JOIN_OPTIONS.find(o=>o.id===selectedJoin)||JOIN_OPTIONS[0];
+  const hStyle=HANG_OPTIONS.find(o=>o.id===selectedHang)||HANG_OPTIONS[0];
+  setAcSummary(5,`${bStyle.title} · ${jStyle.title} · ${hStyle.title}`);
+}
+
+document.getElementById('numColors').addEventListener('change', updateStyleSummary);
+updateStyleSummary();
+updateFinishSummary();
+
+
 
 // ══════════════════════════════════════════════════════════════════════
 // PIECE TYPE BUTTONS
@@ -1144,10 +1376,16 @@ function squareSVG(w,h){const pw=w*9,ph=h*9;let d='';for(let r=0;r<h;r++)for(let
       defaultPiece=pt.id;
       pg.querySelectorAll('.piece-btn').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
+      updateStyleSummary();
     });
     pg.appendChild(b);
   });
 })();
+
+// Build option cards
+buildOptionCardsWithRerender('borderScroll', BORDER_OPTIONS, ()=>selectedBorder, v=>{ selectedBorder=v; updateFinishSummary(); });
+buildOptionCards('joinScroll', JOIN_OPTIONS, ()=>selectedJoin, v=>{ selectedJoin=v; updateFinishSummary(); });
+buildOptionCards('hangScroll', HANG_OPTIONS, ()=>selectedHang, v=>{ selectedHang=v; updateFinishSummary(); });
 
 // ══════════════════════════════════════════════════════════════════════
 // BASEPLATE GRID PICKER
@@ -1163,12 +1401,13 @@ function getStudsH(){ return bpGridH * getBpSize(); }
 
 function updateGridDimsLabel(){
   const bp=getBpSize();
-  document.getElementById('bpGridDims').textContent=`${bpGridW} × ${bpGridH}`;
-  const next=document.getElementById('bpGridDims').nextElementSibling;
-  if(next) next.textContent=`= ${getStudsW()}×${getStudsH()} studs`;
-  // Also sync hidden inputs so rest of code works unchanged
-  document.getElementById('studsW').value=getStudsW();
-  document.getElementById('studsH').value=getStudsH();
+  const ww=getStudsW(), hh=getStudsH();
+  document.getElementById('bpGridDims').textContent=`${bpGridW}×${bpGridH}`;
+  const sd=document.getElementById('bpStudDims');
+  if(sd) sd.textContent=`= ${ww}×${hh} studs`;
+  setAcSummary(2,`${bp}×${bp} · ${bpGridW}×${bpGridH} = ${ww}×${hh} studs`);
+  document.getElementById('studsW').value=ww;
+  document.getElementById('studsH').value=hh;
   document.getElementById('bpSize').value=bp;
 }
 
@@ -1229,8 +1468,11 @@ fileInput.addEventListener('change', e=>{
       thumbArea.style.display='block';
       uploadZone.classList.add('has-image');
       generateBtn.disabled=false;
-      // Show effects card and initial preview
-      document.getElementById('effectsCard').classList.add('visible');
+      // Accordion: mark photo done, collapse it, open effects
+      setAcSummary(1, 'Photo loaded ✓');
+      setAcDone(1);
+      closeAc(1);
+      // Show effects card
       document.getElementById('effectsPreview').src = thumbImg.src;
       refreshEffectsPreview();
     };
@@ -1722,14 +1964,20 @@ function generate(){
   renderMosaic();
   renderBOM();
 
-  viewerCard.style.display='block';
-  bomSection.style.display='block';
+  // Show preview and parts list accordions
+  const ac6=document.getElementById('ac6');
+  const ac7=document.getElementById('ac7');
+  ac6.style.display='block'; openAc(6);
+  ac7.style.display='block'; openAc(7);
+  setAcSummary(6, `${W}×${H} studs · ${mosaicData.pixels.length.toLocaleString()} pieces`);
+  // Collapse setup sections, keep layout open for reference
+  closeAc(3); closeAc(4); closeAc(5);
+  document.getElementById('stickyBar').classList.add('visible');
   exportBtn.style.display='';
   printBtn.style.display='';
-  document.getElementById('bottomActions').style.display='flex';
 
-  // Scroll to viewer
-  setTimeout(()=>viewerCard.scrollIntoView({behavior:'smooth',block:'start'}),100);
+  // Scroll to preview
+  setTimeout(()=>ac6.scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
 
 function dist(a,b){return(a.r-b.r)**2+(a.g-b.g)**2+(a.b-b.b)**2;}
@@ -2309,6 +2557,7 @@ function renderBOM(){
     bomBody.appendChild(tr);
   });
   totalPiecesEl.textContent=total.toLocaleString();
+  setAcSummary(7, `${total.toLocaleString()} pieces · ${Object.keys(cc).length} colours`);
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -2331,16 +2580,14 @@ exportBtn.addEventListener('click',()=>{
   a.download='brick-lab-mosaic.png'; a.href=cv.toDataURL(); a.click();
 });
 
-// Bottom print/export buttons
+// Bottom print/export buttons (sticky bar)
 document.getElementById('printBtnBottom').addEventListener('click',()=>{
   const html=buildBooklet();
   document.getElementById('bookletContent').innerHTML=html;
   document.getElementById('printBooklet').innerHTML=html;
   document.getElementById('modalOverlay').classList.add('open');
 });
-document.getElementById('exportBtnBottom').addEventListener('click',()=>{
-  exportBtn.click();
-});
+document.getElementById('exportBtnBottom').addEventListener('click',()=>{ exportBtn.click(); });
 // ══════════════════════════════════════════════════════════════════════
 const JOIN_INFO={
   bridge:{label:'Bridge plates on back',text:(bW,bH)=>`Flip the assembled baseplates over. Run <strong>1×8 Flat Plates (part 3460)</strong> horizontally across every vertical seam and vertically across every horizontal seam — at least 3 plates per seam edge. This mechanically locks the array and prevents racking.`},
@@ -2423,9 +2670,6 @@ function buildBooklet(){
   pixels.forEach((px,i)=>{tCtx.fillStyle=px.hex;tCtx.fillRect((i%w)*scale,Math.floor(i/w)*scale,scale,scale);});
   const mUrl=tc.toDataURL();
 
-  // Steps
-  let sn=1; const pbStep=t=>`<div class="pb-step"><div class="pb-step-num">${sn++}</div><div class="pb-step-text">${t}</div></div>`;
-
   // ── Colour-by-number section pages ───────────────────────────────────
   // Each baseplate section gets its own page with a numbered grid
   // Cell size: we want the grid to fit within ~170mm × 220mm (A4 inner area)
@@ -2445,14 +2689,13 @@ function buildBooklet(){
     }
     const secColorList=sortedColors.filter(c=>secColors.has(c.hex));
 
-    // Cell size in mm — fit to A4 inner area (170mm wide, ~200mm tall for grid)
-    const maxCellMm=Math.min(170/secW, 200/secH);
-    const cellMm=Math.min(maxCellMm, 10); // cap at 10mm
-    const fontMm=Math.max(2, cellMm*0.55);
-    const gridWmm=secW*cellMm, gridHmm=secH*cellMm;
+    // Cell size: fit within 182mm wide × 210mm tall (A4 with 10mm margins each side)
+    // Use percentage width on table so it never overflows — cell is a square percentage
+    const maxCellMm = Math.min(182/secW, 210/secH);
+    const cellMm = Math.min(maxCellMm, 9); // hard cap 9mm
+    const fontMm = Math.max(1.8, cellMm * 0.52);
+    const tableMm = cellMm * secW; // actual table width in mm
 
-    // Build grid HTML — inline SVG is most reliable for print
-    // We'll use an HTML table for the grid (more printer-friendly than canvas)
     let gridRows='';
     for(let sy=startY;sy<endY;sy++){
       let cells='';
@@ -2460,46 +2703,46 @@ function buildBooklet(){
         const px=pixels[sy*w+sx];
         const num=colorNumMap[px.hex]||'?';
         const txtCol=isLight(px.hex)?'#000':'#fff';
-        cells+=`<td style="background:${px.hex};color:${txtCol};width:${cellMm}mm;height:${cellMm}mm;font-size:${fontMm}mm;border:0.3px solid rgba(0,0,0,.12)">${num}</td>`;
+        // Fixed mm width per cell — table is constrained by max-width below
+        cells+=`<td style="background:${px.hex};color:${txtCol};font-size:${fontMm}mm;border:0.25px solid rgba(0,0,0,.15);padding:0;overflow:hidden">${num}</td>`;
       }
-      gridRows+=`<tr>${cells}</tr>`;
+      gridRows+=`<tr style="height:${cellMm}mm">${cells}</tr>`;
     }
 
-    // Mini key for this section
+    // Mini key
     const sectionKey=secColorList.map(c=>{
-      // Count in this section
       let cnt=0;
       for(let sy=startY;sy<endY;sy++) for(let sx=startX;sx<endX;sx++){
         if(pixels[sy*w+sx].hex===c.hex) cnt++;
       }
       const txtCol=isLight(c.hex)?'#000':'#fff';
-      return `<span style="display:inline-flex;align-items:center;gap:3px;
-        margin:2px;padding:2px 5px;border-radius:3px;background:${c.hex};
-        color:${txtCol};font-size:7px;font-weight:700;border:1px solid rgba(0,0,0,.1);
-        white-space:nowrap">${c.num} ${c.name} <span style="opacity:.7">(${cnt})</span></span>`;
+      return `<span class="pb-key-chip" style="background:${c.hex};color:${txtCol}">${c.num} ${c.name} <span style="opacity:.6;font-size:.85em">(${cnt})</span></span>`;
     }).join('');
 
-    return `<div class="pb-page"><div class="pb-inner" style="padding:8mm 10mm">
-  <div class="pb-page-header">
-    <h2>Section ${bpRow+1}-${bpCol+1} &nbsp;
-      <span style="font-weight:400;font-size:.75rem;color:#666">
-        cols ${startX+1}–${endX}, rows ${startY+1}–${endY}
-      </span>
-    </h2>
-    <span class="pb-page-num">Page ${pageNum}</span>
+    return `<div class="pb-page">
+  <div class="pb-section-topbar">
+    <div>
+      <div class="pb-section-id">Section ${bpRow+1}-${bpCol+1}</div>
+      <div class="pb-section-coords">Cols ${startX+1}–${endX} · Rows ${startY+1}–${endY}</div>
+    </div>
+    <div class="pb-section-pagenum">${pageNum}</div>
   </div>
-  <div style="margin-bottom:4mm;line-height:1.6;flex-wrap:wrap;display:flex">
+  <div class="pb-mini-key">
     ${sectionKey}
   </div>
-  <div style="overflow:hidden">
-    <table style="border-collapse:collapse;table-layout:fixed;
-      font-family:'Space Grotesk',sans-serif;font-weight:700;
-      text-align:center;line-height:1">
-      ${gridRows}
-    </table>
+  <div class="pb-grid-wrap">
+    <div style="max-width:${tableMm}mm;overflow:hidden">
+      <table style="border-collapse:collapse;table-layout:fixed;
+        width:${tableMm}mm;max-width:182mm;
+        font-family:'Space Grotesk',sans-serif;font-weight:700;
+        text-align:center;line-height:1">
+        <colgroup>${Array(secW).fill(`<col style="width:${cellMm}mm"/>`).join('')}</colgroup>
+        ${gridRows}
+      </table>
+    </div>
   </div>
-  <div class="pb-footer">BRICK LAB · Section ${bpRow+1}-${bpCol+1} · ${now}</div>
-</div></div>`;
+  ${pbFooter(`Section ${bpRow+1}-${bpCol+1}`)}
+</div>`;
   }
 
   // Generate all section pages
@@ -2508,66 +2751,220 @@ function buildBooklet(){
     sectionPages+=buildSectionPage(bc,br,pageNum++);
   }
 
+  // ── Hardware quantities ───────────────────────────────────────────────
+  // Baseplates
+  const bpPartNum = bpSize===16?'3857':bpSize===48?'4186':'3811'; // 32×32 = 3811
+  const bpBLColor = '11'; // Black is most common for mosaics
+
+  // Border pieces
+  let borderHardware='';
+  if(selectedBorder==='flat1'){
+    const perim=2*(w+h); // studs around perimeter
+    const pcs=Math.ceil(perim/2); // 1×2 plates
+    borderHardware=`<tr style="background:#f0f4f0"><td colspan="2" style="font-weight:700;font-size:.65rem;color:#555;padding:4px 7px;text-transform:uppercase;letter-spacing:.06em">Border</td><td colspan="5"></td></tr>
+    <tr><td></td><td><span class="pb-swatch" style="background:${document.getElementById?'':'#05131D'}${borderCol?'':''}" ></span></td><td>${borderColorName} · 1×2 Flat Plate</td><td><span class="pb-part-tag">3023</span></td><td style="text-align:right;font-weight:600">${pcs}</td><td style="text-align:right;color:#999">${perim} studs</td><td></td></tr>`;
+  } else if(selectedBorder==='flat2'){
+    const perim=2*(w+h);
+    const pcs1=Math.ceil(perim/4); // 1×4 base
+    const pcs2=Math.ceil(perim/2); // 1×2 top
+    borderHardware=`<tr style="background:#f0f4f0"><td colspan="2" style="font-weight:700;font-size:.65rem;color:#555;padding:4px 7px;text-transform:uppercase;letter-spacing:.06em">Border</td><td colspan="5"></td></tr>
+    <tr><td></td><td></td><td>${borderColorName} · 1×4 Flat Plate (base layer)</td><td><span class="pb-part-tag">3710</span></td><td style="text-align:right;font-weight:600">${pcs1}</td><td></td><td></td></tr>
+    <tr><td></td><td></td><td>${borderColorName} · 1×2 Flat Plate (top layer)</td><td><span class="pb-part-tag">3023</span></td><td style="text-align:right;font-weight:600">${pcs2}</td><td></td><td></td></tr>`;
+  } else if(selectedBorder==='technic'){
+    const perim=2*(w+h);
+    const pcs=Math.ceil(perim/2)*2; // 2 bricks high
+    borderHardware=`<tr style="background:#f0f4f0"><td colspan="2" style="font-weight:700;font-size:.65rem;color:#555;padding:4px 7px;text-transform:uppercase;letter-spacing:.06em">Border</td><td colspan="5"></td></tr>
+    <tr><td></td><td></td><td>${borderColorName} · Technic Brick 1×2 with Hole</td><td><span class="pb-part-tag">3700</span></td><td style="text-align:right;font-weight:600">${pcs}</td><td></td><td></td></tr>`;
+  }
+
+  // Joining hardware
+  const seamsV=(bpW-1)*bpH, seamsH=bpW*(bpH-1);
+  const totalSeams=seamsV+seamsH;
+  let joinHardware='';
+  if(selectedJoin==='bridge'){
+    const platesPerSeam=Math.ceil(bpSize/8)*3;
+    joinHardware=`<tr><td></td><td></td><td>1×8 Flat Plate (bridge seams)</td><td><span class="pb-part-tag">3460</span></td><td style="text-align:right;font-weight:600">${totalSeams*platesPerSeam}</td><td style="text-align:right;color:#999">${totalSeams} seams</td><td><a href="https://www.bricklink.com/v2/catalog/catalogitem.page?P=3460" style="font-size:.56rem;color:#F2C314" target="_blank">BL↗</a></td></tr>`;
+  } else if(selectedJoin==='technic'){
+    const pinsPerSeam=Math.floor(bpSize/2);
+    joinHardware=`<tr><td></td><td></td><td>Technic Pin (part 3673)</td><td><span class="pb-part-tag">3673</span></td><td style="text-align:right;font-weight:600">${totalSeams*pinsPerSeam}</td><td></td><td><a href="https://www.bricklink.com/v2/catalog/catalogitem.page?P=3673" style="font-size:.56rem;color:#F2C314" target="_blank">BL↗</a></td></tr>
+    <tr><td></td><td></td><td>Pin Stop Bush</td><td><span class="pb-part-tag">32054</span></td><td style="text-align:right;font-weight:600">${totalSeams*pinsPerSeam}</td><td></td><td></td></tr>`;
+  }
+
+  // Hanging hardware
+  let hangHardware='';
+  if(selectedHang==='lego_hanger'){
+    hangHardware=`<tr><td></td><td></td><td>LEGO Art Hanger Bracket</td><td><span class="pb-part-tag">67139</span></td><td style="text-align:right;font-weight:600">1</td><td></td><td></td></tr>`;
+  } else if(selectedHang==='command'){
+    hangHardware=`<tr><td></td><td></td><td>3M Command Large Strips (pairs)</td><td><span class="pb-part-tag">Non-LEGO</span></td><td style="text-align:right;font-weight:600">${totalBP*2}</td><td style="text-align:right;color:#999">${totalBP} plates</td><td></td></tr>`;
+  } else if(selectedHang==='french'){
+    const cleatMm=Math.round(w*8); // approximate mm (8mm per stud)
+    hangHardware=`<tr><td></td><td></td><td>French cleat timber strip (18mm ply, ${cleatMm}mm long)</td><td><span class="pb-part-tag">Non-LEGO</span></td><td style="text-align:right;font-weight:600">2</td><td style="text-align:right;color:#999">wall + mosaic</td><td></td></tr>`;
+  } else if(selectedHang==='wire'){
+    hangHardware=`<tr><td></td><td></td><td>D-ring plate brackets</td><td><span class="pb-part-tag">Non-LEGO</span></td><td style="text-align:right;font-weight:600">2</td><td></td><td></td></tr>
+    <tr><td></td><td></td><td>Picture wire (braided, 1m)</td><td><span class="pb-part-tag">Non-LEGO</span></td><td style="text-align:right;font-weight:600">1</td><td></td><td></td></tr>`;
+  } else if(selectedHang==='magnet'){
+    hangHardware=`<tr><td></td><td></td><td>Neodymium magnets (epoxy to back)</td><td><span class="pb-part-tag">Non-LEGO</span></td><td style="text-align:right;font-weight:600">${totalBP*5}</td><td style="text-align:right;color:#999">${totalBP} plates × 5</td><td></td></tr>
+    <tr><td></td><td></td><td>IKEA SKÅDIS rail or steel strip</td><td><span class="pb-part-tag">Non-LEGO</span></td><td style="text-align:right;font-weight:600">1</td><td></td><td></td></tr>`;
+  }
+
+  const borderColorName=document.getElementById('borderColor')?.value||'Black';
+  const hardwareRows=(totalSeams>0||joinHardware||hangHardware)?`
+    <tr style="background:#f0f4f0"><td colspan="2" style="font-weight:700;font-size:.65rem;color:#555;padding:4px 7px;text-transform:uppercase;letter-spacing:.06em">Baseplates</td><td colspan="5"></td></tr>
+    <tr><td></td><td></td><td>${bpSize}×${bpSize} Baseplate</td><td><span class="pb-part-tag">${bpPartNum}</span></td><td style="text-align:right;font-weight:600">${totalBP}</td><td></td><td><a href="https://www.bricklink.com/v2/catalog/catalogitem.page?P=${bpPartNum}" style="font-size:.56rem;color:#F2C314" target="_blank">BL↗</a></td></tr>
+    ${borderHardware}
+    ${totalSeams>0?`<tr style="background:#f0f4f0"><td colspan="2" style="font-weight:700;font-size:.65rem;color:#555;padding:4px 7px;text-transform:uppercase;letter-spacing:.06em">Joining (${joinInf.label})</td><td colspan="5"></td></tr>${joinHardware}`:''}
+    <tr style="background:#f0f4f0"><td colspan="2" style="font-weight:700;font-size:.65rem;color:#555;padding:4px 7px;text-transform:uppercase;letter-spacing:.06em">Hanging (${hangInf.label})</td><td colspan="5"></td></tr>
+    ${hangHardware}
+  `:'';
+
+
+  // ── Helpers ───────────────────────────────────────────────────────────
+  const pbFooter=(label)=>`<div class="pb-footer">
+    <span class="pb-footer-brand">BRICK LAB</span>
+    <span class="pb-footer-dots">● ● ● ● ●</span>
+    <span class="pb-footer-info">${label} · ${now}</span>
+  </div>`;
+  const pbTopbar=(title,pg)=>`<div class="pb-topbar">
+    <span class="pb-topbar-title">${title}</span>
+    <div class="pb-page-circle">${pg}</div>
+  </div>`;
+  const stepIcons=['🧱','🎨','🔨','🖼','🔩','📌','🪝'];
+  let sn=0;
+  const pbStep=t=>`<div class="pb-step">
+    <div class="pb-step-num">${++sn}</div>
+    <div class="pb-step-icon">${stepIcons[(sn-1)%stepIcons.length]}</div>
+    <div class="pb-step-body"><p>${t}</p></div>
+  </div>`;
+
+  // ── Hardware rows with new category style ─────────────────────────────
+  const catRow=(label)=>`<tr class="pb-bom-cat"><td colspan="7">${label}</td></tr>`;
+  const hardwareRowsStyled=(totalSeams>0||joinHardware||hangHardware)?`
+    ${catRow('🔲 &nbsp;Baseplates')}
+    <tr><td></td><td></td><td>${bpSize}×${bpSize} Baseplate</td>
+      <td><span class="pb-part-tag">${bpPartNum}</span></td>
+      <td style="text-align:right;font-weight:600">${totalBP}</td><td></td>
+      <td><a href="https://www.bricklink.com/v2/catalog/catalogitem.page?P=${bpPartNum}" style="font-size:.52rem;color:#F2C314" target="_blank">BL↗</a></td></tr>
+    ${borderHardware}
+    ${totalSeams>0?catRow('🔩 &nbsp;Joining — '+joinInf.label)+joinHardware:''}
+    ${catRow('🪝 &nbsp;Hanging — '+hangInf.label)}
+    ${hangHardware}
+  `:'';
+
   return `<div class="pb-booklet">
 
+<!-- ══ PAGE 1: COVER ══ -->
 <div class="pb-page"><div class="pb-cover">
-  <div class="pb-cover-logo"><div class="dot"></div><span>BRICK LAB</span></div>
-  <div class="pb-cover-title">LEGO® Mosaic<br/>Colour-by-Number<br/>Instructions</div>
-  <div class="pb-cover-mosaic"><img src="${mUrl}" style="max-width:140mm;max-height:80mm;image-rendering:pixelated;border:2px solid #333;border-radius:2mm"/></div>
+  <div class="pb-cover-logo-row">
+    <div class="pb-cover-logo-box">
+      <svg viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="2" width="9" height="9" rx="1.5" fill="#1C1C1E"/>
+        <rect x="13" y="2" width="9" height="9" rx="1.5" fill="#1C1C1E"/>
+        <rect x="2" y="13" width="9" height="9" rx="1.5" fill="#1C1C1E"/>
+        <rect x="13" y="13" width="9" height="9" rx="1.5" fill="#1C1C1E"/>
+        <circle cx="6.5" cy="6.5" r="2.2" fill="#F2C314"/>
+        <circle cx="17.5" cy="6.5" r="2.2" fill="#F2C314"/>
+        <circle cx="6.5" cy="17.5" r="2.2" fill="#F2C314"/>
+        <circle cx="17.5" cy="17.5" r="2.2" fill="#F2C314"/>
+      </svg>
+    </div>
+    <span class="pb-cover-brand">BRICK LAB</span>
+    <span class="pb-cover-set">MOSAIC SERIES</span>
+  </div>
+  <div class="pb-cover-title"><em>Colour-by-Number</em><br/>LEGO® Mosaic<br/>Instructions</div>
+  <div class="pb-cover-subtitle">${w}×${h} studs &nbsp;·&nbsp; ${totalBP} baseplate${totalBP!==1?'s':''} &nbsp;·&nbsp; ${bpW}×${bpH} grid</div>
+  <div class="pb-cover-mosaic-wrap">
+    <img src="${mUrl}" alt="Mosaic preview"/>
+  </div>
   <div class="pb-cover-meta">
-    <span><strong>${w}×${h}</strong> studs</span>
-    <span><strong>${totalBP}</strong> baseplate${totalBP!==1?'s':''}</span>
-    <span><strong>${totalPieces.toLocaleString()}</strong> pieces</span>
-    <span><strong>${sortedColors.length}</strong> colours</span>
-    <span style="margin-left:auto">${now}</span>
+    <div class="pb-cover-stat"><strong>${totalPieces.toLocaleString()}</strong><span>Image pieces</span></div>
+    <div class="pb-cover-stat"><strong>${sortedColors.length}</strong><span>Colours</span></div>
+    <div class="pb-cover-stat"><strong>${totalBP}</strong><span>Baseplates (${bpSize}×${bpSize})</span></div>
+    <div class="pb-cover-stat"><strong>${now}</strong><span>Generated</span></div>
   </div>
 </div></div>
 
-<div class="pb-page"><div class="pb-inner">
-  <div class="pb-page-header"><h2>Reference Images</h2><span class="pb-page-num">Page 2</span></div>
-  <div class="pb-two-col">
-    <div><div class="pb-col-label">Original Photo</div>${originalSrc?`<img class="pb-photo-img" src="${originalSrc}" style="max-height:180mm;object-fit:contain"/>`:'<p style="color:#ccc;font-size:.8rem">No photo</p>'}</div>
-    <div><div class="pb-col-label">LEGO Mosaic (${w}×${h} studs)</div><img class="pb-mosaic-img" src="${mUrl}" style="max-height:180mm"/></div>
+<!-- ══ PAGE 2: REFERENCE ══ -->
+<div class="pb-page">
+  ${pbTopbar('Reference Images', 2)}
+  <div class="pb-inner">
+    <div class="pb-two-col">
+      <div>
+        <div class="pb-col-label">📷 Original Photo</div>
+        <div class="pb-img-frame">${originalSrc?`<img class="pb-photo-img" src="${originalSrc}" style="max-height:42vw;object-fit:contain"/>`:'<p style="color:#999;font-size:.75rem;padding:8px">No photo</p>'}</div>
+        <div class="pb-img-caption">Source image</div>
+      </div>
+      <div>
+        <div class="pb-col-label">🧱 LEGO Mosaic — ${w}×${h}</div>
+        <div class="pb-img-frame"><img class="pb-mosaic-img" src="${mUrl}" style="max-height:42vw"/></div>
+        <div class="pb-img-caption">${sortedColors.length} colours · ${totalPieces.toLocaleString()} pieces</div>
+      </div>
+    </div>
+    <div class="pb-section-head"><span class="pb-section-label">How to use this booklet</span><div class="pb-section-rule"></div></div>
+    <div style="background:var(--lego-light);border-radius:5px;padding:clamp(5px,2vw,4mm);border:1px solid var(--lego-border)">
+      <p style="font-size:clamp(.58rem,2vw,.66rem);line-height:1.6;font-family:'Inter',sans-serif;margin:0">
+        Each colour has been assigned a <strong>number (1–${sortedColors.length})</strong>. Colour&nbsp;1 is the most-used.
+        The <strong>Colour Key &amp; Parts List</strong> (Page&nbsp;3) shows every number, LEGO name, part number and total count.
+        The <strong>Section Pages</strong> each cover one baseplate — find the number in each cell and place that colour stud.
+        Each section page has a <strong>mini key</strong> showing only the colours for that section.
+      </p>
+    </div>
   </div>
-  <div class="pb-footer">BRICK LAB · ${now}</div>
-</div></div>
+  ${pbFooter('Reference')}
+</div>
 
-<div class="pb-page"><div class="pb-inner">
-  <div class="pb-page-header"><h2>Colour Key &amp; Shopping List</h2><span class="pb-page-num">Page 3</span></div>
-  <div class="pb-stats">
-    <div class="pb-stat"><div class="n">${totalPieces.toLocaleString()}</div><div class="d">Total pieces</div></div>
-    <div class="pb-stat"><div class="n">${sortedColors.length}</div><div class="d">Colours</div></div>
-    <div class="pb-stat"><div class="n">${totalBP}</div><div class="d">Baseplates (${bpSize}×${bpSize})</div></div>
-    <div class="pb-stat"><div class="n">${bpW}×${bpH}</div><div class="d">Section grid</div></div>
+<!-- ══ PAGE 3: COLOUR KEY & PARTS ══ -->
+<div class="pb-page">
+  ${pbTopbar('Colour Key & Full Parts List', 3)}
+  <div class="pb-inner">
+    <div class="pb-stats">
+      <div class="pb-stat"><div class="n">${totalPieces.toLocaleString()}</div><div class="d">Image pieces</div></div>
+      <div class="pb-stat"><div class="n">${sortedColors.length}</div><div class="d">Colours</div></div>
+      <div class="pb-stat"><div class="n">${totalBP}</div><div class="d">Baseplates</div></div>
+      <div class="pb-stat"><div class="n">${bpW}×${bpH}</div><div class="d">Section grid</div></div>
+    </div>
+    <table class="pb-bom-table">
+      <thead><tr>
+        <th>#</th><th>Swatch</th><th>LEGO Name</th><th>Part</th>
+        <th style="text-align:right">Pcs</th><th style="text-align:right">Studs</th><th>Buy</th>
+      </tr></thead>
+      <tbody>
+        ${catRow('🎨 &nbsp;Image Colours')}
+        ${bomRows}
+        ${hardwareRowsStyled}
+      </tbody>
+    </table>
+    <div class="pb-bom-total">Image total: ${totalPieces.toLocaleString()} pieces &nbsp;·&nbsp; bricklink.com &nbsp;·&nbsp; lego.com/pick-a-brick</div>
+    <p style="font-size:clamp(.46rem,1.6vw,.54rem);color:var(--lego-muted);font-family:Inter,sans-serif;margin-top:2mm">
+      Round 1×1=4073 · Flat 1×1=3024 · Flat 1×2=3023 · Flat 2×2=3022 · Flat 2×4=3020
+    </p>
   </div>
-  <table class="pb-bom-table">
-    <thead><tr><th>#</th><th>Swatch</th><th>LEGO Name</th><th>Part</th><th style="text-align:right">Pieces</th><th style="text-align:right">Studs</th><th>Buy</th></tr></thead>
-    <tbody>${bomRows}</tbody>
-  </table>
-  <div class="pb-bom-total">Total: ${totalPieces.toLocaleString()} pieces · source at bricklink.com or lego.com/pick-a-brick</div>
-  <p style="font-size:.55rem;color:#999;margin-top:3mm;font-family:Inter,sans-serif">Round 1×1=4073 · Flat 1×1=3024 · Flat 1×2=3023 · Flat 2×2=3022 · Flat 2×4=3020</p>
-  <div class="pb-footer">BRICK LAB · ${now}</div>
-</div></div>
+  ${pbFooter('Parts List')}
+</div>
 
-<div class="pb-page"><div class="pb-inner">
-  <div class="pb-page-header"><h2>Build Instructions</h2><span class="pb-page-num">Page 4</span></div>
-  <p style="font-size:.7rem;color:#555;margin-bottom:4mm;font-family:Inter,sans-serif">
-    This mosaic is divided into <strong>${totalBP} section${totalBP!==1?'s':''}</strong> arranged in a <strong>${bpW}×${bpH} grid</strong>.
-    Each section page shows a ${bpSize}×${bpSize} stud grid with a colour number in every cell.
-    Use the Colour Key (Page 3) to match numbers to LEGO colours.
-  </p>
-  <div class="pb-steps">
-    ${pbStep(`<strong>Prepare baseplates.</strong> Lay ${totalBP} baseplate${totalBP!==1?'s':''} (${bpSize}×${bpSize} studs) in a ${bpW} wide × ${bpH} tall grid on a flat surface. Label each baseplate lightly with a sticky note matching the section grid (e.g. row 1-col 1 in top-left).`)}
-    ${pbStep(`<strong>Sort your pieces by colour.</strong> Group each colour into a small bowl or tray and label it with its number from the Colour Key. This makes placing much faster.`)}
-    ${pbStep(`<strong>Work section by section.</strong> Complete one baseplate at a time using its section page. Build top to bottom, left to right, checking your number against the grid for each stud.`)}
-    ${pbStep(`<strong>Use the mini colour key</strong> at the top of each section page — it shows only the colours that appear in that section and how many of each you need.`)}
-    ${borderStep ? pbStep(borderStep) : ''}
-    ${pbStep(`<strong>Join baseplates — ${joinInf.label}.</strong> ${joinInf.text(bpW,bpH)}`)}
-    ${pbStep(`<strong>Wall hanging — ${hangInf.label}.</strong> ${hangInf.text()}`)}
+<!-- ══ PAGE 4: BUILD INSTRUCTIONS ══ -->
+<div class="pb-page">
+  ${pbTopbar('Build Instructions', 4)}
+  <div class="pb-inner">
+    <div style="background:var(--lego-yellow);border-radius:5px;padding:clamp(4px,1.8vw,3mm) clamp(7px,3vw,5mm)">
+      <p style="font-size:clamp(.58rem,2vw,.66rem);font-weight:700;color:var(--lego-dark);margin:0;font-family:'Space Grotesk',sans-serif">
+        📐 &nbsp;${totalBP} section${totalBP!==1?'s':''} &nbsp;·&nbsp; ${bpW}×${bpH} baseplate grid &nbsp;·&nbsp; ${bpSize}×${bpSize} studs per section &nbsp;·&nbsp; Use colour numbers from Page 3
+      </p>
+    </div>
+    <div class="pb-steps">
+      ${pbStep(`<strong>Prepare baseplates.</strong> Lay ${totalBP} baseplate${totalBP!==1?'s':''} in a ${bpW}×${bpH} grid. Label each with a sticky note — row 1 left to right, row 2 below, and so on.`)}
+      ${pbStep(`<strong>Sort pieces by colour number.</strong> Group each colour into a dish and label it with its number from the Colour Key. Pre-sorting makes placing much faster.`)}
+      ${pbStep(`<strong>Work section by section.</strong> Complete one baseplate using its page. Build top to bottom, left to right. Check the number in each cell.`)}
+      ${pbStep(`<strong>Use the mini key.</strong> Each section page shows only the colours in that section with per-section piece counts.`)}
+      ${borderStep ? pbStep(borderStep) : ''}
+      ${pbStep(`<strong>Join baseplates — ${joinInf.label}.</strong> ${joinInf.text(bpW,bpH)}`)}
+      ${pbStep(`<strong>Wall hanging — ${hangInf.label}.</strong> ${hangInf.text()}`)}
+    </div>
+    <p style="font-size:clamp(.44rem,1.5vw,.52rem);color:var(--lego-muted);font-family:Inter,sans-serif;line-height:1.5;margin-top:auto">
+      LEGO® is a trademark of the LEGO Group, which does not sponsor, authorise or endorse this document. Part numbers sourced from BrickLink Reference Catalog.
+    </p>
   </div>
-  <p style="font-size:.55rem;color:#999;font-family:Inter,sans-serif;line-height:1.5;margin-top:auto">LEGO® is a trademark of the LEGO Group, which does not sponsor or endorse this document.</p>
-  <div class="pb-footer">BRICK LAB · ${now}</div>
-</div></div>
+  ${pbFooter('Instructions')}
+</div>
 
 ${sectionPages}
 
