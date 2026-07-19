@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>Brick Lab v24</title>
+<title>Brick Lab v25</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
@@ -321,7 +321,7 @@ tr:last-child td{border-bottom:none;}
       <circle cx="17" cy="17" r="2" fill="#F2C314"/>
     </svg>
   </div>
-  <h1>Brick Lab <span style="font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:0">v24</span></h1>
+  <h1>Brick Lab <span style="font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:0">v25</span></h1>
   <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
     <button class="hdr-pab-btn" id="hdrPabRefBtn" onclick="openPabRefPanel()" title="PAB Parts Reference">&#127847;</button>
     <button class="hdr-nav" id="hdrBack" onclick="hdrNav(-1)">&#8249;</button>
@@ -2098,7 +2098,13 @@ function getElementId(hex, pieceTypeId) {
 
 document.getElementById('pabBtn').addEventListener('click', function(){
   if(!mosaicData){ showToast('Generate a mosaic first'); setTimeout(hideToast,2000); return; }
-  exportPAB();
+  try {
+    exportPAB();
+  } catch(e) {
+    showToast('PAB error: '+e.message);
+    setTimeout(hideToast, 4000);
+    console.error('exportPAB error:', e);
+  }
 });
 
 function exportPAB(){
@@ -2246,10 +2252,17 @@ function exportPAB(){
 
 
 function dlFile(content,name,type){
-  var b=new Blob([content],{type:type});
-  var u=URL.createObjectURL(b);
-  var a=document.createElement('a');a.href=u;a.download=name;a.click();
-  setTimeout(function(){URL.revokeObjectURL(u);},1000);
+  var blob = new Blob([content],{type:type});
+  var file = new File([blob], name, {type:type});
+  if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+    navigator.share({files:[file], title:name}).catch(function(){});
+  } else {
+    // Fallback for desktop
+    var u = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href=u; a.download=name; a.click();
+    setTimeout(function(){ URL.revokeObjectURL(u); },1000);
+  }
 }
 
 function openPabSheet(){
@@ -2344,20 +2357,21 @@ function buildPDFWithLib(JSPDF){
     var doc=new JSPDF({orientation:'portrait',unit:'mm',format:'a4'});
     function renderPage(i){
       if(i>=total){
-        showToast('Opening PDF\u2026');
+        showToast('Preparing PDF\u2026');
         setTimeout(function(){
-          // Use blob URL + window.open to avoid navigating away on Safari iOS
           var pdfBlob = doc.output('blob');
-          var blobUrl = URL.createObjectURL(pdfBlob);
-          var a = document.createElement('a');
-          a.href = blobUrl;
-          a.download = 'brick-lab-mosaic.pdf';
-          a.target = '_blank';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 10000);
-          hideToast();
+          var file = new File([pdfBlob], 'brick-lab-mosaic.pdf', {type:'application/pdf'});
+          if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+            navigator.share({files:[file], title:'Brick Lab Mosaic'})
+              .then(function(){ hideToast(); })
+              .catch(function(){ hideToast(); });
+          } else {
+            // Fallback: open blob in new tab (desktop / non-iOS)
+            var url = URL.createObjectURL(pdfBlob);
+            window.open(url, '_blank');
+            setTimeout(function(){ URL.revokeObjectURL(url); }, 30000);
+            hideToast();
+          }
         },50);
         return;
       }
