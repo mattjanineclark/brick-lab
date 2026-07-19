@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>Brick Lab v29</title>
+<title>Brick Lab v30</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
@@ -321,7 +321,7 @@ tr:last-child td{border-bottom:none;}
       <circle cx="17" cy="17" r="2" fill="#F2C314"/>
     </svg>
   </div>
-  <h1>Brick Lab <span style="font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:0">v29</span></h1>
+  <h1>Brick Lab <span style="font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:0">v30</span></h1>
   <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
     <button class="hdr-pab-btn" id="hdrPabRefBtn" onclick="openPabRefPanel()" title="PAB Parts Reference">&#127847;</button>
     <button class="hdr-nav" id="hdrBack" onclick="hdrNav(-1)">&#8249;</button>
@@ -1974,32 +1974,41 @@ const PAB_DATA = [
   {d:'3070',c:'89',  name:'Purple',                  e:'4133545', p:0.08},
   // ── ROUND TILE (35381/98138) ─────────────────────────
   // Brick Owl per-colour "LEGO part numbers" - all 41 colours confirmed
-  // ── ROUND TILE (35381/98138) -- IDs from Brick Owl per-colour pages ─────
-  {d:'35381',c:'1',   name:'White',            e:'6284572', p:0.10},  // 4646844=old mould
-  {d:'35381',c:'86',  name:'Light Bluish Gray', e:'6284572', p:0.10},
-  {d:'35381',c:'85',  name:'Dark Bluish Gray',  e:'6284596', p:0.10},
-  {d:'35381',c:'11',  name:'Black',             e:'6284070', p:0.10},  // 6139403=old mould
-  {d:'35381',c:'5',   name:'Red',               e:'6284574', p:0.10},
-  {d:'35381',c:'59',  name:'Dark Red',           e:'6284585', p:0.10},
-  {d:'35381',c:'3',   name:'Yellow',             e:'6284577', p:0.10},
-  {d:'35381',c:'110', name:'Bright Light Orange',e:'6322822', p:0.10},
-  {d:'35381',c:'4',   name:'Orange',             e:'6284582', p:0.10},
-  {d:'35381',c:'68',  name:'Dark Orange',         e:'6322840', p:0.10},
-  {d:'35381',c:'88',  name:'Reddish Brown',       e:'6284586', p:0.10},
-  {d:'35381',c:'120', name:'Dark Brown',           e:'6284587', p:0.10},
-  {d:'35381',c:'2',   name:'Tan',                 e:'6284575', p:0.10},
-  {d:'35381',c:'69',  name:'Dark Tan',             e:'6322841', p:0.10},
-  {d:'35381',c:'48',  name:'Sand Green',           e:'6284592', p:0.10},
-  {d:'35381',c:'36',  name:'Bright Green',         e:'6353793', p:0.10},
-  {d:'35381',c:'39',  name:'Dark Turquoise',        e:'6311437', p:0.10},
-  {d:'35381',c:'105', name:'Bright Light Blue',     e:'6322823', p:0.10},
-  {d:'35381',c:'71',  name:'Magenta',               e:'6322816', p:0.10},
-  {d:'35381',c:'47',  name:'Dark Pink',              e:'6322817', p:0.10},
-  {d:'35381',c:'104', name:'Bright Pink',             e:'6322818', p:0.10},
-  {d:'35381',c:'154', name:'Lavender',                e:'6322820', p:0.10},
-  {d:'35381',c:'157', name:'Medium Lavender',         e:'6322819', p:0.10},
-  {d:'35381',c:'220', name:'Coral',                   e:'6311436', p:0.10},
-  {d:'35381',c:'89',  name:'Purple',                  e:'6322821', p:0.10},
+  // ── ROUND TILE (35381) -- Element IDs verified directly from PAB NZ (July 2026) ──
+  // All 40 colours photographed from PAB NZ product pages by Matthew Clark
+  {d:'35381',c:'1',   name:'White',            e:'6284572', p:0.07},
+  {d:'35381',c:'86',  name:'Light Bluish Gray', e:'6284071', p:0.07},
+  {d:'35381',c:'85',  name:'Dark Bluish Gray',  e:'6284596', p:0.07},
+  {d:'35381',c:'11',  name:'Black',             e:'6284070', p:0.07},
+  {d:'35381',c:'5',   name:'Red',               e:'6284574', p:0.07},
+  {d:'35381',c:'59',  name:'Dark Red',           e:'6284585', p:0.07},
+  {d:'35381',c:'3',   name:'Yellow',             e:'6284577', p:0.07},
+  {d:'35381',c:'110', name:'Bright Light Orange',e:'6322822', p:0.07},
+  {d:'35381',c:'4',   name:'Orange',             e:'6284582', p:0.07},
+  {d:'35381',c:'68',  name:'Dark Orange',         e:'6322840', p:0.07},
+  {d:'35381',c:'88',  name:'Reddish Brown',       e:'6284586', p:0.07},
+  {d:'35381',c:'120', name:'Dark Brown',           e:'6322813', p:0.07},
+  {d:'35381',c:'2',   name:'Tan',                 e:'6284573', p:0.07},
+  {d:'35381',c:'69',  name:'Dark Tan',             e:'6322841', p:0.07},
+  {d:'35381',c:'28',  name:'Nougat',               e:'6343472', p:0.07},
+  {d:'35381',c:'150', name:'Medium Nougat',         e:'6284589', p:0.07},
+  {d:'35381',c:'90',  name:'Light Nougat',          e:'6315196', p:0.07},
+  {d:'35381',c:'80',  name:'Dark Green',             e:'6396247', p:0.07},
+  {d:'35381',c:'36',  name:'Bright Green',           e:'6353793', p:0.07},
+  {d:'35381',c:'34',  name:'Lime',                   e:'6284583', p:0.07},
+  {d:'35381',c:'155', name:'Olive Green',             e:'6284595', p:0.07},
+  {d:'35381',c:'39',  name:'Dark Turquoise',          e:'6311437', p:0.07},
+  {d:'35381',c:'7',   name:'Blue',                   e:'6284575', p:0.07},
+  {d:'35381',c:'63',  name:'Dark Blue',               e:'6284584', p:0.07},
+  {d:'35381',c:'153', name:'Dark Azure',               e:'6322824', p:0.07},
+  {d:'35381',c:'156', name:'Medium Azure',              e:'6322819', p:0.07},
+  {d:'35381',c:'152', name:'Light Aqua',                e:'6322818', p:0.07},
+  {d:'35381',c:'71',  name:'Magenta',                   e:'6322816', p:0.07},
+  {d:'35381',c:'47',  name:'Dark Pink',                 e:'6322817', p:0.07},
+  {d:'35381',c:'154', name:'Lavender',                  e:'6322820', p:0.07},
+  {d:'35381',c:'157', name:'Medium Lavender',            e:'6346374', p:0.07},
+  {d:'35381',c:'220', name:'Coral',                      e:'6311436', p:0.07},
+  {d:'35381',c:'89',  name:'Purple',                     e:'6322821', p:0.07},
 ];
 
 var PAB_DESIGN_LABELS = {'6141':'Round Plate','3024':'Sq Plate','3070':'Sq Tile','35381':'Round Tile'};
