@@ -1715,15 +1715,23 @@ function buildBookletData(){
     return (0.299*r+0.587*g+0.114*b)>160;
   }
 
-  // Mosaic thumbnail canvas
-  var thumbScale=4;
+  // Mosaic thumbnail — draw pixel by pixel into ImageData for reliability
+  var thumbScale=6;
   var thumbCv=document.createElement('canvas');
   thumbCv.width=w*thumbScale; thumbCv.height=h*thumbScale;
   var tCtx=thumbCv.getContext('2d');
+  var thumbImg=tCtx.createImageData(thumbCv.width,thumbCv.height);
+  var td=thumbImg.data;
   pixels.forEach(function(px,idx){
-    tCtx.fillStyle=px.hex;
-    tCtx.fillRect((idx%w)*thumbScale,Math.floor(idx/w)*thumbScale,thumbScale,thumbScale);
+    var col=idx%w, row=Math.floor(idx/w);
+    for(var py=0;py<thumbScale;py++){
+      for(var px2=0;px2<thumbScale;px2++){
+        var i=((row*thumbScale+py)*thumbCv.width+(col*thumbScale+px2))*4;
+        td[i]=px.r; td[i+1]=px.g; td[i+2]=px.b; td[i+3]=255;
+      }
+    }
   });
+  tCtx.putImageData(thumbImg,0,0);
 
   var YELLOW='#F2C314', DARK='#1C1C1E', WHITE='#fff', LGRAY='#F5F5F0', MGRAY='#888';
   var now=new Date().toLocaleDateString('en-NZ',{year:'numeric',month:'long',day:'numeric'});
@@ -1787,7 +1795,8 @@ function buildBookletData(){
     if(tAsp>availTW/availTH){tW2=availTW;tH2=Math.round(availTW/tAsp);}
     else{tH2=availTH;tW2=Math.round(availTH*tAsp);}
     var tX2=(CW-tW2)/2;
-    ctx.drawImage(thumbCv,tX2,y,tW2,tH2);
+    if(thumbCv.width>0&&thumbCv.height>0) ctx.drawImage(thumbCv,tX2,y,tW2,tH2);
+    else{ctx.fillStyle='#333';ctx.fillRect(tX2,y,tW2,tH2);}
     ctx.strokeStyle=YELLOW;ctx.lineWidth=2*S;ctx.strokeRect(tX2,y,tW2,tH2);
     y+=tH2+12*S;
 
@@ -1841,12 +1850,16 @@ function buildBookletData(){
 
     // Left: original photo
     function drawImgBox(srcEl,label,lx,ly,maxW,maxH2){
-      var asp=srcEl?(srcEl.naturalWidth/srcEl.naturalHeight):1;
+      // srcEl can be an HTMLImageElement or a canvas — handle both
+      var srcW=srcEl?(srcEl.naturalWidth||srcEl.width||0):0;
+      var srcH=srcEl?(srcEl.naturalHeight||srcEl.height||0):0;
+      var asp=(srcW&&srcH)?srcW/srcH:1;
       var iW,iH;
       if(asp>maxW/maxH2){iW=maxW;iH=Math.round(maxW/asp);}
       else{iH=maxH2;iW=Math.round(maxH2*asp);}
+      iW=Math.max(1,iW); iH=Math.max(1,iH);
       var ix=lx+(maxW-iW)/2;
-      if(srcEl&&srcEl.naturalWidth>0) ctx.drawImage(srcEl,ix,ly,iW,iH);
+      if(srcEl&&srcW>0) ctx.drawImage(srcEl,ix,ly,iW,iH);
       else{ctx.fillStyle='#eee';ctx.fillRect(lx,ly,maxW,iH);}
       ctx.strokeStyle='#ccc'; ctx.lineWidth=1*S; ctx.strokeRect(ix,ly,iW,iH);
       setFont(ctx,5.5,600,S); ctx.fillStyle=MGRAY; ctx.textAlign='center'; ctx.textBaseline='top';
