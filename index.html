@@ -1822,65 +1822,284 @@ function buildBookletData(){
     ctx.fillText('BRICK LAB \u00b7 Page 1',CW/2,CH-7*S);
   });
 
-  // ── PAGE 2: COLOUR KEY + PARTS LIST ────────────────────────────────────
+
+  // ── PAGE 2: REFERENCE IMAGES (original photo + mosaic) ────────────────
   pages.push(function(ctx,CW,CH,S){
-    var PAD=8*S;
-    ctx.fillStyle=WHITE;ctx.fillRect(0,0,CW,CH);
-    ctx.fillStyle=YELLOW;ctx.fillRect(0,0,CW,12*S);
-    setFont(ctx,6.5,700,S);ctx.fillStyle=DARK;ctx.textAlign='left';ctx.textBaseline='middle';
-    ctx.fillText('COLOUR KEY & PARTS LIST',PAD,6*S);
-    ctx.textAlign='right';ctx.fillText('Page 2',CW-PAD,6*S);
+    var PAD=10*S;
+    ctx.fillStyle=WHITE; ctx.fillRect(0,0,CW,CH);
+    // Top bar
+    ctx.fillStyle=YELLOW; ctx.fillRect(0,0,CW,12*S);
+    setFont(ctx,6.5,700,S); ctx.fillStyle=DARK;
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText('REFERENCE IMAGES',PAD,6*S);
+    ctx.textAlign='right'; ctx.fillText('Page 2',CW-PAD,6*S);
 
     var y=16*S;
-    var C=[PAD,PAD+11*S,PAD+21*S,PAD+80*S,PAD+118*S,PAD+146*S,PAD+168*S];
-    ctx.fillStyle=DARK;ctx.fillRect(0,y,CW,8.5*S);
-    setFont(ctx,4.5,700,S);ctx.fillStyle=YELLOW;ctx.textBaseline='middle';
-    ['#','Sw','LEGO Colour','Part','Pcs','Studs',''].forEach(function(h,i){
-      ctx.textAlign=i>=4?'right':'left';ctx.fillText(h,C[i],y+4.25*S);
-    });
-    y+=8.5*S;
+    // Two-column: original photo | mosaic
+    var colW=(CW-PAD*3)/2;
+    var maxH=CH*0.38;
 
-    var rH=8*S, totalPcs2=0;
+    // Left: original photo
+    function drawImgBox(srcEl,label,lx,ly,maxW,maxH2){
+      var asp=srcEl?(srcEl.naturalWidth/srcEl.naturalHeight):1;
+      var iW,iH;
+      if(asp>maxW/maxH2){iW=maxW;iH=Math.round(maxW/asp);}
+      else{iH=maxH2;iW=Math.round(maxH2*asp);}
+      var ix=lx+(maxW-iW)/2;
+      if(srcEl&&srcEl.naturalWidth>0) ctx.drawImage(srcEl,ix,ly,iW,iH);
+      else{ctx.fillStyle='#eee';ctx.fillRect(lx,ly,maxW,iH);}
+      ctx.strokeStyle='#ccc'; ctx.lineWidth=1*S; ctx.strokeRect(ix,ly,iW,iH);
+      setFont(ctx,5.5,600,S); ctx.fillStyle=MGRAY; ctx.textAlign='center'; ctx.textBaseline='top';
+      ctx.fillText(label,lx+maxW/2,ly+iH+3*S);
+      return iH;
+    }
+
+    var lh=drawImgBox(imgEl,'Original photo',PAD,y,colW,maxH);
+    // Right: mosaic pixelated
+    var rh=drawImgBox(thumbCv,'LEGO mosaic ('+w+'×'+h+' studs)',PAD*2+colW,y,colW,maxH);
+    y+=Math.max(lh,rh)+12*S;
+
+    // How-to-use box
+    var boxH=CH-y-10*S;
+    roundRect(ctx,PAD,y,CW-PAD*2,boxH,5*S,'#F8F7F2');
+    ctx.strokeStyle='#ddd'; ctx.lineWidth=0.8*S; ctx.strokeRect(PAD,y,CW-PAD*2,boxH);
+    setFont(ctx,6.5,700,S); ctx.fillStyle=DARK; ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('How to use this booklet',PAD+8*S,y+8*S);
+    ctx.fillStyle=YELLOW; ctx.fillRect(PAD+8*S,y+16*S,40*S,1.5*S);
+    var tips=[
+      'Each colour is assigned a NUMBER (1 = most used). The Colour Key on page 3 shows every colour with its number, LEGO name and part number.',
+      'The BUILD INSTRUCTIONS on page 4 walk through baseplates, borders, joining and hanging hardware.',
+      'SECTION PAGES (one per baseplate) show a colour-coded numbered grid — find the number in each cell and place the matching piece.',
+      'Each section page has a MINI KEY showing only the colours in that section with piece counts.'
+    ];
+    var ty2=y+20*S;
+    tips.forEach(function(tip,i){
+      setFont(ctx,5.5,700,S); ctx.fillStyle=YELLOW; ctx.textAlign='left'; ctx.textBaseline='middle';
+      ctx.fillText(String(i+1),PAD+12*S,ty2+3.5*S);
+      setFont(ctx,5,400,S); ctx.fillStyle='#444';
+      // Word-wrap
+      var words=tip.split(' '), line='', lx2=PAD+20*S, maxTW=CW-PAD*3-20*S;
+      words.forEach(function(word){
+        var test=(line?line+' ':'')+word;
+        setFont(ctx,5,400,S);
+        if(ctx.measureText(test).width>maxTW && line){
+          ctx.fillText(line,lx2,ty2+3.5*S); ty2+=7*S; line=word;
+        } else { line=test; }
+      });
+      if(line){ctx.fillText(line,lx2,ty2+3.5*S); ty2+=7*S;}
+      ty2+=5*S;
+    });
+    setFont(ctx,5,400,S); ctx.fillStyle=MGRAY; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('BRICK LAB · Page 2',CW/2,CH-5*S);
+  });
+
+  // ── PAGE 3: COLOUR KEY + FULL PARTS LIST (image pieces + hardware) ─────
+  pages.push(function(ctx,CW,CH,S){
+    var PAD=8*S;
+    ctx.fillStyle=WHITE; ctx.fillRect(0,0,CW,CH);
+    ctx.fillStyle=YELLOW; ctx.fillRect(0,0,CW,12*S);
+    setFont(ctx,6.5,700,S); ctx.fillStyle=DARK;
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText('COLOUR KEY & FULL PARTS LIST',PAD,6*S);
+    ctx.textAlign='right'; ctx.fillText('Page 3',CW-PAD,6*S);
+
+    var y=16*S;
+    var rH=7.8*S;
+    // Column x positions: badge | swatch | name | part | pcs | studs
+    var C=[PAD, PAD+11*S, PAD+21*S, PAD+86*S, PAD+120*S, PAD+148*S, PAD+170*S];
+
+    function tableHeader(title){
+      ctx.fillStyle='#2A2A2C'; ctx.fillRect(0,y,CW,8*S);
+      setFont(ctx,5,700,S); ctx.fillStyle=YELLOW; ctx.textBaseline='middle'; ctx.textAlign='left';
+      ctx.fillText(title,PAD,y+4*S);
+      y+=8*S;
+    }
+    function tableColHeaders(){
+      ctx.fillStyle=DARK; ctx.fillRect(0,y,CW,7.5*S);
+      setFont(ctx,4,700,S); ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.textBaseline='middle';
+      [['#',C[0]],['Sw',C[1]],['LEGO Colour / Description',C[2]],['Part',C[3]],['Pcs',C[5]],['Studs',C[6]]].forEach(function(h){
+        ctx.textAlign=h[0]==='Pcs'||h[0]==='Studs'?'right':'left';
+        ctx.fillText(h[0],h[1],y+3.75*S);
+      });
+      y+=7.5*S;
+    }
+    function dataRow(num,swatchHex,label,partNum,pcs,studs,ri){
+      if(y+rH>CH-10*S) return;
+      ctx.fillStyle=ri%2===0?'#f4f3ef':WHITE; ctx.fillRect(0,y,CW,rH);
+      if(num!==null){
+        roundRect(ctx,C[0],y+1.2*S,9*S,5*S,1.5*S,swatchHex||MGRAY);
+        setFont(ctx,3.8,700,S); ctx.fillStyle=swatchHex?isLight(swatchHex)?DARK:WHITE:'#fff';
+        ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(num),C[0]+4.5*S,y+3.7*S);
+      }
+      if(swatchHex){
+        ctx.fillStyle=swatchHex; ctx.fillRect(C[1],y+1.2*S,7.5*S,5*S);
+        ctx.strokeStyle='rgba(0,0,0,0.15)'; ctx.lineWidth=0.3*S; ctx.strokeRect(C[1],y+1.2*S,7.5*S,5*S);
+      }
+      ctx.fillStyle=DARK; ctx.textAlign='left'; ctx.textBaseline='middle';
+      fitText(ctx,label,C[2],y+3.7*S,C[3]-C[2]-4*S,4.8,500,S);
+      if(partNum){
+        roundRect(ctx,C[3],y+1.2*S,20*S,5*S,2*S,DARK);
+        setFont(ctx,3.8,700,S); ctx.fillStyle=YELLOW; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(String(partNum),C[3]+10*S,y+3.7*S);
+      }
+      if(pcs!==null){
+        setFont(ctx,4.8,700,S); ctx.fillStyle=DARK; ctx.textBaseline='middle';
+        ctx.textAlign='right'; ctx.fillText(String(pcs),C[5],y+3.7*S);
+        if(studs!==null){ setFont(ctx,4,400,S); ctx.fillStyle=MGRAY; ctx.fillText(String(studs),C[6],y+3.7*S); }
+      }
+      y+=rH;
+    }
+
+    // Image pieces
+    tableHeader('IMAGE PIECES');
+    tableColHeaders();
+    var totalImgPcs=0;
     sortedColors.forEach(function(c,ri){
-      if(y+rH>CH-11*S) return;
       var pid=colorPieceMap[c.hex]||defaultPiece;
       var pt=PIECE_TYPES.find(function(p){return p.id===pid;})||PIECE_TYPES[0];
-      var n=Math.ceil(c.count/pt.studs); totalPcs2+=n;
-      ctx.fillStyle=ri%2===0?'#f4f3ef':WHITE;ctx.fillRect(0,y,CW,rH);
-      // Num badge
-      roundRect(ctx,C[0],y+1.5*S,9*S,5*S,1.5*S,c.hex);
-      setFont(ctx,4,700,S);ctx.fillStyle=isLight(c.hex)?DARK:WHITE;
-      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(c.num,C[0]+4.5*S,y+4*S);
-      // Swatch
-      ctx.fillStyle=c.hex;ctx.fillRect(C[1],y+1.5*S,7.5*S,5*S);
-      ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=0.4*S;ctx.strokeRect(C[1],y+1.5*S,7.5*S,5*S);
-      // Name
-      ctx.fillStyle=DARK;ctx.textAlign='left';ctx.textBaseline='middle';
-      fitText(ctx,c.name,C[2],y+4*S,C[3]-C[2]-4*S,5,500,S);
-      // Part badge
-      roundRect(ctx,C[3],y+1.5*S,20*S,5*S,2*S,DARK);
-      setFont(ctx,4,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(pt.part,C[3]+10*S,y+4*S);
-      // Pcs / Studs
-      setFont(ctx,5,700,S);ctx.fillStyle=DARK;ctx.textBaseline='middle';
-      ctx.textAlign='right';ctx.fillText(n.toLocaleString(),C[5],y+4*S);
-      setFont(ctx,4.5,400,S);ctx.fillStyle=MGRAY;
-      ctx.fillText(c.count.toLocaleString(),C[6],y+4*S);
-      y+=rH;
+      var n=Math.ceil(c.count/pt.studs); totalImgPcs+=n;
+      dataRow(c.num,c.hex,c.name,pt.part,n.toLocaleString(),c.count.toLocaleString(),ri);
     });
-    // Total
-    if(y<CH-13*S){
-      ctx.fillStyle=DARK;ctx.fillRect(0,y,CW,9*S);
-      setFont(ctx,5.5,700,S);ctx.fillStyle=WHITE;ctx.textAlign='left';ctx.textBaseline='middle';
-      ctx.fillText('Total pieces',C[2],y+4.5*S);
-      ctx.textAlign='right';ctx.fillStyle=YELLOW;ctx.fillText(totalPcs2.toLocaleString(),C[5],y+4.5*S);
+    // Total image
+    if(y+7.5*S<CH-10*S){
+      ctx.fillStyle='#2A2A2C'; ctx.fillRect(0,y,CW,7.5*S);
+      setFont(ctx,5,700,S); ctx.fillStyle=WHITE; ctx.textAlign='left'; ctx.textBaseline='middle';
+      ctx.fillText('Image total',C[2],y+3.75*S);
+      ctx.textAlign='right'; ctx.fillStyle=YELLOW; ctx.fillText(totalImgPcs.toLocaleString(),C[5],y+3.75*S);
+      y+=7.5*S+3*S;
     }
-    setFont(ctx,5,400,S);ctx.fillStyle=MGRAY;ctx.textAlign='center';ctx.textBaseline='alphabetic';
-    ctx.fillText('BRICK LAB \u00b7 Page 2',CW/2,CH-5*S);
+
+    // Baseplates
+    var bpPartNum=bpSize===16?'3857':bpSize===48?'4186':'3811';
+    tableHeader('BASEPLATES');
+    dataRow(null,'#2A5A2A',bpSize+'×'+bpSize+' Baseplate',bpPartNum,totalBP,null,0);
+
+    // Border hardware
+    var borderInf=BORDER_INFO[selBorder];
+    if(selBorder!=='none'){
+      tableHeader('BORDER — '+borderInf.label.toUpperCase());
+      var bcVal=document.getElementById('borderColor')?document.getElementById('borderColor').value:'Black';
+      var perim=2*(w+h);
+      if(selBorder==='flat1'){
+        dataRow(null,null,bcVal+' · 1×2 Flat Plate (border)','3023',Math.ceil(perim/2).toLocaleString(),perim+' studs',0);
+      } else if(selBorder==='flat2'){
+        dataRow(null,null,bcVal+' · 1×4 Flat Plate (base layer)','3710',Math.ceil(perim/4).toLocaleString(),perim+' studs',0);
+        dataRow(null,null,bcVal+' · 1×2 Flat Plate (top layer)','3023',Math.ceil(perim/2).toLocaleString(),perim+' studs',1);
+      } else if(selBorder==='technic'){
+        dataRow(null,null,bcVal+' · Technic Brick 1×2 with Hole','3700',(Math.ceil(perim/2)*2).toLocaleString(),perim+' studs',0);
+      }
+    }
+
+    // Joining hardware
+    var joinInf=JOIN_INFO[selJoin];
+    if(totalBP>1){
+      tableHeader('JOINING — '+joinInf.label.toUpperCase());
+      var seamsV=bpW-1, seamsH=bpH-1, totalSeams=seamsV*bpH+seamsH*bpW;
+      if(selJoin==='bridge'){
+        dataRow(null,null,'1×8 Flat Plate (bridge each seam)','3460',(totalSeams*3).toLocaleString(),null,0);
+      } else if(selJoin==='technic'){
+        dataRow(null,null,'Technic Pin','3673',(totalSeams*4).toLocaleString(),null,0);
+        dataRow(null,null,'Pin Stop Bush','32054',(totalSeams*4).toLocaleString(),null,1);
+      } else if(selJoin==='wood'){
+        dataRow(null,null,'9–12mm MDF/ply board (cut to mosaic size)','Non-LEGO',1,null,0);
+      } else if(selJoin==='glue'){
+        dataRow(null,null,'Contact cement + MDF/ply board','Non-LEGO',1,null,0);
+      }
+    }
+
+    // Hanging hardware
+    var hangInf=HANG_INFO[selHang];
+    tableHeader('HANGING — '+hangInf.label.toUpperCase());
+    if(selHang==='lego_hanger'){
+      dataRow(null,null,'LEGO Art Hanger Bracket','67139',1,null,0);
+    } else if(selHang==='command'){
+      dataRow(null,null,'3M Command Large Picture Strips (pairs)','Non-LEGO',Math.ceil(totalBP*1.5),null,0);
+    } else if(selHang==='french'){
+      dataRow(null,null,'French cleat timber strip (18mm ply)','Non-LEGO',2,null,0);
+    } else if(selHang==='wire'){
+      dataRow(null,null,'D-ring plate brackets','Non-LEGO',2,null,0);
+      dataRow(null,null,'Braided picture wire (1m)','Non-LEGO',1,null,1);
+    } else if(selHang==='magnet'){
+      dataRow(null,null,'Neodymium magnets (epoxy to back, 4–6 per plate)','Non-LEGO',totalBP*5,null,0);
+      dataRow(null,null,'Steel rail or IKEA SKÅDIS panel','Non-LEGO',1,null,1);
+    }
+
+    setFont(ctx,5,400,S); ctx.fillStyle=MGRAY; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('LEGO® is a trademark of the LEGO Group, which does not sponsor, authorise or endorse this document · BRICK LAB · Page 3',CW/2,CH-5*S);
+  });
+
+  // ── PAGE 4: BUILD INSTRUCTIONS ─────────────────────────────────────────
+  pages.push(function(ctx,CW,CH,S){
+    var PAD=10*S;
+    ctx.fillStyle=WHITE; ctx.fillRect(0,0,CW,CH);
+    ctx.fillStyle=YELLOW; ctx.fillRect(0,0,CW,12*S);
+    setFont(ctx,6.5,700,S); ctx.fillStyle=DARK;
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText('BUILD INSTRUCTIONS',PAD,6*S);
+    ctx.textAlign='right'; ctx.fillText('Page 4',CW-PAD,6*S);
+
+    var y=18*S;
+    var joinInf2=JOIN_INFO[selJoin];
+    var hangInf2=HANG_INFO[selHang];
+    var borderInf2=BORDER_INFO[selBorder];
+    var bcVal2=document.getElementById('borderColor')?document.getElementById('borderColor').value:'Black';
+
+    var steps=[
+      ['🧱','Prepare baseplates','Lay '+totalBP+' baseplate'+(totalBP!==1?'s':'')+' in a '+bpW+'×'+bpH+' grid. Label each with a sticky note — section 1-1 top-left, then left to right, top to bottom.'],
+      ['🎨','Sort pieces by number','Group each colour into a separate container and label it with its number from the Colour Key (Page 3). Pre-sorting makes placing much faster.'],
+      ['📋','Work section by section','Complete one baseplate at a time using its section page. Build top-to-bottom, left-to-right. Check the number in each cell and place the matching piece.'],
+      ['🔍','Use the mini key','Each section page shows only the colours in that section with piece counts, so you can quickly verify you have the right pieces ready.'],
+    ];
+    if(selBorder!=='none'){
+      steps.push(['🔲','Add border',''+borderInf2.label+': run '+bcVal2+' border pieces around the complete mosaic perimeter once all baseplates are fully built.']);
+    }
+    if(totalBP>1){
+      steps.push(['🔩','Join baseplates',''+joinInf2.label+': '+joinInf2.text(bpW,bpH).replace(/<[^>]+>/g,'')]);
+    }
+    steps.push(['🪝','Hang on wall',''+hangInf2.label+': '+hangInf2.text().replace(/<[^>]+>/g,'')]);
+
+    var stepW=CW-PAD*2;
+    steps.forEach(function(step,i){
+      if(y+18*S>CH-12*S) return;
+      // Step card
+      roundRect(ctx,PAD,y,stepW,0,4*S,'#F8F7F2');
+      // Measure content height first (rough)
+      var stepText=step[2];
+      setFont(ctx,5,400,S);
+      var words=stepText.split(' '), lines2=[], curLine='', maxTW=stepW-52*S;
+      words.forEach(function(word){
+        var test=(curLine?curLine+' ':'')+word;
+        if(ctx.measureText(test).width>maxTW&&curLine){lines2.push(curLine);curLine=word;}
+        else curLine=test;
+      });
+      if(curLine) lines2.push(curLine);
+      var cardH=Math.max(18*S, lines2.length*7*S+12*S);
+
+      roundRect(ctx,PAD,y,stepW,cardH,4*S,'#F8F7F2');
+      // Step number circle
+      roundRect(ctx,PAD+4*S,y+4*S,12*S,12*S,6*S,YELLOW);
+      setFont(ctx,7,700,S); ctx.fillStyle=DARK; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(String(i+1),PAD+10*S,y+10*S);
+      // Icon
+      setFont(ctx,10,400,S); ctx.textBaseline='middle';
+      ctx.fillText(step[0],PAD+18*S,y+10*S);
+      // Title
+      setFont(ctx,6,700,S); ctx.fillStyle=DARK; ctx.textAlign='left'; ctx.textBaseline='top';
+      ctx.fillText(step[1],PAD+32*S,y+5*S);
+      // Body text
+      setFont(ctx,5,400,S); ctx.fillStyle='#444';
+      lines2.forEach(function(ln,li){
+        ctx.fillText(ln,PAD+32*S,y+13*S+li*7*S);
+      });
+      y+=cardH+4*S;
+    });
+
+    setFont(ctx,5,400,S); ctx.fillStyle=MGRAY; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.fillText('BRICK LAB · Page 4',CW/2,CH-5*S);
   });
 
   // ── SECTION PAGES ──────────────────────────────────────────────────────
-  var pageNum=3;
+  var pageNum=5;
   for(var br=0;br<bpH;br++){
     for(var bc=0;bc<bpW;bc++){
       (function(bpCol,bpRow,pn){
@@ -1892,20 +2111,20 @@ function buildBookletData(){
 
           ctx.fillStyle=WHITE;ctx.fillRect(0,0,CW,CH);
 
-          // Top bar
-          var TB=14*S;
+          // Top bar — two lines to avoid overlap
+          var TB=20*S;
           ctx.fillStyle=DARK;ctx.fillRect(0,0,CW,TB);
-          setFont(ctx,7.5,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='left';ctx.textBaseline='middle';
-          ctx.fillText('Section '+(bpRow+1)+'-'+(bpCol+1),PAD,TB/2);
-          setFont(ctx,5,400,S);ctx.fillStyle='rgba(255,255,255,0.45)';
-          ctx.fillText(' \u00b7 Cols '+(startX+1)+'\u2013'+endX+' \u00b7 Rows '+(startY+1)+'\u2013'+endY,
-            PAD+ctx.measureText('Section '+(bpRow+1)+'-'+(bpCol+1)).width+2*S,TB/2);
-          roundRect(ctx,CW-19*S,2*S,15*S,10*S,4*S,YELLOW);
-          setFont(ctx,6,700,S);ctx.fillStyle=DARK;ctx.textAlign='center';
-          ctx.fillText(pn,CW-11.5*S,TB/2);
+          setFont(ctx,8,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='left';ctx.textBaseline='middle';
+          ctx.fillText('Section '+(bpRow+1)+'-'+(bpCol+1),PAD,TB*0.35);
+          setFont(ctx,5,400,S);ctx.fillStyle='rgba(255,255,255,0.5)';
+          ctx.fillText('Cols '+(startX+1)+'\u2013'+endX+' \u00b7 Rows '+(startY+1)+'\u2013'+endY,PAD,TB*0.75);
+          // Page badge — right side, vertically centred
+          roundRect(ctx,CW-20*S,3*S,16*S,14*S,4*S,YELLOW);
+          setFont(ctx,7,700,S);ctx.fillStyle=DARK;ctx.textAlign='center';ctx.textBaseline='middle';
+          ctx.fillText(pn,CW-12*S,TB/2);
           var y=TB;
 
-          // Mini key — wrap into rows, max 3 rows
+          // Mini key — wraps, max 3 rows
           var secUsed={};
           for(var sy2=startY;sy2<endY;sy2++) for(var sx2=startX;sx2<endX;sx2++) secUsed[pixels[sy2*w+sx2].hex]=true;
           var secList=sortedColors.filter(function(c){return secUsed[c.hex];});
@@ -1913,12 +2132,9 @@ function buildBookletData(){
           setFont(ctx,5,700,S);
           secList.forEach(function(c){
             var label=String(c.num)+' '+c.name;
-            var tw=Math.min(ctx.measureText(label).width+8*S,38*S);
-            if(kx+tw>CW-PAD){
-              krows++; if(krows>=3) return;
-              kx=PAD; ky+=KRH+2*S;
-            }
-            ctx.fillStyle='#EDECE6';ctx.fillRect(kx-1*S,ky-1*S,tw+1*S,KRH+1*S);
+            var tw=Math.min(ctx.measureText(label).width+8*S,40*S);
+            if(kx+tw>CW-PAD){ krows++; if(krows>=3) return; kx=PAD; ky+=KRH+2*S; }
+            ctx.fillStyle='#EDECE6'; ctx.fillRect(kx-0.5*S,ky-0.5*S,tw+1*S,KRH+1*S);
             roundRect(ctx,kx,ky,tw,KRH,2.5*S,c.hex);
             ctx.fillStyle=isLight(c.hex)?DARK:WHITE;
             ctx.textAlign='left';ctx.textBaseline='middle';
@@ -1927,12 +2143,12 @@ function buildBookletData(){
           });
           y=ky+KRH+4*S;
 
-          // Grid — square cells, fills remaining space
+          // Grid — always square cells
           var FOOTER=9*S;
           var availW=CW-PAD*2;
           var availH=CH-y-FOOTER-2*S;
-          var cellPx=Math.min(availW/secW, availH/secH);
-          var gx3=(CW-cellPx*secW)/2, gy3=y;
+          var cellPx=Math.min(availW/secW,availH/secH);
+          var gx3=(CW-cellPx*secW)/2,gy3=y;
 
           var fsize3=Math.max(3*S,Math.min(cellPx*0.44,8.5*S));
           ctx.font='700 '+fsize3+'px "Space Grotesk",sans-serif';
@@ -1943,12 +2159,12 @@ function buildBookletData(){
               var px3=pixels[sy3*w+sx3];
               var cx3=Math.round(gx3+(sx3-startX)*cellPx);
               var cy3=Math.round(gy3+(sy3-startY)*cellPx);
-              var cw3=Math.ceil(cellPx),ch3=Math.ceil(cellPx);
-              ctx.fillStyle=px3.hex;ctx.fillRect(cx3,cy3,cw3,ch3);
-              ctx.strokeStyle='rgba(0,0,0,0.1)';ctx.lineWidth=Math.max(0.4,0.18*S);
-              ctx.strokeRect(cx3+0.5,cy3+0.5,cw3-1,ch3-1);
+              var cw3=Math.ceil(cellPx);
+              ctx.fillStyle=px3.hex; ctx.fillRect(cx3,cy3,cw3,cw3);
+              ctx.strokeStyle='rgba(0,0,0,0.1)'; ctx.lineWidth=Math.max(0.4,0.18*S);
+              ctx.strokeRect(cx3+0.5,cy3+0.5,cw3-1,cw3-1);
               ctx.fillStyle=isLight(px3.hex)?'#111':'#eee';
-              ctx.fillText(colorNumMap[px3.hex]||'?',cx3+cw3/2,cy3+ch3/2);
+              ctx.fillText(colorNumMap[px3.hex]||'?',cx3+cw3/2,cy3+cw3/2);
             }
           }
 
