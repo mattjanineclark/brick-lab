@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>Brick Lab v25</title>
+<title>Brick Lab v26</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
@@ -321,7 +321,7 @@ tr:last-child td{border-bottom:none;}
       <circle cx="17" cy="17" r="2" fill="#F2C314"/>
     </svg>
   </div>
-  <h1>Brick Lab <span style="font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:0">v25</span></h1>
+  <h1>Brick Lab <span style="font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:0">v26</span></h1>
   <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
     <button class="hdr-pab-btn" id="hdrPabRefBtn" onclick="openPabRefPanel()" title="PAB Parts Reference">&#127847;</button>
     <button class="hdr-nav" id="hdrBack" onclick="hdrNav(-1)">&#8249;</button>
@@ -2106,6 +2106,23 @@ document.getElementById('pabBtn').addEventListener('click', function(){
     console.error('exportPAB error:', e);
   }
 });
+
+const PAB_HARDWARE = {
+  baseplate: {
+    '32':{ elementId:'4186076', label:'32x32 Baseplate (Green)',          price:4.99 },
+    '16':{ elementId:'4186077', label:'16x16 Baseplate (Green)',          price:2.49 },
+    '48':{ elementId:null,      label:'48x48 Baseplate (source BrickLink)',price:null },
+  },
+  border_1x2: {
+    'Black':           { elementId:'302126',  price:0.13 },
+    'White':           { elementId:'302101',  price:0.13 },
+    'Dark Bluish Gray':{ elementId:'4211063', price:0.13 },
+    'Red':             { elementId:'302121',  price:0.13 },
+    'Tan':             { elementId:'302115',  price:0.13 },
+  },
+  join_1x8:    { elementId:'303826', price:0.23 },
+  lego_hanger: { elementId:'6343128', price:2.49 },
+};
 
 function exportPAB(){
   var cc=getColorCounts();
