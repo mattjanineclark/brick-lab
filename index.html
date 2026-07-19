@@ -1660,38 +1660,52 @@ function generatePDF(){
 }
 
 function buildPDFWithLib(JSPDF){
-  // A4 in mm: 210 x 297. We render each page at 2x resolution for sharpness.
-  var PW=210, PH=297; // page mm
-  var SCALE=3; // px per mm for canvas rendering (3 = ~216 dpi equivalent)
+  var PW=210, PH=297;
+  var SCALE=3;
   var CW=Math.round(PW*SCALE), CH=Math.round(PH*SCALE);
 
-  var doc=new JSPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  showToast('Preparing mosaic\u2026');
+
+  // Build booklet data (creates thumbImg2 with dataURL src)
   var bookletData=buildBookletData();
   var pages=bookletData.pages;
   var total=pages.length;
 
-  function renderPage(i){
-    if(i>=total){
-      showToast('Saving\u2026');
+  // Wait for thumbImg2 to fully decode before rendering pages
+  var img2=bookletData.thumbImg2;
+  function startRender(){
+    var doc=new JSPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    function renderPage(i){
+      if(i>=total){
+        showToast('Saving\u2026');
+        setTimeout(function(){ doc.save('brick-lab-mosaic.pdf'); hideToast(); },50);
+        return;
+      }
+      showToast('Page '+(i+1)+' of '+total+'\u2026');
       setTimeout(function(){
-        doc.save('brick-lab-mosaic.pdf');
-        hideToast();
-      },50);
-      return;
+        var cv=document.createElement('canvas');
+        cv.width=CW; cv.height=CH;
+        var ctx=cv.getContext('2d');
+        pages[i](ctx,CW,CH,SCALE);
+        var imgData=cv.toDataURL('image/jpeg',0.92);
+        if(i>0) doc.addPage();
+        doc.addImage(imgData,'JPEG',0,0,PW,PH);
+        renderPage(i+1);
+      },0);
     }
-    showToast('Building page '+(i+1)+' of '+total+'\u2026');
-    setTimeout(function(){
-      var cv=document.createElement('canvas');
-      cv.width=CW; cv.height=CH;
-      var ctx=cv.getContext('2d');
-      pages[i](ctx, CW, CH, SCALE);
-      var imgData=cv.toDataURL('image/jpeg',0.92);
-      if(i>0) doc.addPage();
-      doc.addImage(imgData,'JPEG',0,0,PW,PH);
-      renderPage(i+1);
-    },0);
+    renderPage(0);
   }
-  renderPage(0);
+
+  if(img2&&img2.src){
+    if(img2.complete&&img2.naturalWidth>0){
+      startRender();
+    } else {
+      img2.onload=startRender;
+      img2.onerror=startRender; // start anyway on error
+    }
+  } else {
+    startRender();
+  }
 }
 
 function buildBookletData(){
@@ -1715,7 +1729,7 @@ function buildBookletData(){
     return (0.299*r+0.587*g+0.114*b)>160;
   }
 
-  // Mosaic thumbnail — draw pixel by pixel into ImageData for reliability
+  // Mosaic thumbnail — draw via ImageData then capture as dataURL for reliable PDF embedding
   var thumbScale=6;
   var thumbCv=document.createElement('canvas');
   thumbCv.width=w*thumbScale; thumbCv.height=h*thumbScale;
@@ -1732,6 +1746,12 @@ function buildBookletData(){
     }
   });
   tCtx.putImageData(thumbImg,0,0);
+  // Convert to Image element so drawImage works reliably across all contexts
+  var thumbDataUrl=thumbCv.toDataURL('image/png');
+  var thumbImg2=new Image();
+  thumbImg2.src=thumbDataUrl;
+  // thumbImg2.width/height won't be set until onload, so set them manually
+  thumbImg2._w=thumbCv.width; thumbImg2._h=thumbCv.height;
 
   var YELLOW='#F2C314', DARK='#1C1C1E', WHITE='#fff', LGRAY='#F5F5F0', MGRAY='#888';
   var now=new Date().toLocaleDateString('en-NZ',{year:'numeric',month:'long',day:'numeric'});
@@ -1789,14 +1809,14 @@ function buildBookletData(){
     // Divider
     ctx.fillStyle='rgba(255,255,255,0.1)';ctx.fillRect(PAD,y,CW-PAD*2,1);y+=8*S;
 
-    // Thumbnail
+    // Thumbnail — use the pre-rendered Image element
     var availTW=CW-PAD*2, availTH=Math.round(CH*0.36);
-    var tAsp=(w&&h)?w/h:1, tW2,tH2;
+    var tW2src=thumbImg2._w||1, tH2src=thumbImg2._h||1;
+    var tAsp=tW2src/tH2src, tW2,tH2;
     if(tAsp>availTW/availTH){tW2=availTW;tH2=Math.round(availTW/tAsp);}
     else{tH2=availTH;tW2=Math.round(availTH*tAsp);}
     var tX2=(CW-tW2)/2;
-    if(thumbCv.width>0&&thumbCv.height>0) ctx.drawImage(thumbCv,tX2,y,tW2,tH2);
-    else{ctx.fillStyle='#333';ctx.fillRect(tX2,y,tW2,tH2);}
+    ctx.drawImage(thumbImg2,tX2,y,tW2,tH2);
     ctx.strokeStyle=YELLOW;ctx.lineWidth=2*S;ctx.strokeRect(tX2,y,tW2,tH2);
     y+=tH2+12*S;
 
@@ -1850,9 +1870,9 @@ function buildBookletData(){
 
     // Left: original photo
     function drawImgBox(srcEl,label,lx,ly,maxW,maxH2){
-      // srcEl can be an HTMLImageElement or a canvas — handle both
-      var srcW=srcEl?(srcEl.naturalWidth||srcEl.width||0):0;
-      var srcH=srcEl?(srcEl.naturalHeight||srcEl.height||0):0;
+      // Handle img, canvas, or our custom _w/_h tagged img
+      var srcW=srcEl?(srcEl._w||srcEl.naturalWidth||srcEl.width||0):0;
+      var srcH=srcEl?(srcEl._h||srcEl.naturalHeight||srcEl.height||0):0;
       var asp=(srcW&&srcH)?srcW/srcH:1;
       var iW,iH;
       if(asp>maxW/maxH2){iW=maxW;iH=Math.round(maxW/asp);}
@@ -1869,7 +1889,7 @@ function buildBookletData(){
 
     var lh=drawImgBox(imgEl,'Original photo',PAD,y,colW,maxH);
     // Right: mosaic pixelated
-    var rh=drawImgBox(thumbCv,'LEGO mosaic ('+w+'×'+h+' studs)',PAD*2+colW,y,colW,maxH);
+    var rh=drawImgBox(thumbImg2,'LEGO mosaic ('+w+'×'+h+' studs)',PAD*2+colW,y,colW,maxH);
     y+=Math.max(lh,rh)+12*S;
 
     // How-to-use box
@@ -2192,7 +2212,7 @@ function buildBookletData(){
     }
   }
 
-  return {pages:pages};
+  return {pages:pages, thumbImg2:thumbImg2};
 }
 
 
