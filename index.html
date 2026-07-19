@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>Brick Lab v20</title>
+<title>Brick Lab v21</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
@@ -88,11 +88,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:Inter,s
 .thumb{width:100%;aspect-ratio:4/3;border-radius:10px;object-fit:cover;display:none;}
 /* Layout stage */
 .layout-wrap{position:relative;width:100%;border-radius:10px;overflow:hidden;
-  background:#111;touch-action:none;aspect-ratio:4/3;user-select:none;}
+  background:#111;touch-action:pan-y;aspect-ratio:unset;height:min(56vw,260px);user-select:none;}
 #layCanvas{display:block;position:absolute;top:0;left:0;width:100%;height:100%;
-  image-rendering:pixelated;}
+  image-rendering:pixelated;touch-action:none;}
 #gridCanvas{display:block;position:absolute;top:0;left:0;width:100%;height:100%;
-  pointer-events:none;}
+  pointer-events:none;touch-action:none;}
 .bp-row{display:flex;gap:8px;margin-bottom:12px;}
 .bp-btn{flex:1;padding:10px 4px;border-radius:8px;background:var(--s2);
   border:1.5px solid var(--border);color:var(--muted);
@@ -320,7 +320,7 @@ tr:last-child td{border-bottom:none;}
       <circle cx="17" cy="17" r="2" fill="#F2C314"/>
     </svg>
   </div>
-  <h1>Brick Lab <span style="font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:0">v20</span></h1>
+  <h1>Brick Lab <span style="font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:0">v21</span></h1>
   <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
     <button class="hdr-pab-btn" id="hdrPabRefBtn" onclick="openPabRefPanel()" title="PAB Parts Reference">&#127847;</button>
     <button class="hdr-nav" id="hdrBack" onclick="hdrNav(-1)">&#8249;</button>
