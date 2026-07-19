@@ -1888,8 +1888,66 @@ function buildBookletData(){
     }
 
     var lh=drawImgBox(imgEl,'Original photo',PAD,y,colW,maxH);
-    // Right: mosaic pixelated
-    var rh=drawImgBox(thumbImg2,'LEGO mosaic ('+w+'×'+h+' studs)',PAD*2+colW,y,colW,maxH);
+
+    // Right: mosaic with baseplate grid overlay
+    (function(){
+      var srcW=thumbImg2._w||1, srcH=thumbImg2._h||1;
+      var asp=srcW/srcH;
+      var iW,iH;
+      if(asp>colW/maxH){iW=colW;iH=Math.round(colW/asp);}
+      else{iH=maxH;iW=Math.round(maxH*asp);}
+      iW=Math.max(1,iW); iH=Math.max(1,iH);
+      var ix=PAD*2+colW+(colW-iW)/2;
+      // Draw mosaic image
+      ctx.drawImage(thumbImg2,ix,y,iW,iH);
+      // Baseplate grid overlay
+      var cellW=iW/bpW, cellH=iH/bpH;
+      // Dim overlay
+      ctx.fillStyle='rgba(0,0,0,0.18)';ctx.fillRect(ix,y,iW,iH);
+      // Grid lines
+      ctx.strokeStyle='rgba(242,195,20,0.9)';ctx.lineWidth=Math.max(1,1.2*S);
+      ctx.setLineDash([3*S,2*S]);
+      for(var gc=1;gc<bpW;gc++){
+        var gx=ix+gc*cellW;
+        ctx.beginPath();ctx.moveTo(gx,y);ctx.lineTo(gx,y+iH);ctx.stroke();
+      }
+      for(var gr=1;gr<bpH;gr++){
+        var gy2=y+gr*cellH;
+        ctx.beginPath();ctx.moveTo(ix,gy2);ctx.lineTo(ix+iW,gy2);ctx.stroke();
+      }
+      ctx.setLineDash([]);
+      // Solid border
+      ctx.strokeStyle='#F2C314';ctx.lineWidth=Math.max(1.5,1.5*S);
+      ctx.strokeRect(ix,y,iW,iH);
+      // Section labels with page number reference
+      var fs=Math.max(3.5*S,Math.min(cellW*0.22,7*S));
+      ctx.font='700 '+fs+'px "Space Grotesk",sans-serif';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      var pageRef=5; // section pages start at page 5
+      for(var gr2=0;gr2<bpH;gr2++){
+        for(var gc2=0;gc2<bpW;gc2++){
+          var lx2=ix+gc2*cellW+cellW/2;
+          var ly2=y+gr2*cellH+cellH/2;
+          // Badge background
+          var bw=Math.min(cellW*0.72,14*S),bh=Math.min(cellH*0.52,9*S);
+          roundRect(ctx,lx2-bw/2,ly2-bh/2,bw,bh,2*S,'rgba(28,28,30,0.75)');
+          // Section id
+          ctx.fillStyle='#F2C314';
+          ctx.fillText((gr2+1)+'-'+(gc2+1),lx2,ly2-bh*0.18);
+          // Page ref
+          ctx.font='400 '+(fs*0.72)+'px "Space Grotesk",sans-serif';
+          ctx.fillStyle='rgba(255,255,255,0.7)';
+          ctx.fillText('p.'+pageRef,lx2,ly2+bh*0.32);
+          ctx.font='700 '+fs+'px "Space Grotesk",sans-serif';
+          pageRef++;
+        }
+      }
+      // Caption
+      setFont(ctx,5.5,600,S);ctx.fillStyle=MGRAY;ctx.textAlign='center';ctx.textBaseline='top';
+      ctx.fillText('LEGO mosaic ('+w+'\u00d7'+h+' studs)',PAD*2+colW+colW/2,y+iH+3*S);
+      rh=iH;
+    })();
+    var rh;
     y+=Math.max(lh,rh)+12*S;
 
     // How-to-use box
