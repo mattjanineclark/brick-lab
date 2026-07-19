@@ -24,9 +24,37 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:Inter,s
   display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .hdr-logo svg{width:18px;height:18px;}
 .hdr h1{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:-.02em;}
-.hdr-step{margin-left:auto;font-size:.72rem;color:var(--muted);}
-.prog{height:3px;background:var(--border);}
-.prog-fill{height:100%;background:var(--yellow);border-radius:0 2px 2px 0;transition:width .3s;}
+.hdr-nav{width:34px;height:34px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--s2);color:var(--text);font-size:1.3rem;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-family:sans-serif;}
+.hdr-nav:disabled{opacity:.25;cursor:not-allowed;}
+.hdr-nav-fwd{background:var(--yellow);border-color:var(--yellow);color:#1A1A1A;font-weight:700;}
+.hdr-nav-fwd:disabled{background:var(--s2);border-color:var(--border);color:var(--muted);}
+/* Step strip */
+.stepstrip{display:flex;align-items:center;background:var(--surface);
+  border-bottom:2px solid var(--border);padding:0 10px;position:sticky;top:54px;z-index:99;
+  box-shadow:0 2px 6px rgba(0,0,0,.04);}
+.step-btn{display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 4px;flex:1;border:none;background:none;cursor:pointer;opacity:.4;
+  font-family:'Space Grotesk',sans-serif;transition:opacity .15s;}
+.step-btn.on{opacity:1;}
+.step-btn.done{opacity:.75;}
+.step-btn.on .step-dot{background:var(--yellow);color:#1A1A1A;}
+.step-btn.done .step-dot{background:#2d8a2d;color:#fff;}
+.step-dot{width:22px;height:22px;border-radius:50%;background:var(--border);
+  color:var(--muted);font-size:.65rem;font-weight:700;display:flex;
+  align-items:center;justify-content:center;transition:background .15s;}
+.step-lbl{font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.04em;white-space:nowrap;}
+.step-btn.on .step-lbl{color:var(--text);}
+.step-line{height:2px;flex:1;background:var(--border);border-radius:1px;max-width:24px;}
+/* PAB status pill */
+.pab-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;
+  border-radius:20px;font-family:'Space Grotesk',sans-serif;font-size:.7rem;font-weight:700;
+  border:1.5px solid var(--border);background:var(--s2);color:var(--muted);}
+.pab-pill.ok{border-color:#2d8a2d;background:#f0fff0;color:#2d8a2d;}
+.pab-pill.err{border-color:#c00;background:#fff0f0;color:#c00;}
+.pab-pill.loading{border-color:var(--yellow);background:var(--ylite);color:#856400;}
 .stage{display:none;flex-direction:column;min-height:calc(100vh - 54px);}
 .stage.on{display:flex;}
 .sbody{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;}
@@ -287,9 +315,30 @@ tr:last-child td{border-bottom:none;}
     </svg>
   </div>
   <h1>Brick Lab</h1>
-  <span class="hdr-step" id="hdrStep">1 of 4</span>
+  <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+    <button class="hdr-nav" id="hdrBack" onclick="hdrNav(-1)">&#8249;</button>
+    <button class="hdr-nav hdr-nav-fwd" id="hdrNext" onclick="hdrNav(1)">&#8250;</button>
+  </div>
 </div>
-<div class="prog"><div class="prog-fill" id="progFill" style="width:25%"></div></div>
+
+<!-- Step strip -->
+<div class="stepstrip" id="stepStrip">
+  <button class="step-btn on" data-step="1" onclick="stepNav(1)">
+    <span class="step-dot">1</span><span class="step-lbl">Photo</span>
+  </button>
+  <div class="step-line"></div>
+  <button class="step-btn" data-step="2" onclick="stepNav(2)">
+    <span class="step-dot">2</span><span class="step-lbl">Layout</span>
+  </button>
+  <div class="step-line"></div>
+  <button class="step-btn" data-step="3" onclick="stepNav(3)">
+    <span class="step-dot">3</span><span class="step-lbl">Style</span>
+  </button>
+  <div class="step-line"></div>
+  <button class="step-btn" data-step="4" onclick="stepNav(4)">
+    <span class="step-dot">4</span><span class="step-lbl">Result</span>
+  </button>
+</div>
 
 <!-- S1: PHOTO -->
 <div class="stage on" id="s1">
@@ -485,11 +534,13 @@ tr:last-child td{border-bottom:none;}
       <div class="card">
         <div class="ch">PAB Element ID Reference</div>
         <div class="cb" style="padding:10px 0 0">
-          <p style="font-size:.72rem;color:var(--muted);padding:0 14px 10px;line-height:1.5">
-            Element IDs sourced from Brick Owl &amp; BrickLink for designs
+          <p style="font-size:.72rem;color:var(--muted);padding:0 14px 8px;line-height:1.5">
+            Element IDs sourced live from LEGO Pick a Brick for designs
             <strong>3024</strong> (Sq Plate), <strong>3070</strong> (Sq Tile), <strong>35381</strong> (Round Tile).
-            Upload the CSV to <a href="https://www.lego.com/en-nz/pick-and-build/pick-a-brick" target="_blank" style="color:var(--yellow)">lego.com/en-nz Pick a Brick</a>.
           </p>
+          <div style="padding:0 14px 12px">
+            <span class="pab-pill loading" id="pabPill">&#9679; Fetching from PAB&hellip;</span>
+          </div>
           <!-- Filter by piece type -->
           <div style="display:flex;gap:6px;padding:0 14px 10px;flex-wrap:wrap" id="refTypeFilter"></div>
           <div style="overflow-x:auto">
@@ -584,17 +635,76 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── STAGE NAV ──────────────────────────────────────────────
 var curStage = 1;
+var maxReached = 1; // furthest stage unlocked
+
 function goStage(n) {
   document.getElementById('s'+curStage).classList.remove('on');
   curStage = n;
+  if(n > maxReached) maxReached = n;
   document.getElementById('s'+n).classList.add('on');
-  document.getElementById('progFill').style.width = (n/4*100)+'%';
-  document.getElementById('hdrStep').textContent = n+' of 4';
   window.scrollTo(0,0);
   if(n===2) initLayout();
   if(n===3) refreshEffPreview();
+  updateStepStrip();
+  if(n===4) triggerPABPrefetch();
 }
-window.goStage = goStage; // expose for inline onclick handlers
+window.goStage = goStage;
+
+function updateStepStrip() {
+  var steps = document.querySelectorAll('.step-btn');
+  steps.forEach(function(btn) {
+    var s = parseInt(btn.getAttribute('data-step'));
+    btn.classList.remove('on','done');
+    if(s === curStage) btn.classList.add('on');
+    else if(s < curStage) btn.classList.add('done');
+    // show ✓ in dot for completed steps
+    var dot = btn.querySelector('.step-dot');
+    if(dot) dot.textContent = s < curStage ? '✓' : String(s);
+    btn.disabled = s > maxReached;
+  });
+  // Header nav buttons
+  var back = document.getElementById('hdrBack');
+  var fwd  = document.getElementById('hdrNext');
+  if(back) back.disabled = curStage <= 1;
+  if(fwd)  fwd.disabled  = curStage >= maxReached || curStage >= 4;
+}
+
+function stepNav(n) {
+  // Only allow navigating to visited stages
+  if(n > maxReached) return;
+  // Stage 3→4 requires generation, so don't jump there directly from strip
+  if(n === 4 && !mosaicData) { showToast('Generate a mosaic first'); setTimeout(hideToast,2000); return; }
+  goStage(n);
+}
+window.stepNav = stepNav;
+
+function hdrNav(dir) {
+  var target = curStage + dir;
+  if(target < 1 || target > 4) return;
+  if(target > maxReached) return;
+  if(target === 4 && !mosaicData) { showToast('Generate a mosaic first'); setTimeout(hideToast,2000); return; }
+  goStage(target);
+}
+window.hdrNav = hdrNav;
+
+// Pre-fetch PAB data in background when we hit stage 4
+function triggerPABPrefetch() {
+  var pill = document.getElementById('pabPill');
+  if(pill && pabFetchState==='idle') { pill.className='pab-pill loading'; pill.textContent='\u25cf Fetching from lego.com/en-nz\u2026'; }
+  fetchPABData(function(data) {
+    var pill2 = document.getElementById('pabPill');
+    if(!pill2) return;
+    if(data && data.length > 0) {
+      pill2.className = 'pab-pill ok';
+      pill2.textContent = '\u2713 ' + data.length + ' elements loaded from lego.com/en-nz';
+    } else {
+      pill2.className = 'pab-pill err';
+      pill2.textContent = '\u2717 Could not reach PAB \u2014 using cached data';
+    }
+  });
+}
+
+
 const LEGO_COLORS = [
   {name:'White',             hex:'#F2F3F2',bl:'1'},
   {name:'Black',             hex:'#05131D',bl:'11'},
@@ -630,11 +740,10 @@ const LEGO_COLORS = [
 ];
 
 const PIECE_TYPES = [
-  {id:'roundPlate', label:'Round Plate', sublabel:'stud on top', part:'4073',  studs:1, round:true,  tile:false, flower:false},
+  {id:'roundPlate', label:'Round Plate', sublabel:'stud on top', part:'6141',  studs:1, round:true,  tile:false, flower:false},
   {id:'roundTile',  label:'Round Tile',  sublabel:'smooth top',  part:'98138', studs:1, round:true,  tile:true,  flower:false},
   {id:'sqPlate',    label:'Sq Plate',    sublabel:'stud on top', part:'3024',  studs:1, round:false, tile:false, flower:false},
   {id:'sqTile',     label:'Sq Tile',     sublabel:'smooth top',  part:'3070',  studs:1, round:false, tile:true,  flower:false},
-  {id:'flower',     label:'Flower',      sublabel:'4 petals',    part:'33291', studs:1, round:true,  tile:false, flower:true},
 ];
 
 // ── Inline SVG illustrations for option cards ──────────────────────────
@@ -1705,63 +1814,63 @@ function renderBOM(){
 // for designs 3024 (sqPlate), 3070 (sqTile), 35381/98138 (roundTile)
 // [BO] = confirmed from Brick Owl part listing · [BL] = BrickLink element ID list
 // null = exists in this colour but element ID not confirmed from authoritative source
-const PAB_PRICES = { roundPlate:0.11, roundTile:0.10, sqPlate:0.10, sqTile:0.08, flower:0.14 };
+const PAB_PRICES = { roundPlate:0.11, roundTile:0.10, sqPlate:0.10, sqTile:0.08 };
 
 const PAB_ELEMENTS = {
   // White (bl:1)
-  '1':  { sqPlate:'302401', sqTile:'307001', roundTile:'4646844', roundPlate:null, flower:null },
+  '1':  { sqPlate:'302401', sqTile:'307001', roundTile:'4646844', roundPlate:null },
   // Light Bluish Gray (bl:86)
-  '86': { sqPlate:'4211399',sqTile:'4211415',roundTile:null,       roundPlate:null, flower:null },
+  '86': { sqPlate:'4211399',sqTile:'4211415',roundTile:null,       roundPlate:null },
   // Dark Bluish Gray (bl:85)
-  '85': { sqPlate:'4210719',sqTile:'4537251',roundTile:'6284596',  roundPlate:null, flower:null },
+  '85': { sqPlate:'4210719',sqTile:'4537251',roundTile:'6284596',  roundPlate:null },
   // Black (bl:11)
-  '11': { sqPlate:'302426', sqTile:'307026', roundTile:'6139403',  roundPlate:null, flower:null },
+  '11': { sqPlate:'302426', sqTile:'307026', roundTile:'6139403',  roundPlate:null },
   // Red (bl:5)
-  '5':  { sqPlate:'302421', sqTile:'307021', roundTile:'6063445',  roundPlate:null, flower:null },
+  '5':  { sqPlate:'302421', sqTile:'307021', roundTile:'6063445',  roundPlate:null },
   // Dark Red (bl:59)
-  '59': { sqPlate:'4183901',sqTile:'4539114',roundTile:'6028132',  roundPlate:null, flower:null },
+  '59': { sqPlate:'4183901',sqTile:'4539114',roundTile:'6028132',  roundPlate:null },
   // Yellow (bl:3)
-  '3':  { sqPlate:'302424', sqTile:'307024', roundTile:'6070714',  roundPlate:null, flower:null },
+  '3':  { sqPlate:'302424', sqTile:'307024', roundTile:'6070714',  roundPlate:null },
   // Bright Light Orange (bl:110)
-  '110':{ sqPlate:'4645042',sqTile:'4655243',roundTile:null,       roundPlate:null, flower:null },
+  '110':{ sqPlate:'4645042',sqTile:'4655243',roundTile:null,       roundPlate:null },
   // Orange (bl:4)
-  '4':  { sqPlate:'4524929',sqTile:'4527526',roundTile:null,       roundPlate:null, flower:null },
+  '4':  { sqPlate:'4524929',sqTile:'4527526',roundTile:null,       roundPlate:null },
   // Dark Orange (bl:68)
-  '68': { sqPlate:'6186012',sqTile:'6097301',roundTile:null,       roundPlate:null, flower:null },
+  '68': { sqPlate:'6186012',sqTile:'6097301',roundTile:null,       roundPlate:null },
   // Reddish Brown (bl:88)
-  '88': { sqPlate:'4221744',sqTile:'4125253',roundTile:'6133854',  roundPlate:null, flower:null },
+  '88': { sqPlate:'4221744',sqTile:'4125253',roundTile:'6133854',  roundPlate:null },
   // Dark Brown (bl:120)
-  '120':{ sqPlate:'6013830',sqTile:null,     roundTile:null,       roundPlate:null, flower:null },
+  '120':{ sqPlate:'6013830',sqTile:null,     roundTile:null,       roundPlate:null },
   // Tan (bl:2)
-  '2':  { sqPlate:'4159553',sqTile:'302405', roundTile:null,       roundPlate:null, flower:null },
+  '2':  { sqPlate:'4159553',sqTile:'302405', roundTile:null,       roundPlate:null },
   // Dark Tan (bl:69)
-  '69': { sqPlate:'4497084',sqTile:'4497023',roundTile:null,       roundPlate:null, flower:null },
+  '69': { sqPlate:'4497084',sqTile:'4497023',roundTile:null,       roundPlate:null },
   // Nougat (bl:28)
-  '28': { sqPlate:'4497056',sqTile:'4165933',roundTile:null,       roundPlate:null, flower:null },
+  '28': { sqPlate:'4497056',sqTile:'4165933',roundTile:null,       roundPlate:null },
   // Medium Nougat (bl:150)
-  '150':{ sqPlate:'6215606',sqTile:'4645054',roundTile:null,       roundPlate:null, flower:null },
+  '150':{ sqPlate:'6215606',sqTile:'4645054',roundTile:null,       roundPlate:null },
   // Sand Green (bl:48)
-  '48': { sqPlate:'6099189',sqTile:'6099364',roundTile:null,       roundPlate:null, flower:null },
+  '48': { sqPlate:'6099189',sqTile:'6099364',roundTile:null,       roundPlate:null },
   // Dark Green (bl:80)
-  '80': { sqPlate:'6055169',sqTile:'6055171',roundTile:null,       roundPlate:null, flower:null },
+  '80': { sqPlate:'6055169',sqTile:'6055171',roundTile:null,       roundPlate:null },
   // Green (bl:6)
-  '6':  { sqPlate:'302428', sqTile:'307028', roundTile:null,       roundPlate:null, flower:null },
+  '6':  { sqPlate:'302428', sqTile:'307028', roundTile:null,       roundPlate:null },
   // Lime (bl:34)
-  '34': { sqPlate:'4261450',sqTile:'4261450',roundTile:null,       roundPlate:null, flower:null },
+  '34': { sqPlate:'4261450',sqTile:'4261450',roundTile:null,       roundPlate:null },
   // Blue (bl:7)
-  '7':  { sqPlate:'302423', sqTile:'307023', roundTile:null,       roundPlate:null, flower:null },
+  '7':  { sqPlate:'302423', sqTile:'307023', roundTile:null,       roundPlate:null },
   // Dark Blue (bl:63)
-  '63': { sqPlate:'4184108',sqTile:'4184108',roundTile:null,       roundPlate:null, flower:null },
+  '63': { sqPlate:'4184108',sqTile:'4184108',roundTile:null,       roundPlate:null },
   // Medium Blue (bl:102)
-  '102':{ sqPlate:'4179826',sqTile:'4179826',roundTile:null,       roundPlate:null, flower:null },
+  '102':{ sqPlate:'4179826',sqTile:'4179826',roundTile:null,       roundPlate:null },
   // Magenta (bl:71)
-  '71': { sqPlate:'4644234',sqTile:'4644234',roundTile:null,       roundPlate:null, flower:null },
+  '71': { sqPlate:'4644234',sqTile:'4644234',roundTile:null,       roundPlate:null },
   // Dark Pink (bl:47)
-  '47': { sqPlate:'4119648',sqTile:'4119648',roundTile:null,       roundPlate:null, flower:null },
+  '47': { sqPlate:'4119648',sqTile:'4119648',roundTile:null,       roundPlate:null },
   // Bright Pink (bl:104)
-  '104':{ sqPlate:'6031883',sqTile:'6031883',roundTile:null,       roundPlate:null, flower:null },
+  '104':{ sqPlate:'6031883',sqTile:'6031883',roundTile:null,       roundPlate:null },
   // Purple (bl:89)
-  '89': { sqPlate:'4133545',sqTile:'4133545',roundTile:null,       roundPlate:null, flower:null },
+  '89': { sqPlate:'4133545',sqTile:'4133545',roundTile:null,       roundPlate:null },
 };
 
 // ── STAGE 4 TABS ──────────────────────────────────────────────
@@ -1779,27 +1888,27 @@ window.switchS4Tab=switchS4Tab;
 // ── PAB LIVE DATA ─────────────────────────────────────────────
 // Fetched live from LEGO's PAB API when the Reference tab is opened.
 // Design IDs we care about for mosaics:
-var PAB_DESIGN_IDS = ['3024','3070','35381'];
-var PAB_DESIGN_LABELS = {'3024':'Sq Plate','3070':'Sq Tile','35381':'Round Tile'};
+var PAB_DESIGN_IDS = ['6141','3024','3070','35381'];
+var PAB_DESIGN_LABELS = {'6141':'Round Plate','3024':'Sq Plate','3070':'Sq Tile','35381':'Round Tile'};
 // Map design_id -> PIECE_TYPE id (for matching to colorPieceMap)
-var PAB_DESIGN_TO_TYPE = {'3024':'sqPlate','3070':'sqTile','35381':'roundTile'};
+var PAB_DESIGN_TO_TYPE = {'6141':'roundPlate','3024':'sqPlate','3070':'sqTile','35381':'roundTile'};
 
 // Live fetched data: array of {elementId, designId, colourName, colourHex, price, available}
 var pabLiveData = null;
 var pabFetchState = 'idle'; // idle | loading | done | error
+var pabCallbacks = [];
 
 function fetchPABData(onDone) {
-  if(pabFetchState === 'done') { onDone(pabLiveData); return; }
-  if(pabFetchState === 'loading') { return; }
+  if(pabFetchState === 'done' || pabFetchState === 'error') { onDone(pabLiveData); return; }
+  if(pabFetchState === 'loading') { pabCallbacks.push(onDone); return; }
   pabFetchState = 'loading';
+  pabCallbacks.push(onDone);
 
-  // LEGO's PAB search API — same endpoint the PAB page JS uses
   var results = [];
   var designs = PAB_DESIGN_IDS.slice();
   var remaining = designs.length;
 
   designs.forEach(function(designId) {
-    // The PAB page fetches from this URL — it's a public search endpoint
     var url = 'https://services.slingshot.lego.com/api/v4/lego_pick_a_brick_read/_search';
     var body = JSON.stringify({
       from: 0,
@@ -1831,15 +1940,14 @@ function fetchPABData(onDone) {
         });
       });
     })
-    .catch(function() {
-      // API call failed for this design — continue with others
-    })
+    .catch(function() {})
     .finally(function() {
       remaining--;
       if(remaining === 0) {
         pabLiveData = results;
         pabFetchState = results.length > 0 ? 'done' : 'error';
-        onDone(pabLiveData);
+        var cbs = pabCallbacks.splice(0);
+        cbs.forEach(function(cb){ cb(pabLiveData); });
       }
     });
   });
@@ -1930,13 +2038,14 @@ function buildRefTableFallback(filter) {
   // Fallback using hardcoded PAB_ELEMENTS if API unreachable
   var tbody = document.getElementById('refBody');
   var pieceInfo = {
+    roundPlate:{label:'Round Plate',design:'6141',  price:PAB_PRICES.roundPlate},
     sqPlate:   {label:'Sq Plate',   design:'3024',  price:PAB_PRICES.sqPlate},
     sqTile:    {label:'Sq Tile',    design:'3070',  price:PAB_PRICES.sqTile},
     roundTile: {label:'Round Tile', design:'35381', price:PAB_PRICES.roundTile},
   };
-  var designToType = {'3024':'sqPlate','3070':'sqTile','35381':'roundTile'};
+  var designToType = {'6141':'roundPlate','3024':'sqPlate','3070':'sqTile','35381':'roundTile'};
   var showTypes = (filter==='all'||!filter)
-    ? ['sqPlate','sqTile','roundTile']
+    ? ['roundPlate','sqPlate','sqTile','roundTile']
     : [designToType[filter]||filter];
   var rowCount = 0;
 
