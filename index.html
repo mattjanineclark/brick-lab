@@ -483,6 +483,39 @@ tr:last-child td{border-bottom:none;}
   </div>
 </div>
 
+<!-- PAB export picker sheet -->
+<div id="pabSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.5)">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);
+    border-radius:16px 16px 0 0;padding:16px 16px calc(16px + var(--safe));
+    box-shadow:0 -4px 24px rgba(0,0,0,.18)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:.88rem;font-weight:700">Download PAB List</span>
+      <button id="pabSheetClose" style="background:none;border:none;font-size:1.2rem;color:var(--muted);cursor:pointer;padding:4px 8px">&#10005;</button>
+    </div>
+    <p id="pabSheetSub" style="font-size:.72rem;color:var(--muted);margin-bottom:14px;font-family:Inter,sans-serif"></p>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <button class="pab-dl-btn" id="pabDlCsv" style="background:var(--yellow);border:none;border-radius:10px;
+        padding:14px 16px;font-family:'Space Grotesk',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;
+        text-align:left;display:flex;align-items:center;gap:10px">
+        <span style="font-size:1.3rem">&#128196;</span>
+        <span><strong>CSV</strong> &mdash; Upload to Pick a Brick<br><small style="font-weight:400;opacity:.7">lego.com → Pick a Brick → Upload List</small></span>
+      </button>
+      <button class="pab-dl-btn" id="pabDlJson" style="background:var(--s2);border:1.5px solid var(--border);border-radius:10px;
+        padding:13px 16px;font-family:'Space Grotesk',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;
+        text-align:left;display:flex;align-items:center;gap:10px;color:var(--text)">
+        <span style="font-size:1.2rem">&#128220;</span>
+        <span><strong>JSON</strong> &mdash; Alternative upload format</span>
+      </button>
+      <button class="pab-dl-btn" id="pabDlCost" style="background:var(--s2);border:1.5px solid var(--border);border-radius:10px;
+        padding:13px 16px;font-family:'Space Grotesk',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;
+        text-align:left;display:flex;align-items:center;gap:10px;color:var(--text)">
+        <span style="font-size:1.2rem">&#128176;</span>
+        <span><strong>Cost Estimate</strong> &mdash; NZD breakdown by colour</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- PDF progress toast -->
 <div id="pdfToast" style="display:none;position:fixed;bottom:calc(80px + var(--safe));left:50%;transform:translateX(-50%);
   background:#1A1A1A;color:#fff;padding:12px 20px;border-radius:10px;
@@ -1653,71 +1686,208 @@ document.getElementById('pabBtn').addEventListener('click', function(){
   exportPAB();
 });
 
+// PAB element IDs for hardware pieces
+const PAB_HARDWARE = {
+  baseplate: {
+    '32':{ elementId:'4186076', label:'32x32 Baseplate (Green)',         price:4.99 },
+    '16':{ elementId:'4186077', label:'16x16 Baseplate (Green)',         price:2.49 },
+    '48':{ elementId:null,      label:'48x48 Baseplate (source BrickLink)',price:null },
+  },
+  border_1x2: {
+    'Black':           { elementId:'302126',  price:0.13 },
+    'White':           { elementId:'302101',  price:0.13 },
+    'Dark Bluish Gray':{ elementId:'4211063', price:0.13 },
+    'Red':             { elementId:'302121',  price:0.13 },
+    'Tan':             { elementId:'302115',  price:0.13 },
+  },
+  join_1x8:    { elementId:'303826', price:0.23 },  // 1x8 plate black
+  lego_hanger: { elementId:'6343128', price:2.49 },
+};
+
 function exportPAB(){
   var cc=getColorCounts();
   var rows=[], totalCost=0, unknown=[];
+  var totalBP2=bpW*bpH;
+
+  // ── IMAGE PIECES ──────────────────────────────────────
+  rows.push({section:'IMAGE PIECES',header:true});
   Object.entries(cc).forEach(function(e){
     var hex=e[0], info=e[1];
     var pid=colorPieceMap[hex]||defaultPiece;
     var pt=PIECE_TYPES.find(function(p){return p.id===pid;})||PIECE_TYPES[0];
     var qty=Math.ceil(info.count/pt.studs);
-    var legoCol=LEGO_COLORS.find(function(lc){return lc.hex===hex;});
-    var blId=legoCol?String(legoCol.bl):null;
+    var lc=LEGO_COLORS.find(function(c){return c.hex===hex;});
+    var blId=lc?String(lc.bl):null;
     var elMap=blId?PAB_ELEMENTS[blId]:null;
     var elId=elMap?elMap[pid]:null;
     var price=PAB_PRICES[pid]||0.11;
     totalCost+=qty*price;
-    rows.push({elementId:elId,quantity:qty,colour:info.name,part:pt.part,label:pt.label,price:price});
+    rows.push({elementId:elId,quantity:qty,description:info.name+' - '+pt.label,part:pt.part,price:price});
     if(!elId) unknown.push(info.name+' '+pt.label+' (design #'+pt.part+')');
   });
 
-  // CSV for PAB upload
-  var csvRows=['elementId,quantity'].concat(
-    rows.filter(function(r){return r.elementId;})
-        .map(function(r){return r.elementId+','+r.quantity;})
-  );
-  // Also include a comment block for unknown ones
-  if(unknown.length){
-    csvRows.push('');
-    csvRows.push('# The following could not be mapped to a PAB element ID.');
-    csvRows.push('# Search for these manually on Pick a Brick by design number:');
-    unknown.forEach(function(u){csvRows.push('# '+u);});
+  // ── BASEPLATES ────────────────────────────────────────
+  rows.push({section:'BASEPLATES',header:true});
+  var bpKey=String(bpSize);
+  var bpInfo=PAB_HARDWARE.baseplate[bpKey]||PAB_HARDWARE.baseplate['32'];
+  if(bpInfo.price){
+    totalCost+=totalBP2*bpInfo.price;
+    rows.push({elementId:bpInfo.elementId,quantity:totalBP2,description:bpInfo.label,
+      part:bpKey==='16'?'3857':bpKey==='48'?'4186':'3811',price:bpInfo.price});
+    if(!bpInfo.elementId) unknown.push(bpInfo.label);
+  } else {
+    rows.push({elementId:null,quantity:totalBP2,description:bpInfo.label,part:'4186',price:0});
+    unknown.push(bpInfo.label);
   }
 
-  // JSON for PAB upload
-  var jsonData=rows.filter(function(r){return r.elementId;})
-    .map(function(r){return {elementId:r.elementId, quantity:r.quantity};});
+  // ── BORDER ────────────────────────────────────────────
+  if(selBorder!=='none'){
+    rows.push({section:'BORDER ('+BORDER_INFO[selBorder].label+')',header:true});
+    var bcEl=document.getElementById('borderColor');
+    var bcName=bcEl?bcEl.value:'Black';
+    var perim=2*(mosaicData.w+mosaicData.h);
+    var bPAB=PAB_HARDWARE.border_1x2[bcName]||{elementId:null,price:0.13};
+    if(selBorder==='flat1'){
+      var q=Math.ceil(perim/2);
+      totalCost+=q*bPAB.price;
+      rows.push({elementId:bPAB.elementId,quantity:q,
+        description:bcName+' 1x2 Plate (border)',part:'3023',price:bPAB.price});
+      if(!bPAB.elementId) unknown.push(bcName+' 1x2 Plate');
+    } else if(selBorder==='flat2'){
+      var q1=Math.ceil(perim/4), q2=Math.ceil(perim/2);
+      totalCost+=(q1+q2)*bPAB.price;
+      rows.push({elementId:bPAB.elementId,quantity:q1,
+        description:bcName+' 1x4 Plate (border base)',part:'3710',price:bPAB.price});
+      rows.push({elementId:bPAB.elementId,quantity:q2,
+        description:bcName+' 1x2 Plate (border top)',part:'3023',price:bPAB.price});
+      if(!bPAB.elementId) unknown.push(bcName+' border plates');
+    } else if(selBorder==='technic'){
+      var qt=Math.ceil(perim/2)*2;
+      totalCost+=qt*0.18;
+      rows.push({elementId:null,quantity:qt,
+        description:bcName+' Technic Brick 1x2 with Hole',part:'3700',price:0.18});
+      unknown.push(bcName+' Technic Brick 1x2 — search PAB manually');
+    }
+  }
 
-  // Cost estimate text
-  var costLines=['BRICK LAB — LEGO PICK A BRICK COST ESTIMATE','NZD prices from lego.com/en-nz, July 2026',''];
+  // ── JOINING ───────────────────────────────────────────
+  if(totalBP2>1){
+    rows.push({section:'JOINING ('+JOIN_INFO[selJoin].label+')',header:true});
+    var seams=(bpW-1)*bpH+(bpH-1)*bpW;
+    if(selJoin==='bridge'){
+      var qj=seams*3;
+      totalCost+=qj*PAB_HARDWARE.join_1x8.price;
+      rows.push({elementId:PAB_HARDWARE.join_1x8.elementId,quantity:qj,
+        description:'1x8 Flat Plate (bridge seams)',part:'3460',price:PAB_HARDWARE.join_1x8.price});
+    } else if(selJoin==='technic'){
+      var qp=seams*4;
+      totalCost+=qp*0.08;
+      rows.push({elementId:null,quantity:qp,description:'Technic Pin',part:'3673',price:0.08});
+      unknown.push('Technic Pin 3673 — search PAB manually');
+    } else {
+      rows.push({elementId:null,quantity:1,
+        description:'MDF/ply board + adhesive (hardware store)',part:'-',price:0});
+    }
+  }
+
+  // ── HANGING ───────────────────────────────────────────
+  rows.push({section:'HANGING ('+HANG_INFO[selHang].label+')',header:true});
+  if(selHang==='lego_hanger'){
+    totalCost+=PAB_HARDWARE.lego_hanger.price;
+    rows.push({elementId:PAB_HARDWARE.lego_hanger.elementId,quantity:1,
+      description:'LEGO Art Hanger Bracket',part:'67139',price:PAB_HARDWARE.lego_hanger.price});
+  } else if(selHang==='command'){
+    rows.push({elementId:null,quantity:Math.ceil(totalBP2*1.5),
+      description:'3M Command Large strips (hardware store)',part:'-',price:0});
+  } else {
+    rows.push({elementId:null,quantity:1,
+      description:HANG_INFO[selHang].label+' hardware (hardware store)',part:'-',price:0});
+  }
+
+  // ── BUILD CSV ─────────────────────────────────────────
+  var csvRows=['elementId,quantity,description'];
   rows.forEach(function(r){
+    if(r.header){ csvRows.push('# --- '+r.section+' ---'); return; }
+    if(r.elementId) csvRows.push(r.elementId+','+r.quantity+',"'+r.description+'"');
+    else csvRows.push('# SEARCH MANUALLY: '+r.description+' (design '+r.part+') x'+r.quantity);
+  });
+
+  // ── BUILD JSON ────────────────────────────────────────
+  var jsonData=rows.filter(function(r){return !r.header&&r.elementId;})
+    .map(function(r){return {elementId:r.elementId,quantity:r.quantity};});
+
+  // ── COST ESTIMATE ─────────────────────────────────────
+  var costLines=['BRICK LAB — LEGO PICK A BRICK COST ESTIMATE',
+    'NZD prices from lego.com/en-nz, July 2026',''];
+  rows.forEach(function(r){
+    if(r.header){ costLines.push(''); costLines.push('--- '+r.section+' ---'); return; }
     var flag=r.elementId?'  ':'? ';
-    costLines.push(flag+r.colour+' '+r.label+' x'+r.quantity+' @ $'+r.price.toFixed(2)+' = $'+(r.quantity*r.price).toFixed(2)+' NZD');
+    var line=flag+r.description+' x'+r.quantity;
+    if(r.price>0) line+='  @ $'+r.price.toFixed(2)+' = $'+(r.quantity*r.price).toFixed(2)+' NZD';
+    else line+='  (non-LEGO / hardware store)';
+    costLines.push(line);
   });
   costLines.push('');
-  costLines.push('ESTIMATED TOTAL: $'+totalCost.toFixed(2)+' NZD');
-  costLines.push('(Prices indicative only — verify on PAB before ordering)');
+  costLines.push('LEGO PAB TOTAL: $'+totalCost.toFixed(2)+' NZD (excl. hardware store items)');
+  costLines.push('Prices indicative — verify on lego.com/en-nz before ordering.');
   if(unknown.length){
     costLines.push('');
-    costLines.push('Items marked ? have no confirmed PAB element ID.');
-    costLines.push('Search Pick a Brick by design number and select your colour.');
+    costLines.push('? = No confirmed PAB element ID — search by design number or use BrickLink:');
+    unknown.forEach(function(u){costLines.push('  '+u);});
   }
 
-  function dl(content,name,type){
-    var b=new Blob([content],{type:type});
-    var u=URL.createObjectURL(b);
-    var a=document.createElement('a');a.href=u;a.download=name;a.click();
-    setTimeout(function(){URL.revokeObjectURL(u);},1000);
-  }
-  dl(csvRows.join('\r\n'),'brick-lab-pab.csv','text/csv');
-  setTimeout(function(){dl(JSON.stringify(jsonData,null,2),'brick-lab-pab.json','application/json');},300);
-  setTimeout(function(){dl(costLines.join('\n'),'brick-lab-cost-estimate.txt','text/plain');},600);
+  var pabCount=rows.filter(function(r){return !r.header&&r.elementId;}).length;
+  var totalCount=rows.filter(function(r){return !r.header;}).length;
 
-  showToast('Saved! Est. $'+totalCost.toFixed(0)+' NZD · '+rows.filter(function(r){return r.elementId;}).length+'/'+rows.length+' mapped to PAB');
-  setTimeout(hideToast,5000);
+  window._pabExport={
+    csv:csvRows.join('\r\n'),
+    json:JSON.stringify(jsonData,null,2),
+    cost:costLines.join('\n'),
+    total:totalCost,
+    mapped:pabCount,
+    total_rows:totalCount
+  };
+  openPabSheet();
 }
 
-// ── EXPORT PNG ─────────────────────────────────────────────
+
+function dlFile(content,name,type){
+  var b=new Blob([content],{type:type});
+  var u=URL.createObjectURL(b);
+  var a=document.createElement('a');a.href=u;a.download=name;a.click();
+  setTimeout(function(){URL.revokeObjectURL(u);},1000);
+}
+
+function openPabSheet(){
+  var ex=window._pabExport;
+  if(!ex) return;
+  var sub='Est. $'+ex.total.toFixed(0)+' NZD \u00b7 '+ex.mapped+'/'+ex.total_rows+' colours mapped to PAB element IDs';
+  document.getElementById('pabSheetSub').textContent=sub;
+  document.getElementById('pabSheet').style.display='block';
+}
+
+document.getElementById('pabSheetClose').addEventListener('click',function(){
+  document.getElementById('pabSheet').style.display='none';
+});
+document.getElementById('pabSheet').addEventListener('click',function(e){
+  if(e.target===this) this.style.display='none';
+});
+document.getElementById('pabDlCsv').addEventListener('click',function(){
+  var ex=window._pabExport; if(!ex) return;
+  dlFile(ex.csv,'brick-lab-pab.csv','text/csv');
+  document.getElementById('pabSheet').style.display='none';
+});
+document.getElementById('pabDlJson').addEventListener('click',function(){
+  var ex=window._pabExport; if(!ex) return;
+  dlFile(ex.json,'brick-lab-pab.json','application/json');
+  document.getElementById('pabSheet').style.display='none';
+});
+document.getElementById('pabDlCost').addEventListener('click',function(){
+  var ex=window._pabExport; if(!ex) return;
+  dlFile(ex.cost,'brick-lab-cost-estimate.txt','text/plain');
+  document.getElementById('pabSheet').style.display='none';
+});
+
 document.getElementById('exportBtn').addEventListener('click',function(){
   if(!mosaicData)return;
   var pixels=mosaicData.pixels,w=mosaicData.w,h=mosaicData.h,scale=14;
