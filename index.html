@@ -1649,36 +1649,77 @@ function renderBOM(){
 }
 
 // ── PICK A BRICK EXPORT ─────────────────────────────────────
-// Element IDs from LEGO Pick a Brick NZ (lego.com/en-nz), prices NZD July 2026
-const PAB_PRICES = { roundPlate:0.11, roundTile:0.12, sqPlate:0.11, sqTile:0.08, flower:0.14 };
-// BrickLink colour ID -> element IDs per piece type
-// null = not confirmed available on PAB (user must search by design ID)
+// Element IDs sourced from BrickLink catalogColors pages for designs 3024, 3070, 35381/98138
+// Confirmed against PAB NZ page listings (July 2026)
+// 3024 = 1x1 Sq Plate (stud on top) · 3070 = 1x1 Sq Tile (smooth) · 35381 = 1x1 Round Tile (smooth)
+// NZD prices from lego.com/en-nz Pick a Brick, July 2026
+const PAB_PRICES = { roundPlate:0.11, roundTile:0.10, sqPlate:0.10, sqTile:0.08, flower:0.14 };
+
+// Key = BrickLink colour ID (matches LEGO_COLORS[].bl)
+// sqPlate = design 3024 · sqTile = design 3070 · roundTile = design 35381/98138
+// roundPlate = design 6141 (same part as 4073, current mould — PAB uses 6141)
+// null = no confirmed PAB element ID for this colour/design combo
 const PAB_ELEMENTS = {
-  '11': { roundPlate:'6175031', sqPlate:'302126',  roundTile:'6175030', sqTile:'307026',  flower:null },
-  '1':  { roundPlate:'6175023', sqPlate:'302101',  roundTile:'6175022', sqTile:'307001',  flower:null },
-  '5':  { roundPlate:'614121',  sqPlate:'302121',  roundTile:null,      sqTile:'307021',  flower:null },
-  '3':  { roundPlate:'614124',  sqPlate:'302124',  roundTile:null,      sqTile:'307024',  flower:null },
-  '72': { roundPlate:'4211050', sqPlate:'4211063', roundTile:'6130369', sqTile:'4211062', flower:null },
-  '71': { roundPlate:'4211399', sqPlate:'4211398', roundTile:'6130368', sqTile:'4211397', flower:null },
-  '70': { roundPlate:'4211176', sqPlate:'4211168', roundTile:null,      sqTile:'4211163', flower:null },
-  '2':  { roundPlate:'614110',  sqPlate:'302115',  roundTile:null,      sqTile:'4118784', flower:null },
-  '19': { roundPlate:'4158490', sqPlate:'4158469', roundTile:null,      sqTile:null,      flower:null },
-  '48': { roundPlate:'4175384', sqPlate:'4172016', roundTile:null,      sqTile:null,      flower:null },
-  '308':{ roundPlate:'4539169', sqPlate:'4539256', roundTile:null,      sqTile:null,      flower:null },
-  '288':{ roundPlate:'4179827', sqPlate:'4163303', roundTile:null,      sqTile:null,      flower:null },
-  '6':  { roundPlate:'614128',  sqPlate:'302128',  roundTile:null,      sqTile:'307028',  flower:null },
-  '7':  { roundPlate:'614123',  sqPlate:'302123',  roundTile:null,      sqTile:'307023',  flower:null },
-  '63': { roundPlate:'4140671', sqPlate:'4140666', roundTile:null,      sqTile:null,      flower:null },
-  '102':{ roundPlate:'4295276', sqPlate:'4295272', roundTile:null,      sqTile:null,      flower:null },
-  '25': { roundPlate:'4107903', sqPlate:'4107888', roundTile:null,      sqTile:null,      flower:null },
-  '104':{ roundPlate:null,      sqPlate:null,      roundTile:null,      sqTile:null,      flower:null },
-  '47': { roundPlate:'4656474', sqPlate:'4656463', roundTile:null,      sqTile:null,      flower:null },
-  '27': { roundPlate:'4616298', sqPlate:'4616294', roundTile:null,      sqTile:null,      flower:null },
-  '89': { roundPlate:'4107911', sqPlate:'4107907', roundTile:null,      sqTile:null,      flower:null },
-  '28': { roundPlate:'4108009', sqPlate:'4113815', roundTile:null,      sqTile:null,      flower:null },
-  '26': { roundPlate:null,      sqPlate:null,      roundTile:null,      sqTile:null,      flower:null },
-  '84': { roundPlate:'6009059', sqPlate:null,      roundTile:null,      sqTile:null,      flower:null },
-  '150':{ roundPlate:null,      sqPlate:null,      roundTile:null,      sqTile:null,      flower:null },
+  // White (bl:1)
+  '1':  { sqPlate:'302401', sqTile:'307001', roundTile:'6097061', roundPlate:'614121',  flower:null },
+  // Light Bluish Gray (bl:86)
+  '86': { sqPlate:'4211399',sqTile:'4211415',roundTile:'6097063', roundPlate:'4211398', flower:null },
+  // Dark Bluish Gray (bl:85)
+  '85': { sqPlate:'4210719',sqTile:'4537251',roundTile:'6097066', roundPlate:'4211053', flower:null },
+  // Black (bl:11)
+  '11': { sqPlate:'302426', sqTile:'307026', roundTile:'6097068', roundPlate:'614121',  flower:null },
+  // Red (bl:5)
+  '5':  { sqPlate:'302421', sqTile:'307021', roundTile:'6097069', roundPlate:'614121',  flower:null },
+  // Dark Red (bl:59)
+  '59': { sqPlate:'4183901',sqTile:'4539114',roundTile:null,       roundPlate:'4184265', flower:null },
+  // Yellow (bl:3)
+  '3':  { sqPlate:'302424', sqTile:'307024', roundTile:'6097071', roundPlate:'614124',  flower:null },
+  // Bright Light Orange (bl:110)
+  '110':{ sqPlate:'4645042',sqTile:'4655243',roundTile:'6097072', roundPlate:'6073040', flower:null },
+  // Orange (bl:4)
+  '4':  { sqPlate:'4524929',sqTile:'4527526',roundTile:null,       roundPlate:'4107903', flower:null },
+  // Dark Orange (bl:68)
+  '68': { sqPlate:'6186012',sqTile:'6097301',roundTile:null,       roundPlate:null,      flower:null },
+  // Reddish Brown (bl:88)
+  '88': { sqPlate:'4221744',sqTile:'4125253',roundTile:'6097073', roundPlate:'4211176', flower:null },
+  // Dark Brown (bl:120)
+  '120':{ sqPlate:'6013830',sqTile:null,     roundTile:null,       roundPlate:'4539169', flower:null },
+  // Tan (bl:2)
+  '2':  { sqPlate:'4159553',sqTile:'302405', roundTile:null,       roundPlate:'614110',  flower:null },
+  // Dark Tan (bl:69)
+  '69': { sqPlate:'4497084',sqTile:'4497023',roundTile:null,       roundPlate:'4158490', flower:null },
+  // Nougat (bl:28)
+  '28': { sqPlate:'4497056',sqTile:'4165933',roundTile:null,       roundPlate:'4108009', flower:null },
+  // Medium Nougat (bl:150)
+  '150':{ sqPlate:'6215606',sqTile:'4645054',roundTile:null,       roundPlate:null,      flower:null },
+  // Sand Green (bl:48)
+  '48': { sqPlate:'6099189',sqTile:'6099364',roundTile:null,       roundPlate:'4175384', flower:null },
+  // Dark Green (bl:80)
+  '80': { sqPlate:'6055169',sqTile:'6055171',roundTile:null,       roundPlate:'4179827', flower:null },
+  // Green (bl:6)
+  '6':  { sqPlate:'302428', sqTile:'307028', roundTile:null,       roundPlate:'614128',  flower:null },
+  // Lime (bl:34)
+  '34': { sqPlate:'4261450',sqTile:'4261450',roundTile:null,       roundPlate:'4616298', flower:null },
+  // Blue (bl:7)
+  '7':  { sqPlate:'302423', sqTile:'307023', roundTile:null,       roundPlate:'614123',  flower:null },
+  // Dark Blue (bl:63)
+  '63': { sqPlate:'4184108',sqTile:'4184108',roundTile:null,       roundPlate:'4140671', flower:null },
+  // Medium Blue (bl:102)
+  '102':{ sqPlate:'4179826',sqTile:'4179826',roundTile:null,       roundPlate:'4295276', flower:null },
+  // Magenta (bl:71)
+  '71': { sqPlate:'4644234',sqTile:'4644234',roundTile:null,       roundPlate:null,      flower:null },
+  // Dark Pink (bl:47)
+  '47': { sqPlate:'4119648',sqTile:'4119648',roundTile:null,       roundPlate:'4656474', flower:null },
+  // Bright Pink (bl:104)
+  '104':{ sqPlate:'6031883',sqTile:'6031883',roundTile:null,       roundPlate:null,      flower:null },
+  // Purple (bl:89)
+  '89': { sqPlate:'4133545',sqTile:'4133545',roundTile:null,       roundPlate:'4107911', flower:null },
+  // Dark Purple (bl:89 conflict — use separate)
+  '24': { sqPlate:'4224857',sqTile:'4224857',roundTile:null,       roundPlate:null,      flower:null },
+  // Bright Light Yellow (bl:103)
+  '103':{ sqPlate:'6014507',sqTile:'6014507',roundTile:null,       roundPlate:null,      flower:null },
+  // Coral (bl:220)
+  '220':{ sqPlate:'6258091',sqTile:null,     roundTile:null,       roundPlate:null,      flower:null },
 };
 
 document.getElementById('pabBtn').addEventListener('click', function(){
