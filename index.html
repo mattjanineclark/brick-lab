@@ -1745,129 +1745,138 @@ function buildBookletData(){
     ctx.font=weight+' '+(size*scale)+'px "Space Grotesk",sans-serif';
   }
 
+  // Helper: fit text to maxW by shrinking font if needed
+  function fitText(ctx,text,x,y,maxW,size,weight,S){
+    var fs=Math.floor(size*S);
+    ctx.font=(weight||'400')+' '+fs+'px "Space Grotesk",sans-serif';
+    var tw=ctx.measureText(text).width;
+    if(tw>maxW) ctx.font=(weight||'400')+' '+Math.floor(fs*maxW/tw)+'px "Space Grotesk",sans-serif';
+    ctx.fillText(text,x,y);
+  }
+
   // ── PAGE 1: COVER ──────────────────────────────────────────────────────
   pages.push(function(ctx,CW,CH,S){
-    // Background
-    ctx.fillStyle=DARK; ctx.fillRect(0,0,CW,CH);
-    // Stud pattern
-    ctx.fillStyle='rgba(255,255,255,0.03)';
-    for(var gy=0;gy<CH;gy+=12*S) for(var gx=0;gx<CW;gx+=12*S){
-      ctx.beginPath();ctx.arc(gx+4*S,gy+4*S,1.5*S,0,Math.PI*2);ctx.fill();
+    var PAD=10*S;
+    ctx.fillStyle=DARK;ctx.fillRect(0,0,CW,CH);
+    // Dot pattern
+    ctx.fillStyle='rgba(255,255,255,0.025)';
+    for(var gy2=0;gy2<CH;gy2+=14*S) for(var gx2=0;gx2<CW;gx2+=14*S){
+      ctx.beginPath();ctx.arc(gx2+4*S,gy2+4*S,1.2*S,0,Math.PI*2);ctx.fill();
     }
-    // Yellow accent bar
-    ctx.fillStyle=YELLOW;ctx.fillRect(0,0,8*S,CH);
-    // Logo box
-    roundRect(ctx,20*S,24*S,32*S,32*S,6*S,YELLOW);
-    setFont(ctx,18,700,S);ctx.fillStyle=DARK;ctx.textAlign='center';
-    ctx.fillText('BB',36*S,44*S);
-    // Title
-    setFont(ctx,28,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='left';
-    ctx.fillText('BRICK LAB',60*S,44*S);
-    setFont(ctx,11,400,S);ctx.fillStyle='rgba(255,255,255,0.4)';
-    ctx.fillText('MOSAIC SERIES',60*S,58*S);
+    // Yellow side stripe
+    ctx.fillStyle=YELLOW;ctx.fillRect(0,0,5*S,CH);
+
+    var y=PAD;
+    // Logo
+    roundRect(ctx,PAD+2*S,y,26*S,26*S,5*S,YELLOW);
+    setFont(ctx,12,700,S);ctx.fillStyle=DARK;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('BB',PAD+15*S,y+13*S);
+    ctx.textBaseline='alphabetic';
+    setFont(ctx,18,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='left';
+    ctx.fillText('BRICK LAB',PAD+32*S,y+17*S);
+    setFont(ctx,7,400,S);ctx.fillStyle='rgba(255,255,255,0.4)';
+    ctx.fillText('MOSAIC SERIES',PAD+32*S,y+26*S);
+    y+=34*S;
 
     // Divider
-    ctx.fillStyle='rgba(255,255,255,0.1)';ctx.fillRect(20*S,72*S,CW-28*S,1);
+    ctx.fillStyle='rgba(255,255,255,0.1)';ctx.fillRect(PAD,y,CW-PAD*2,1);y+=8*S;
 
-    // Mosaic thumbnail
-    var maxTW=(CW-40*S), maxTH=100*S;
-    var tAsp=w/h, tW,tH;
-    if(tAsp>maxTW/maxTH){tW=maxTW;tH=Math.round(maxTW/tAsp);}
-    else{tH=maxTH;tW=Math.round(maxTH*tAsp);}
-    var tX=(CW-tW)/2, tY=84*S;
-    ctx.drawImage(thumbCv,tX,tY,tW,tH);
-    ctx.strokeStyle=YELLOW;ctx.lineWidth=2*S;ctx.strokeRect(tX,tY,tW,tH);
+    // Thumbnail
+    var availTW=CW-PAD*2, availTH=Math.round(CH*0.36);
+    var tAsp=(w&&h)?w/h:1, tW2,tH2;
+    if(tAsp>availTW/availTH){tW2=availTW;tH2=Math.round(availTW/tAsp);}
+    else{tH2=availTH;tW2=Math.round(availTH*tAsp);}
+    var tX2=(CW-tW2)/2;
+    ctx.drawImage(thumbCv,tX2,y,tW2,tH2);
+    ctx.strokeStyle=YELLOW;ctx.lineWidth=2*S;ctx.strokeRect(tX2,y,tW2,tH2);
+    y+=tH2+12*S;
 
-    // Big title text
-    var ty=tY+tH+22*S;
-    setFont(ctx,32,700,S);ctx.fillStyle=WHITE;ctx.textAlign='center';
-    ctx.fillText('Colour-by-Number',CW/2,ty);
-    setFont(ctx,26,700,S);ctx.fillStyle=YELLOW;
-    ctx.fillText('LEGO\u00ae Mosaic Instructions',CW/2,ty+28*S);
+    // Titles — scale to page width
+    var innerW=CW-PAD*2;
+    ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillStyle=WHITE;
+    fitText(ctx,'Colour-by-Number',CW/2,y,innerW,20,700,S);y+=18*S;
+    ctx.fillStyle=YELLOW;
+    fitText(ctx,'LEGO\u00ae Mosaic Instructions',CW/2,y,innerW,16,700,S);y+=18*S;
 
-    // Stats row
+    // Stats 2x2 grid
     var stats=[
       [w+'x'+h+' studs','Size'],
-      [sortedColors.length,'Colours'],
-      [totalBP,'Baseplates'],
-      [now,'Generated']
+      [sortedColors.length+' colours','Colours'],
+      [totalBP+' plate'+(totalBP!==1?'s':''),'Baseplates'],
+      [now,'Date']
     ];
-    var sx=20*S, sy=ty+50*S, sw=(CW-40*S)/stats.length;
+    var sw2=Math.floor(innerW/2)-3*S;
     stats.forEach(function(st,i){
-      roundRect(ctx,sx+i*sw+2*S,sy,sw-4*S,28*S,4*S,DARK);
-      setFont(ctx,12,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='center';
-      ctx.fillText(st[0],sx+i*sw+sw/2,sy+12*S);
-      setFont(ctx,7,400,S);ctx.fillStyle='rgba(255,255,255,0.4)';
-      ctx.fillText(st[1],sx+i*sw+sw/2,sy+22*S);
+      var sx2=PAD+(i%2)*(sw2+3*S), sy2=y+Math.floor(i/2)*(16*S+3*S);
+      roundRect(ctx,sx2,sy2,sw2,16*S,3*S,'rgba(255,255,255,0.07)');
+      ctx.textAlign='left';ctx.textBaseline='alphabetic';
+      ctx.fillStyle=YELLOW;
+      fitText(ctx,String(st[0]),sx2+5*S,sy2+10*S,sw2-7*S,6.5,700,S);
+      setFont(ctx,5,400,S);ctx.fillStyle='rgba(255,255,255,0.35)';
+      ctx.fillText(st[1],sx2+5*S,sy2+15*S);
     });
 
     // Footer
-    setFont(ctx,8,400,S);ctx.fillStyle='rgba(255,255,255,0.3)';ctx.textAlign='center';
-    ctx.fillText('BRICK LAB · Page 1',CW/2,CH-10*S);
+    setFont(ctx,5.5,400,S);ctx.fillStyle='rgba(255,255,255,0.2)';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillText('BRICK LAB \u00b7 Page 1',CW/2,CH-7*S);
   });
 
   // ── PAGE 2: COLOUR KEY + PARTS LIST ────────────────────────────────────
   pages.push(function(ctx,CW,CH,S){
+    var PAD=8*S;
     ctx.fillStyle=WHITE;ctx.fillRect(0,0,CW,CH);
-    // Top bar
-    ctx.fillStyle=YELLOW;ctx.fillRect(0,0,CW,14*S);
-    setFont(ctx,8,700,S);ctx.fillStyle=DARK;ctx.textAlign='left';
-    ctx.fillText('COLOUR KEY & PARTS LIST',8*S,9*S);
-    setFont(ctx,8,400,S);ctx.textAlign='right';
-    ctx.fillText('Page 2',CW-8*S,9*S);
+    ctx.fillStyle=YELLOW;ctx.fillRect(0,0,CW,12*S);
+    setFont(ctx,6.5,700,S);ctx.fillStyle=DARK;ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText('COLOUR KEY & PARTS LIST',PAD,6*S);
+    ctx.textAlign='right';ctx.fillText('Page 2',CW-PAD,6*S);
 
-    var y=22*S;
-    // Column headers
-    var cols=[18*S,40*S,90*S,130*S,158*S,180*S];
-    var hdrs=['#','Swatch','LEGO Name','Part','Pieces','Studs'];
-    ctx.fillStyle=DARK;ctx.fillRect(8*S,y,CW-16*S,10*S);
-    setFont(ctx,6,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='left';
-    hdrs.forEach(function(h,i){ctx.fillText(h,cols[i],y+7*S);});
-    y+=10*S;
+    var y=16*S;
+    var C=[PAD,PAD+11*S,PAD+21*S,PAD+80*S,PAD+118*S,PAD+146*S,PAD+168*S];
+    ctx.fillStyle=DARK;ctx.fillRect(0,y,CW,8.5*S);
+    setFont(ctx,4.5,700,S);ctx.fillStyle=YELLOW;ctx.textBaseline='middle';
+    ['#','Sw','LEGO Colour','Part','Pcs','Studs',''].forEach(function(h,i){
+      ctx.textAlign=i>=4?'right':'left';ctx.fillText(h,C[i],y+4.25*S);
+    });
+    y+=8.5*S;
 
-    var totalPieces=0;
+    var rH=8*S, totalPcs2=0;
     sortedColors.forEach(function(c,ri){
+      if(y+rH>CH-11*S) return;
       var pid=colorPieceMap[c.hex]||defaultPiece;
       var pt=PIECE_TYPES.find(function(p){return p.id===pid;})||PIECE_TYPES[0];
-      var n=Math.ceil(c.count/pt.studs);
-      totalPieces+=n;
-      ctx.fillStyle=ri%2===0?'#f8f7f2':WHITE;
-      ctx.fillRect(8*S,y,CW-16*S,9*S);
-      var txtC=isLight(c.hex)?DARK:WHITE;
+      var n=Math.ceil(c.count/pt.studs); totalPcs2+=n;
+      ctx.fillStyle=ri%2===0?'#f4f3ef':WHITE;ctx.fillRect(0,y,CW,rH);
       // Num badge
-      roundRect(ctx,cols[0]-4*S,y+1.5*S,10*S,6*S,1.5*S,c.hex);
-      setFont(ctx,5.5,700,S);ctx.fillStyle=txtC;ctx.textAlign='center';
-      ctx.fillText(c.num,cols[0]+1*S,y+6*S);
+      roundRect(ctx,C[0],y+1.5*S,9*S,5*S,1.5*S,c.hex);
+      setFont(ctx,4,700,S);ctx.fillStyle=isLight(c.hex)?DARK:WHITE;
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(c.num,C[0]+4.5*S,y+4*S);
       // Swatch
-      ctx.fillStyle=c.hex;ctx.fillRect(cols[1],y+2*S,8*S,5*S);
-      ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=0.5*S;ctx.strokeRect(cols[1],y+2*S,8*S,5*S);
+      ctx.fillStyle=c.hex;ctx.fillRect(C[1],y+1.5*S,7.5*S,5*S);
+      ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=0.4*S;ctx.strokeRect(C[1],y+1.5*S,7.5*S,5*S);
       // Name
-      setFont(ctx,6,600,S);ctx.fillStyle=DARK;ctx.textAlign='left';
-      ctx.fillText(c.name,cols[2],y+6*S);
-      // Part
-      roundRect(ctx,cols[3],y+1.5*S,22*S,6*S,2*S,DARK);
-      setFont(ctx,5,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='center';
-      ctx.fillText(pt.part,cols[3]+11*S,y+6*S);
-      // Pieces
-      setFont(ctx,6,700,S);ctx.fillStyle=DARK;ctx.textAlign='right';
-      ctx.fillText(n.toLocaleString(),cols[5]-2*S,y+6*S);
-      // Studs
-      ctx.fillStyle=MGRAY;ctx.textAlign='right';
-      ctx.fillText(c.count.toLocaleString(),CW-10*S,y+6*S);
-      y+=9*S;
-      if(y>CH-20*S){ y=CH-18*S; } // soft clamp — may overflow for very long lists
+      ctx.fillStyle=DARK;ctx.textAlign='left';ctx.textBaseline='middle';
+      fitText(ctx,c.name,C[2],y+4*S,C[3]-C[2]-4*S,5,500,S);
+      // Part badge
+      roundRect(ctx,C[3],y+1.5*S,20*S,5*S,2*S,DARK);
+      setFont(ctx,4,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(pt.part,C[3]+10*S,y+4*S);
+      // Pcs / Studs
+      setFont(ctx,5,700,S);ctx.fillStyle=DARK;ctx.textBaseline='middle';
+      ctx.textAlign='right';ctx.fillText(n.toLocaleString(),C[5],y+4*S);
+      setFont(ctx,4.5,400,S);ctx.fillStyle=MGRAY;
+      ctx.fillText(c.count.toLocaleString(),C[6],y+4*S);
+      y+=rH;
     });
-
-    // Total row
-    ctx.fillStyle=DARK;ctx.fillRect(8*S,y,CW-16*S,10*S);
-    setFont(ctx,7,700,S);ctx.fillStyle=WHITE;ctx.textAlign='left';
-    ctx.fillText('Total image pieces:',cols[2],y+7*S);
-    ctx.textAlign='right';ctx.fillStyle=YELLOW;
-    ctx.fillText(totalPieces.toLocaleString(),cols[5]-2*S,y+7*S);
-
-    // Footer
-    setFont(ctx,7,400,S);ctx.fillStyle=MGRAY;ctx.textAlign='center';
-    ctx.fillText('BRICK LAB · Page 2',CW/2,CH-6*S);
+    // Total
+    if(y<CH-13*S){
+      ctx.fillStyle=DARK;ctx.fillRect(0,y,CW,9*S);
+      setFont(ctx,5.5,700,S);ctx.fillStyle=WHITE;ctx.textAlign='left';ctx.textBaseline='middle';
+      ctx.fillText('Total pieces',C[2],y+4.5*S);
+      ctx.textAlign='right';ctx.fillStyle=YELLOW;ctx.fillText(totalPcs2.toLocaleString(),C[5],y+4.5*S);
+    }
+    setFont(ctx,5,400,S);ctx.fillStyle=MGRAY;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillText('BRICK LAB \u00b7 Page 2',CW/2,CH-5*S);
   });
 
   // ── SECTION PAGES ──────────────────────────────────────────────────────
@@ -1876,89 +1885,81 @@ function buildBookletData(){
     for(var bc=0;bc<bpW;bc++){
       (function(bpCol,bpRow,pn){
         pages.push(function(ctx,CW,CH,S){
-          var startX=bpCol*bpSize, startY=bpRow*bpSize;
-          var endX=Math.min(startX+bpSize,w), endY=Math.min(startY+bpSize,h);
-          var secW=endX-startX, secH=endY-startY;
+          var PAD=7*S;
+          var startX=bpCol*bpSize,startY=bpRow*bpSize;
+          var endX=Math.min(startX+bpSize,w),endY=Math.min(startY+bpSize,h);
+          var secW=endX-startX,secH=endY-startY;
 
           ctx.fillStyle=WHITE;ctx.fillRect(0,0,CW,CH);
 
           // Top bar
-          ctx.fillStyle=DARK;ctx.fillRect(0,0,CW,16*S);
-          setFont(ctx,8,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='left';
-          ctx.fillText('Section '+(bpRow+1)+'-'+(bpCol+1),8*S,10*S);
-          setFont(ctx,6,400,S);ctx.fillStyle='rgba(255,255,255,0.5)';
-          ctx.fillText('Cols '+(startX+1)+'\u2013'+endX+' \u00b7 Rows '+(startY+1)+'\u2013'+endY,8*S,15*S);
-          // Page circle
-          roundRect(ctx,CW-22*S,2*S,18*S,12*S,6*S,YELLOW);
-          setFont(ctx,7,700,S);ctx.fillStyle=DARK;ctx.textAlign='center';
-          ctx.fillText(pn,CW-13*S,10*S);
+          var TB=14*S;
+          ctx.fillStyle=DARK;ctx.fillRect(0,0,CW,TB);
+          setFont(ctx,7.5,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='left';ctx.textBaseline='middle';
+          ctx.fillText('Section '+(bpRow+1)+'-'+(bpCol+1),PAD,TB/2);
+          setFont(ctx,5,400,S);ctx.fillStyle='rgba(255,255,255,0.45)';
+          ctx.fillText(' \u00b7 Cols '+(startX+1)+'\u2013'+endX+' \u00b7 Rows '+(startY+1)+'\u2013'+endY,
+            PAD+ctx.measureText('Section '+(bpRow+1)+'-'+(bpCol+1)).width+2*S,TB/2);
+          roundRect(ctx,CW-19*S,2*S,15*S,10*S,4*S,YELLOW);
+          setFont(ctx,6,700,S);ctx.fillStyle=DARK;ctx.textAlign='center';
+          ctx.fillText(pn,CW-11.5*S,TB/2);
+          var y=TB;
 
-          // Mini colour key
-          var ky=18*S;
-          var secColorsUsed={};
-          for(var sy=startY;sy<endY;sy++) for(var sx=startX;sx<endX;sx++){
-            secColorsUsed[pixels[sy*w+sx].hex]=true;
-          }
-          var secList=sortedColors.filter(function(c){return secColorsUsed[c.hex];});
-          var kx=8*S;
-          ctx.fillStyle=LGRAY;ctx.fillRect(0,ky,CW,14*S);
+          // Mini key — wrap into rows, max 3 rows
+          var secUsed={};
+          for(var sy2=startY;sy2<endY;sy2++) for(var sx2=startX;sx2<endX;sx2++) secUsed[pixels[sy2*w+sx2].hex]=true;
+          var secList=sortedColors.filter(function(c){return secUsed[c.hex];});
+          var KRH=10*S,kx=PAD,ky=y+2*S,krows=0;
+          setFont(ctx,5,700,S);
           secList.forEach(function(c){
-            var txtC=isLight(c.hex)?DARK:WHITE;
-            roundRect(ctx,kx,ky+2*S,0,10*S,3*S,null); // measure first
-            // Chip width: number + name truncated
-            var label=c.num+' '+c.name;
-            setFont(ctx,6,700,S);
-            var tw=ctx.measureText(label).width+8*S;
-            tw=Math.min(tw,36*S);
-            roundRect(ctx,kx,ky+2*S,tw,10*S,3*S,c.hex);
-            ctx.fillStyle=txtC;ctx.textAlign='left';
-            ctx.fillText(label,kx+4*S,ky+9*S);
-            kx+=tw+3*S;
-            if(kx>CW-40*S){kx=8*S;ky+=12*S;} // wrap
+            var label=String(c.num)+' '+c.name;
+            var tw=Math.min(ctx.measureText(label).width+8*S,38*S);
+            if(kx+tw>CW-PAD){
+              krows++; if(krows>=3) return;
+              kx=PAD; ky+=KRH+2*S;
+            }
+            ctx.fillStyle='#EDECE6';ctx.fillRect(kx-1*S,ky-1*S,tw+1*S,KRH+1*S);
+            roundRect(ctx,kx,ky,tw,KRH,2.5*S,c.hex);
+            ctx.fillStyle=isLight(c.hex)?DARK:WHITE;
+            ctx.textAlign='left';ctx.textBaseline='middle';
+            fitText(ctx,label,kx+4*S,ky+KRH/2,tw-5*S,5,700,S);
+            kx+=tw+2.5*S;
           });
-          ky+=14*S+2*S;
+          y=ky+KRH+4*S;
 
-          // Grid
-          var availW=CW-16*S;
-          var availH=CH-ky-12*S; // leave footer space
-          // Cell size: square, fit both dimensions
+          // Grid — square cells, fills remaining space
+          var FOOTER=9*S;
+          var availW=CW-PAD*2;
+          var availH=CH-y-FOOTER-2*S;
           var cellPx=Math.min(availW/secW, availH/secH);
-          var gridW=cellPx*secW, gridH=cellPx*secH;
-          var gx=(CW-gridW)/2, gy=ky+2*S;
+          var gx3=(CW-cellPx*secW)/2, gy3=y;
 
-          // Font size for numbers
-          var fsize=Math.max(4*S, Math.min(cellPx*0.45, 10*S));
-          setFont(ctx,0,700,1);
-          ctx.font='700 '+fsize+'px "Space Grotesk",sans-serif';
+          var fsize3=Math.max(3*S,Math.min(cellPx*0.44,8.5*S));
+          ctx.font='700 '+fsize3+'px "Space Grotesk",sans-serif';
+          ctx.textBaseline='middle';ctx.textAlign='center';
 
-          for(var sy=startY;sy<endY;sy++){
-            for(var sx=startX;sx<endX;sx++){
-              var px=pixels[sy*w+sx];
-              var cx2=gx+(sx-startX)*cellPx;
-              var cy2=gy+(sy-startY)*cellPx;
-              ctx.fillStyle=px.hex;
-              ctx.fillRect(cx2,cy2,cellPx,cellPx);
-              // Border
-              ctx.strokeStyle='rgba(0,0,0,0.15)';
-              ctx.lineWidth=0.3*S;
-              ctx.strokeRect(cx2,cy2,cellPx,cellPx);
-              // Number
-              var tc=isLight(px.hex)?'#000':'#fff';
-              ctx.fillStyle=tc;
-              ctx.textAlign='center';
-              ctx.textBaseline='middle';
-              ctx.fillText(colorNumMap[px.hex]||'?',cx2+cellPx/2,cy2+cellPx/2);
+          for(var sy3=startY;sy3<endY;sy3++){
+            for(var sx3=startX;sx3<endX;sx3++){
+              var px3=pixels[sy3*w+sx3];
+              var cx3=Math.round(gx3+(sx3-startX)*cellPx);
+              var cy3=Math.round(gy3+(sy3-startY)*cellPx);
+              var cw3=Math.ceil(cellPx),ch3=Math.ceil(cellPx);
+              ctx.fillStyle=px3.hex;ctx.fillRect(cx3,cy3,cw3,ch3);
+              ctx.strokeStyle='rgba(0,0,0,0.1)';ctx.lineWidth=Math.max(0.4,0.18*S);
+              ctx.strokeRect(cx3+0.5,cy3+0.5,cw3-1,ch3-1);
+              ctx.fillStyle=isLight(px3.hex)?'#111':'#eee';
+              ctx.fillText(colorNumMap[px3.hex]||'?',cx3+cw3/2,cy3+ch3/2);
             }
           }
 
           // Footer
-          ctx.fillStyle=DARK;ctx.fillRect(0,CH-10*S,CW,10*S);
-          setFont(ctx,6,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='left';
-          ctx.fillText('BRICK LAB',8*S,CH-3*S);
-          ctx.fillStyle='rgba(255,255,255,0.4)';ctx.textAlign='right';
-          ctx.fillText('Section '+(bpRow+1)+'-'+(bpCol+1)+' \u00b7 '+now,CW-8*S,CH-3*S);
+          ctx.fillStyle=DARK;ctx.fillRect(0,CH-FOOTER,CW,FOOTER);
+          setFont(ctx,5,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='left';ctx.textBaseline='middle';
+          ctx.fillText('BRICK LAB',PAD,CH-FOOTER/2);
+          setFont(ctx,4.5,400,S);ctx.fillStyle='rgba(255,255,255,0.35)';ctx.textAlign='right';
+          ctx.fillText('Section '+(bpRow+1)+'-'+(bpCol+1)+' \u00b7 '+now,CW-PAD,CH-FOOTER/2);
         });
-      })(bc, br, pageNum++);
+      })(bc,br,pageNum++);
     }
   }
 
