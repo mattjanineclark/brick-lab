@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>Brick Lab v23</title>
+<title>Brick Lab v24</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
@@ -321,7 +321,7 @@ tr:last-child td{border-bottom:none;}
       <circle cx="17" cy="17" r="2" fill="#F2C314"/>
     </svg>
   </div>
-  <h1>Brick Lab <span style="font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:0">v23</span></h1>
+  <h1>Brick Lab <span style="font-size:.65rem;font-weight:500;color:var(--muted);letter-spacing:0">v24</span></h1>
   <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
     <button class="hdr-pab-btn" id="hdrPabRefBtn" onclick="openPabRefPanel()" title="PAB Parts Reference">&#127847;</button>
     <button class="hdr-nav" id="hdrBack" onclick="hdrNav(-1)">&#8249;</button>
@@ -747,7 +747,7 @@ const PIECE_TYPES = [
 // ── Inline SVG illustrations for option cards ──────────────────────────
 // These show exactly what each method looks like, load offline, never break.
 
-// Pre-computed SVG data URIs — no nested template literals
+// Pre-computed SVG data URIs -- no nested template literals
 const BORDER_SVG = {
   none:    "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20140%2080%22%3E%3Crect%20width%3D%22140%22%20height%3D%2280%22%20fill%3D%22%231a1a1a%22/%3E%3Crect%20x%3D%2220%22%20y%3D%2210%22%20width%3D%22100%22%20height%3D%2260%22%20fill%3D%22%232a2a2a%22%20rx%3D%222%22/%3E%3Ccircle%20cx%3D%2225%22%20cy%3D%2215%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2235%22%20cy%3D%2215%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2245%22%20cy%3D%2215%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2255%22%20cy%3D%2215%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2265%22%20cy%3D%2215%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2275%22%20cy%3D%2215%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2285%22%20cy%3D%2215%22%20r%3D%223.5%22%20fill%3D%22%23582A12%22/%3E%3Ccircle%20cx%3D%2295%22%20cy%3D%2215%22%20r%3D%223.5%22%20fill%3D%22%23A0A5A9%22/%3E%3Ccircle%20cx%3D%22105%22%20cy%3D%2215%22%20r%3D%223.5%22%20fill%3D%22%23BBE90B%22/%3E%3Ccircle%20cx%3D%22115%22%20cy%3D%2215%22%20r%3D%223.5%22%20fill%3D%22%233F3691%22/%3E%3Ccircle%20cx%3D%2225%22%20cy%3D%2225%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2235%22%20cy%3D%2225%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2245%22%20cy%3D%2225%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2255%22%20cy%3D%2225%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2265%22%20cy%3D%2225%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2275%22%20cy%3D%2225%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2285%22%20cy%3D%2225%22%20r%3D%223.5%22%20fill%3D%22%23582A12%22/%3E%3Ccircle%20cx%3D%2295%22%20cy%3D%2225%22%20r%3D%223.5%22%20fill%3D%22%23A0A5A9%22/%3E%3Ccircle%20cx%3D%22105%22%20cy%3D%2225%22%20r%3D%223.5%22%20fill%3D%22%23BBE90B%22/%3E%3Ccircle%20cx%3D%22115%22%20cy%3D%2225%22%20r%3D%223.5%22%20fill%3D%22%233F3691%22/%3E%3Ccircle%20cx%3D%2225%22%20cy%3D%2235%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2235%22%20cy%3D%2235%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2245%22%20cy%3D%2235%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2255%22%20cy%3D%2235%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2265%22%20cy%3D%2235%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2275%22%20cy%3D%2235%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2285%22%20cy%3D%2235%22%20r%3D%223.5%22%20fill%3D%22%23582A12%22/%3E%3Ccircle%20cx%3D%2295%22%20cy%3D%2235%22%20r%3D%223.5%22%20fill%3D%22%23A0A5A9%22/%3E%3Ccircle%20cx%3D%22105%22%20cy%3D%2235%22%20r%3D%223.5%22%20fill%3D%22%23BBE90B%22/%3E%3Ccircle%20cx%3D%22115%22%20cy%3D%2235%22%20r%3D%223.5%22%20fill%3D%22%233F3691%22/%3E%3Ccircle%20cx%3D%2225%22%20cy%3D%2245%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2235%22%20cy%3D%2245%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2245%22%20cy%3D%2245%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2255%22%20cy%3D%2245%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2265%22%20cy%3D%2245%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2275%22%20cy%3D%2245%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2285%22%20cy%3D%2245%22%20r%3D%223.5%22%20fill%3D%22%23582A12%22/%3E%3Ccircle%20cx%3D%2295%22%20cy%3D%2245%22%20r%3D%223.5%22%20fill%3D%22%23A0A5A9%22/%3E%3Ccircle%20cx%3D%22105%22%20cy%3D%2245%22%20r%3D%223.5%22%20fill%3D%22%23BBE90B%22/%3E%3Ccircle%20cx%3D%22115%22%20cy%3D%2245%22%20r%3D%223.5%22%20fill%3D%22%233F3691%22/%3E%3Ccircle%20cx%3D%2225%22%20cy%3D%2255%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2235%22%20cy%3D%2255%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2245%22%20cy%3D%2255%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2255%22%20cy%3D%2255%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2265%22%20cy%3D%2255%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2275%22%20cy%3D%2255%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2285%22%20cy%3D%2255%22%20r%3D%223.5%22%20fill%3D%22%23582A12%22/%3E%3Ccircle%20cx%3D%2295%22%20cy%3D%2255%22%20r%3D%223.5%22%20fill%3D%22%23A0A5A9%22/%3E%3Ccircle%20cx%3D%22105%22%20cy%3D%2255%22%20r%3D%223.5%22%20fill%3D%22%23BBE90B%22/%3E%3Ccircle%20cx%3D%22115%22%20cy%3D%2255%22%20r%3D%223.5%22%20fill%3D%22%233F3691%22/%3E%3Ccircle%20cx%3D%2225%22%20cy%3D%2265%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2235%22%20cy%3D%2265%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2245%22%20cy%3D%2265%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2255%22%20cy%3D%2265%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2265%22%20cy%3D%2265%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2275%22%20cy%3D%2265%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2285%22%20cy%3D%2265%22%20r%3D%223.5%22%20fill%3D%22%23582A12%22/%3E%3Ccircle%20cx%3D%2295%22%20cy%3D%2265%22%20r%3D%223.5%22%20fill%3D%22%23A0A5A9%22/%3E%3Ccircle%20cx%3D%22105%22%20cy%3D%2265%22%20r%3D%223.5%22%20fill%3D%22%23BBE90B%22/%3E%3Ccircle%20cx%3D%22115%22%20cy%3D%2265%22%20r%3D%223.5%22%20fill%3D%22%233F3691%22/%3E%3Ctext%20x%3D%2270%22%20y%3D%2276%22%20text-anchor%3D%22middle%22%20font-size%3D%227%22%20fill%3D%22%23666%22%20font-family%3D%22sans-serif%22%3ENo%20border%3C/text%3E%3C/svg%3E",
   flat1:   "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20140%2080%22%3E%3Crect%20width%3D%22140%22%20height%3D%2280%22%20fill%3D%22%231a1a1a%22/%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2218%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2228%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2238%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2248%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2258%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2268%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2278%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2288%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2298%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%22108%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%22118%22%20y%3D%228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%228%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2218%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2228%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2238%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2248%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2258%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2268%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2278%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2288%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%2298%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%22108%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%22118%22%20y%3D%2264%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%228%22%20y%3D%2218%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%228%22%20y%3D%2228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%228%22%20y%3D%2238%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%228%22%20y%3D%2248%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%228%22%20y%3D%2258%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%22118%22%20y%3D%2218%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%22118%22%20y%3D%2228%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%22118%22%20y%3D%2238%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%22118%22%20y%3D%2248%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Crect%20x%3D%22118%22%20y%3D%2258%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%2305131D%22/%3E%3Ccircle%20cx%3D%2222%22%20cy%3D%2222%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2222%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2242%22%20cy%3D%2222%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2252%22%20cy%3D%2222%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2262%22%20cy%3D%2222%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2272%22%20cy%3D%2222%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2282%22%20cy%3D%2222%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2292%22%20cy%3D%2222%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%22102%22%20cy%3D%2222%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%22112%22%20cy%3D%2222%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2222%22%20cy%3D%2232%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2242%22%20cy%3D%2232%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2252%22%20cy%3D%2232%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2262%22%20cy%3D%2232%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2272%22%20cy%3D%2232%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2282%22%20cy%3D%2232%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2292%22%20cy%3D%2232%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%22102%22%20cy%3D%2232%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%22112%22%20cy%3D%2232%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2222%22%20cy%3D%2242%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2242%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2242%22%20cy%3D%2242%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2252%22%20cy%3D%2242%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2262%22%20cy%3D%2242%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2272%22%20cy%3D%2242%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2282%22%20cy%3D%2242%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2292%22%20cy%3D%2242%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%22102%22%20cy%3D%2242%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%22112%22%20cy%3D%2242%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2222%22%20cy%3D%2252%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2252%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2242%22%20cy%3D%2252%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2252%22%20cy%3D%2252%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2262%22%20cy%3D%2252%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2272%22%20cy%3D%2252%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2282%22%20cy%3D%2252%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2292%22%20cy%3D%2252%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%22102%22%20cy%3D%2252%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%22112%22%20cy%3D%2252%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2222%22%20cy%3D%2262%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2262%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%2242%22%20cy%3D%2262%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%2252%22%20cy%3D%2262%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ccircle%20cx%3D%2262%22%20cy%3D%2262%22%20r%3D%223.5%22%20fill%3D%22%23F2CD37%22/%3E%3Ccircle%20cx%3D%2272%22%20cy%3D%2262%22%20r%3D%223.5%22%20fill%3D%22%23257A3E%22/%3E%3Ccircle%20cx%3D%2282%22%20cy%3D%2262%22%20r%3D%223.5%22%20fill%3D%22%23F2F3F2%22/%3E%3Ccircle%20cx%3D%2292%22%20cy%3D%2262%22%20r%3D%223.5%22%20fill%3D%22%23FE8A18%22/%3E%3Ccircle%20cx%3D%22102%22%20cy%3D%2262%22%20r%3D%223.5%22%20fill%3D%22%23C91A09%22/%3E%3Ccircle%20cx%3D%22112%22%20cy%3D%2262%22%20r%3D%223.5%22%20fill%3D%22%230055BF%22/%3E%3Ctext%20x%3D%2270%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-size%3D%227%22%20fill%3D%22%23888%22%20font-family%3D%22sans-serif%22%3E1-stud%20flat%20border%3C/text%3E%3C/svg%3E",
@@ -769,71 +769,71 @@ const HANG_SVG = {
 };
 const BORDER_OPTIONS = [
   {id:'none',    title:'No border',
-   sub:'Mosaic edge exposed — works well with a separate picture frame',
+   sub:'Mosaic edge exposed -- works well with a separate picture frame',
    img: BORDER_SVG.none},
   {id:'flat1',   title:'1-stud flat',
-   sub:'Single row of 1×2 plates flush with surface (part 3023) — most common DIY finish',
+   sub:'Single row of 1×2 plates flush with surface (part 3023) -- most common DIY finish',
    img: BORDER_SVG.flat1},
   {id:'flat2',   title:'2-stud raised',
-   sub:'Double-row brick border stands ~6mm proud — picture-frame look (parts 3023 + 3710)',
+   sub:'Double-row brick border stands ~6mm proud -- picture-frame look (parts 3023 + 3710)',
    img: BORDER_SVG.flat2},
   {id:'technic', title:'Technic strip',
-   sub:'Technic 1×2 bricks (part 3700) — holes allow wire hanging without D-rings',
+   sub:'Technic 1×2 bricks (part 3700) -- holes allow wire hanging without D-rings',
    img: BORDER_SVG.technic},
 ];
 
 const JOIN_OPTIONS = [
   {id:'bridge', title:'Bridge plates',
-   sub:'1×8 flat plates across seams on back (part 3460) — simple, strong, reversible',
+   sub:'1×8 flat plates across seams on back (part 3460) -- simple, strong, reversible',
    img: JOIN_SVG.bridge},
   {id:'technic',title:'Technic pins',
-   sub:'As used in official LEGO Art sets (65803 bases + part 3673 pins) — most rigid',
+   sub:'As used in official LEGO Art sets (65803 bases + part 3673 pins) -- most rigid',
    img: JOIN_SVG.technic},
   {id:'wood',   title:'Screw to board',
-   sub:'Baseplates screwed directly onto MDF or ply — best for large permanent displays',
+   sub:'Baseplates screwed directly onto MDF or ply -- best for large permanent displays',
    img: JOIN_SVG.wood},
   {id:'glue',   title:'Glue to board',
-   sub:'Contact cement to MDF backing — leave a stud-width gap between plates at each seam',
+   sub:'Contact cement to MDF backing -- leave a stud-width gap between plates at each seam',
    img: JOIN_SVG.glue},
 ];
 
 const HANG_OPTIONS = [
   {id:'lego_hanger', title:'LEGO Art bracket',
-   sub:'Official hanger element (part 67139) built into Technic frame — just needs a nail',
+   sub:'Official hanger element (part 67139) built into Technic frame -- just needs a nail',
    img: HANG_SVG.lego_hanger},
   {id:'command', title:'Command strips',
-   sub:'3M Command Large strips on back of each baseplate — no drill, holds ~3 kg per pair',
+   sub:'3M Command Large strips on back of each baseplate -- no drill, holds ~3 kg per pair',
    img: HANG_SVG.command},
   {id:'french',  title:'French cleat',
-   sub:'45° wood rail on wall + matching rail on mosaic back — levels itself, lifts off easily',
+   sub:'45° wood rail on wall + matching rail on mosaic back -- levels itself, lifts off easily',
    img: HANG_SVG.french},
   {id:'wire',    title:'D-ring + wire',
-   sub:'Standard picture wire between two D-ring brackets — works with any picture hook',
+   sub:'Standard picture wire between two D-ring brackets -- works with any picture hook',
    img: HANG_SVG.wire},
   {id:'magnet',  title:'Magnets on rail',
-   sub:'Neodymium magnets epoxied to back + steel IKEA SKÅDIS rail — fully rearrangeable',
+   sub:'Neodymium magnets epoxied to back + steel IKEA SKÅDIS rail -- fully rearrangeable',
    img: HANG_SVG.magnet},
 ];
 
 // Selected option IDs
 
 const JOIN_INFO={
-  bridge:{label:'Bridge plates on back',text:(bW,bH)=>`Flip the assembled baseplates over. Run <strong>1×8 Flat Plates (part 3460)</strong> horizontally across every vertical seam and vertically across every horizontal seam — at least 3 plates per seam edge. This mechanically locks the array and prevents racking.`},
-  technic:{label:'Technic pins (LEGO Art method)',text:(bW,bH)=>`Align baseplates so Technic pin holes line up at each seam. Push <strong>Technic Pins (part 3673)</strong> through paired holes on adjacent plates, securing each with a <strong>Pin Stop Bush (part 32054)</strong>. This is the method used in official LEGO Art sets — rigid, flat, nothing protruding on the back.`},
+  bridge:{label:'Bridge plates on back',text:(bW,bH)=>`Flip the assembled baseplates over. Run <strong>1×8 Flat Plates (part 3460)</strong> horizontally across every vertical seam and vertically across every horizontal seam -- at least 3 plates per seam edge. This mechanically locks the array and prevents racking.`},
+  technic:{label:'Technic pins (LEGO Art method)',text:(bW,bH)=>`Align baseplates so Technic pin holes line up at each seam. Push <strong>Technic Pins (part 3673)</strong> through paired holes on adjacent plates, securing each with a <strong>Pin Stop Bush (part 32054)</strong>. This is the method used in official LEGO Art sets -- rigid, flat, nothing protruding on the back.`},
   wood:{label:'Screwed to MDF/ply backing',text:(bW,bH)=>`Cut a piece of 9–12mm MDF or plywood to the mosaic's exact footprint. Position the baseplates on it, leaving a small gap (one stud-width, ~8mm) between each plate for correct LEGO spacing. Pre-drill through the baseplate corners and screw through into the board. The backing gives a rigid frame to hang from and prevents any flex.`},
-  glue:{label:'Contact cement to MDF backing',text:(bW,bH)=>`Cut MDF or ply to size. Apply contact cement to both the MDF surface and the back of each baseplate. Leave to go tacky (approx 10 min), then press plates into position. <strong>Important:</strong> leave a 1-stud gap (~8mm) between adjacent plates — LEGO spacing requires this gap. Clamp or press flat for 30 minutes. Once cured this is extremely strong but not reversible.`},
+  glue:{label:'Contact cement to MDF backing',text:(bW,bH)=>`Cut MDF or ply to size. Apply contact cement to both the MDF surface and the back of each baseplate. Leave to go tacky (approx 10 min), then press plates into position. <strong>Important:</strong> leave a 1-stud gap (~8mm) between adjacent plates -- LEGO spacing requires this gap. Clamp or press flat for 30 minutes. Once cured this is extremely strong but not reversible.`},
 };
 const HANG_INFO={
-  lego_hanger:{label:'LEGO Art hanger bracket',text:()=>`Build the <strong>official LEGO hanger element (part 67139)</strong> into the Technic frame on the back of the mosaic — exactly as LEGO Art sets are designed. The bracket hooks directly over a standard picture nail or screw. One nail per mosaic; no drilling required beyond the wall hook.`},
+  lego_hanger:{label:'LEGO Art hanger bracket',text:()=>`Build the <strong>official LEGO hanger element (part 67139)</strong> into the Technic frame on the back of the mosaic -- exactly as LEGO Art sets are designed. The bracket hooks directly over a standard picture nail or screw. One nail per mosaic; no drilling required beyond the wall hook.`},
   command:{label:'3M Command strips (no drill)',text:()=>`Attach two or more <strong>3M Command Large Picture Hanging Strips</strong> to the back of each baseplate. Clean the surface first, press for 30 seconds, wait 1 hour before hanging. Rated ~3 kg per strip pair. Remove damage-free using the red pull tab. Best for lighter mosaics under ~2 kg.`},
-  french:{label:'French cleat rail',text:()=>`Rip a 45° bevel along one edge of 18mm plywood — one strip for the wall, one for the mosaic back. Screw the wall strip horizontally into studs. Attach the matching strip to the MDF backing of the mosaic. The two cleats interlock; the mosaic is perfectly level, can be lifted off easily, and redistributes weight along the full width rather than two points.`},
-  wire:{label:'D-ring brackets + picture wire',text:()=>`Screw two <strong>D-ring plate brackets</strong> to the MDF backing, one-third of the way in from each side near the top edge. Thread <strong>braided picture wire</strong> between them with 50–75mm of slack. Hang on a hook or nail rated above the mosaic's total weight. Check the rating — a 96×64 stud mosaic can weigh 3–5 kg.`},
+  french:{label:'French cleat rail',text:()=>`Rip a 45° bevel along one edge of 18mm plywood -- one strip for the wall, one for the mosaic back. Screw the wall strip horizontally into studs. Attach the matching strip to the MDF backing of the mosaic. The two cleats interlock; the mosaic is perfectly level, can be lifted off easily, and redistributes weight along the full width rather than two points.`},
+  wire:{label:'D-ring brackets + picture wire',text:()=>`Screw two <strong>D-ring plate brackets</strong> to the MDF backing, one-third of the way in from each side near the top edge. Thread <strong>braided picture wire</strong> between them with 50–75mm of slack. Hang on a hook or nail rated above the mosaic's total weight. Check the rating -- a 96×64 stud mosaic can weigh 3–5 kg.`},
   magnet:{label:'Neodymium magnets on steel rail',text:()=>`Screw a thin steel strip or IKEA SKÅDIS rail horizontally into wall studs. Epoxy small <strong>neodymium magnets</strong> to the back of each baseplate (4–6 per plate). The mosaic snaps to the rail and can be repositioned or rearranged freely. Ideal for displaying multiple mosaics on one rail.`},
 };
 const BORDER_INFO={
   none:{label:'None',stepText:()=>null},
-  flat1:{label:'1-stud flat border',stepText:(col)=>`<strong>1-stud flat border.</strong> Run a single row of <strong>1×2 Flat Plates (part 3023)</strong> in <strong>${col}</strong> around the perimeter — flush with the mosaic surface.`},
-  flat2:{label:'2-stud raised border',stepText:(col)=>`<strong>2-stud raised border.</strong> Place two rows of <strong>1×4 Flat Plates (part 3710)</strong> in <strong>${col}</strong> around the perimeter, then stack a second layer of <strong>1×2 Plates (part 3023)</strong> on top — ~6.4 mm proud of the surface.`},
+  flat1:{label:'1-stud flat border',stepText:(col)=>`<strong>1-stud flat border.</strong> Run a single row of <strong>1×2 Flat Plates (part 3023)</strong> in <strong>${col}</strong> around the perimeter -- flush with the mosaic surface.`},
+  flat2:{label:'2-stud raised border',stepText:(col)=>`<strong>2-stud raised border.</strong> Place two rows of <strong>1×4 Flat Plates (part 3710)</strong> in <strong>${col}</strong> around the perimeter, then stack a second layer of <strong>1×2 Plates (part 3023)</strong> on top -- ~6.4 mm proud of the surface.`},
   technic:{label:'Technic pin-hole strip',stepText:(col)=>`<strong>Technic strip border.</strong> Surround with <strong>Technic Bricks 1×2 with Holes (part 3700)</strong> in <strong>${col}</strong>, two bricks high. The exposed Technic holes allow picture wire to be threaded directly through for hanging.`},
 };
 
@@ -901,10 +901,10 @@ function initLayout() {
   var gridAsp = gridW / gridH;
   // Cover: zoom until image fills the grid in both dimensions
   if(imgAsp > gridAsp) {
-    // image is wider than grid — fit height, overflow on sides
+    // image is wider than grid -- fit height, overflow on sides
     layZoom = gridH / imgEl.naturalHeight;
   } else {
-    // image is taller than grid — fit width, overflow top/bottom
+    // image is taller than grid -- fit width, overflow top/bottom
     layZoom = gridW / imgEl.naturalWidth;
   }
   // Centre image over the grid
@@ -944,7 +944,7 @@ function drawGrid(gc, w, h) {
   var ctx = gc.getContext('2d');
   ctx.clearRect(0,0,w,h);
 
-  // Use square cells — constrain by whichever axis fills first
+  // Use square cells -- constrain by whichever axis fills first
   var cellSize = Math.min(w / bpW, h / bpH);
   var gridW = cellSize * bpW;
   var gridH = cellSize * bpH;
@@ -1021,7 +1021,7 @@ function layClamp() {
   var w=lc.width, h=lc.height;
   var iw=imgEl.naturalWidth*layZoom, ih=imgEl.naturalHeight*layZoom;
   // Only prevent the image from being panned completely off the visible canvas.
-  // Allow free zoom/pan — user can zoom out to see the whole photo and choose crop area.
+  // Allow free zoom/pan -- user can zoom out to see the whole photo and choose crop area.
   var margin = Math.min(w, h) * 0.25; // keep at least 25% of shorter side visible
   layPanX = Math.min(w - margin, Math.max(margin - iw, layPanX));
   layPanY = Math.min(h - margin, Math.max(margin - ih, layPanY));
@@ -1257,7 +1257,7 @@ function pieceTypeSVG(pt) {
   } else if(!pt.round && !pt.tile) {
     return '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="1.5" fill="currentColor" opacity=".3"/><rect x="3" y="3" width="18" height="18" rx="1.5" stroke="currentColor" stroke-width="1" fill="none" opacity=".5"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>';
   } else {
-    // square tile — smooth, no stud
+    // square tile -- smooth, no stud
     return '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="1.5" fill="currentColor" opacity=".6"/><rect x="3" y="3" width="18" height="18" rx="1.5" stroke="currentColor" stroke-width="1" fill="none" opacity=".7"/></svg>';
   }
 }
@@ -1430,7 +1430,7 @@ function renderMosaic(){
     var vo = document.getElementById('viewerOuter');
     var vw = vo.clientWidth, vh = vo.clientHeight;
     if(vw === 0) {
-      // Stage not visible yet — try again next frame
+      // Stage not visible yet -- try again next frame
       requestAnimationFrame(function() {
         var vo2 = document.getElementById('viewerOuter');
         var vw2 = vo2.clientWidth, vh2 = vo2.clientHeight;
@@ -1718,7 +1718,7 @@ function addPSwatch(parent, lc, isInMosaic) {
 function openReplaceBar(fromColor) {
   document.getElementById('replaceFromName').textContent = fromColor.name;
   document.getElementById('replaceBar').style.display = 'block';
-  // Build replacement palette — all LEGO colours except the one being replaced
+  // Build replacement palette -- all LEGO colours except the one being replaced
   var rpal = document.getElementById('replacePal');
   rpal.innerHTML = '';
   LEGO_COLORS.filter(function(lc) { return lc.hex !== fromColor.hex; }).forEach(function(lc) {
@@ -2096,6 +2096,10 @@ function getElementId(hex, pieceTypeId) {
   return row ? row.e : null;
 }
 
+document.getElementById('pabBtn').addEventListener('click', function(){
+  if(!mosaicData){ showToast('Generate a mosaic first'); setTimeout(hideToast,2000); return; }
+  exportPAB();
+});
 
 function exportPAB(){
   var cc=getColorCounts();
@@ -2156,7 +2160,7 @@ function exportPAB(){
       totalCost+=qt*0.18;
       rows.push({elementId:null,quantity:qt,
         description:bcName+' Technic Brick 1x2 with Hole',part:'3700',price:0.18});
-      unknown.push(bcName+' Technic Brick 1x2 — search PAB manually');
+      unknown.push(bcName+' Technic Brick 1x2 -- search PAB manually');
     }
   }
 
@@ -2173,7 +2177,7 @@ function exportPAB(){
       var qp=seams*4;
       totalCost+=qp*0.08;
       rows.push({elementId:null,quantity:qp,description:'Technic Pin',part:'3673',price:0.08});
-      unknown.push('Technic Pin 3673 — search PAB manually');
+      unknown.push('Technic Pin 3673 -- search PAB manually');
     } else {
       rows.push({elementId:null,quantity:1,
         description:'MDF/ply board + adhesive (hardware store)',part:'-',price:0});
@@ -2207,7 +2211,7 @@ function exportPAB(){
     .map(function(r){return {elementId:r.elementId,quantity:r.quantity};});
 
   // ── COST ESTIMATE ─────────────────────────────────────
-  var costLines=['BRICK LAB — LEGO PICK A BRICK COST ESTIMATE',
+  var costLines=['BRICK LAB -- LEGO PICK A BRICK COST ESTIMATE',
     'NZD prices from lego.com/en-nz, July 2026',''];
   rows.forEach(function(r){
     if(r.header){ costLines.push(''); costLines.push('--- '+r.section+' ---'); return; }
@@ -2219,10 +2223,10 @@ function exportPAB(){
   });
   costLines.push('');
   costLines.push('LEGO PAB TOTAL: $'+totalCost.toFixed(2)+' NZD (excl. hardware store items)');
-  costLines.push('Prices indicative — verify on lego.com/en-nz before ordering.');
+  costLines.push('Prices indicative -- verify on lego.com/en-nz before ordering.');
   if(unknown.length){
     costLines.push('');
-    costLines.push('? = No confirmed PAB element ID — search by design number or use BrickLink:');
+    costLines.push('? = No confirmed PAB element ID -- search by design number or use BrickLink:');
     unknown.forEach(function(u){costLines.push('  '+u);});
   }
 
@@ -2340,8 +2344,21 @@ function buildPDFWithLib(JSPDF){
     var doc=new JSPDF({orientation:'portrait',unit:'mm',format:'a4'});
     function renderPage(i){
       if(i>=total){
-        showToast('Saving\u2026');
-        setTimeout(function(){ doc.save('brick-lab-mosaic.pdf'); hideToast(); },50);
+        showToast('Opening PDF\u2026');
+        setTimeout(function(){
+          // Use blob URL + window.open to avoid navigating away on Safari iOS
+          var pdfBlob = doc.output('blob');
+          var blobUrl = URL.createObjectURL(pdfBlob);
+          var a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = 'brick-lab-mosaic.pdf';
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 10000);
+          hideToast();
+        },50);
         return;
       }
       showToast('Page '+(i+1)+' of '+total+'\u2026');
@@ -2392,7 +2409,7 @@ function buildBookletData(){
     return (0.299*r+0.587*g+0.114*b)>160;
   }
 
-  // Mosaic thumbnail — draw via ImageData then capture as dataURL for reliable PDF embedding
+  // Mosaic thumbnail -- draw via ImageData then capture as dataURL for reliable PDF embedding
   var thumbScale=6;
   var thumbCv=document.createElement('canvas');
   thumbCv.width=w*thumbScale; thumbCv.height=h*thumbScale;
@@ -2472,7 +2489,7 @@ function buildBookletData(){
     // Divider
     ctx.fillStyle='rgba(255,255,255,0.1)';ctx.fillRect(PAD,y,CW-PAD*2,1);y+=8*S;
 
-    // Thumbnail — use the pre-rendered Image element
+    // Thumbnail -- use the pre-rendered Image element
     var availTW=CW-PAD*2, availTH=Math.round(CH*0.36);
     var tW2src=thumbImg2._w||1, tH2src=thumbImg2._h||1;
     var tAsp=tW2src/tH2src, tW2,tH2;
@@ -2483,7 +2500,7 @@ function buildBookletData(){
     ctx.strokeStyle=YELLOW;ctx.lineWidth=2*S;ctx.strokeRect(tX2,y,tW2,tH2);
     y+=tH2+12*S;
 
-    // Titles — scale to page width
+    // Titles -- scale to page width
     var innerW=CW-PAD*2;
     ctx.textAlign='center';ctx.textBaseline='alphabetic';
     ctx.fillStyle=WHITE;
@@ -2623,7 +2640,7 @@ function buildBookletData(){
     var tips=[
       'Each colour is assigned a NUMBER (1 = most used). The Colour Key on page 3 shows every colour with its number, LEGO name and part number.',
       'The BUILD INSTRUCTIONS on page 4 walk through baseplates, borders, joining and hanging hardware.',
-      'SECTION PAGES (one per baseplate) show a colour-coded numbered grid — find the number in each cell and place the matching piece.',
+      'SECTION PAGES (one per baseplate) show a colour-coded numbered grid -- find the number in each cell and place the matching piece.',
       'Each section page has a MINI KEY showing only the colours in that section with piece counts.'
     ];
     var ty2=y+20*S;
@@ -2731,7 +2748,7 @@ function buildBookletData(){
     // Border hardware
     var borderInf=BORDER_INFO[selBorder];
     if(selBorder!=='none'){
-      tableHeader('BORDER — '+borderInf.label.toUpperCase());
+      tableHeader('BORDER -- '+borderInf.label.toUpperCase());
       var bcVal=document.getElementById('borderColor')?document.getElementById('borderColor').value:'Black';
       var perim=2*(w+h);
       if(selBorder==='flat1'){
@@ -2747,7 +2764,7 @@ function buildBookletData(){
     // Joining hardware
     var joinInf=JOIN_INFO[selJoin];
     if(totalBP>1){
-      tableHeader('JOINING — '+joinInf.label.toUpperCase());
+      tableHeader('JOINING -- '+joinInf.label.toUpperCase());
       var seamsV=bpW-1, seamsH=bpH-1, totalSeams=seamsV*bpH+seamsH*bpW;
       if(selJoin==='bridge'){
         dataRow(null,null,'1×8 Flat Plate (bridge each seam)','3460',(totalSeams*3).toLocaleString(),null,0);
@@ -2763,7 +2780,7 @@ function buildBookletData(){
 
     // Hanging hardware
     var hangInf=HANG_INFO[selHang];
-    tableHeader('HANGING — '+hangInf.label.toUpperCase());
+    tableHeader('HANGING -- '+hangInf.label.toUpperCase());
     if(selHang==='lego_hanger'){
       dataRow(null,null,'LEGO Art Hanger Bracket','67139',1,null,0);
     } else if(selHang==='command'){
@@ -2799,7 +2816,7 @@ function buildBookletData(){
     var bcVal2=document.getElementById('borderColor')?document.getElementById('borderColor').value:'Black';
 
     var steps=[
-      ['🧱','Prepare baseplates','Lay '+totalBP+' baseplate'+(totalBP!==1?'s':'')+' in a '+bpW+'×'+bpH+' grid. Label each with a sticky note — section 1-1 top-left, then left to right, top to bottom.'],
+      ['🧱','Prepare baseplates','Lay '+totalBP+' baseplate'+(totalBP!==1?'s':'')+' in a '+bpW+'×'+bpH+' grid. Label each with a sticky note -- section 1-1 top-left, then left to right, top to bottom.'],
       ['🎨','Sort pieces by number','Group each colour into a separate container and label it with its number from the Colour Key (Page 3). Pre-sorting makes placing much faster.'],
       ['📋','Work section by section','Complete one baseplate at a time using its section page. Build top-to-bottom, left-to-right. Check the number in each cell and place the matching piece.'],
       ['🔍','Use the mini key','Each section page shows only the colours in that section with piece counts, so you can quickly verify you have the right pieces ready.'],
@@ -2865,20 +2882,20 @@ function buildBookletData(){
 
           ctx.fillStyle=WHITE;ctx.fillRect(0,0,CW,CH);
 
-          // Top bar — two lines to avoid overlap
+          // Top bar -- two lines to avoid overlap
           var TB=20*S;
           ctx.fillStyle=DARK;ctx.fillRect(0,0,CW,TB);
           setFont(ctx,8,700,S);ctx.fillStyle=YELLOW;ctx.textAlign='left';ctx.textBaseline='middle';
           ctx.fillText('Section '+(bpRow+1)+'-'+(bpCol+1),PAD,TB*0.35);
           setFont(ctx,5,400,S);ctx.fillStyle='rgba(255,255,255,0.5)';
           ctx.fillText('Cols '+(startX+1)+'\u2013'+endX+' \u00b7 Rows '+(startY+1)+'\u2013'+endY,PAD,TB*0.75);
-          // Page badge — right side, vertically centred
+          // Page badge -- right side, vertically centred
           roundRect(ctx,CW-20*S,3*S,16*S,14*S,4*S,YELLOW);
           setFont(ctx,7,700,S);ctx.fillStyle=DARK;ctx.textAlign='center';ctx.textBaseline='middle';
           ctx.fillText(pn,CW-12*S,TB/2);
           var y=TB;
 
-          // Mini key — wraps, max 3 rows
+          // Mini key -- wraps, max 3 rows
           var secUsed={};
           for(var sy2=startY;sy2<endY;sy2++) for(var sx2=startX;sx2<endX;sx2++) secUsed[pixels[sy2*w+sx2].hex]=true;
           var secList=sortedColors.filter(function(c){return secUsed[c.hex];});
@@ -2897,7 +2914,7 @@ function buildBookletData(){
           });
           y=ky+KRH+4*S;
 
-          // Grid — always square cells
+          // Grid -- always square cells
           var FOOTER=9*S;
           var availW=CW-PAD*2;
           var availH=CH-y-FOOTER-2*S;
