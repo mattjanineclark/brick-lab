@@ -463,6 +463,7 @@ tr:last-child td{border-bottom:none;}
     <button class="sprint" id="printBtn">&#128196; Download PDF Booklet</button>
     <div class="srow">
       <button class="ssec" id="exportBtn">&#8681; Save PNG</button>
+      <button class="ssec" id="pabBtn" title="Download LEGO Pick a Brick upload file">&#127847; PAB List</button>
       <button class="ssec" onclick="goStage(3)">&#8249; Back</button>
       <button class="ssec" onclick="goStage(1)" style="background:var(--ylite);border-color:var(--yellow)">&#8592; New</button>
     </div>
@@ -1612,6 +1613,108 @@ function renderBOM(){
     tbody.appendChild(tr);
   });
   document.getElementById('totalPcs').textContent=total.toLocaleString()+' pieces';
+}
+
+// ── PICK A BRICK EXPORT ─────────────────────────────────────
+// Element IDs from LEGO Pick a Brick NZ (lego.com/en-nz), prices NZD July 2026
+const PAB_PRICES = { roundPlate:0.11, roundTile:0.12, sqPlate:0.11, sqTile:0.08, flower:0.14 };
+// BrickLink colour ID -> element IDs per piece type
+// null = not confirmed available on PAB (user must search by design ID)
+const PAB_ELEMENTS = {
+  '11': { roundPlate:'6175031', sqPlate:'302126',  roundTile:'6175030', sqTile:'307026',  flower:null },
+  '1':  { roundPlate:'6175023', sqPlate:'302101',  roundTile:'6175022', sqTile:'307001',  flower:null },
+  '5':  { roundPlate:'614121',  sqPlate:'302121',  roundTile:null,      sqTile:'307021',  flower:null },
+  '3':  { roundPlate:'614124',  sqPlate:'302124',  roundTile:null,      sqTile:'307024',  flower:null },
+  '72': { roundPlate:'4211050', sqPlate:'4211063', roundTile:'6130369', sqTile:'4211062', flower:null },
+  '71': { roundPlate:'4211399', sqPlate:'4211398', roundTile:'6130368', sqTile:'4211397', flower:null },
+  '70': { roundPlate:'4211176', sqPlate:'4211168', roundTile:null,      sqTile:'4211163', flower:null },
+  '2':  { roundPlate:'614110',  sqPlate:'302115',  roundTile:null,      sqTile:'4118784', flower:null },
+  '19': { roundPlate:'4158490', sqPlate:'4158469', roundTile:null,      sqTile:null,      flower:null },
+  '48': { roundPlate:'4175384', sqPlate:'4172016', roundTile:null,      sqTile:null,      flower:null },
+  '308':{ roundPlate:'4539169', sqPlate:'4539256', roundTile:null,      sqTile:null,      flower:null },
+  '288':{ roundPlate:'4179827', sqPlate:'4163303', roundTile:null,      sqTile:null,      flower:null },
+  '6':  { roundPlate:'614128',  sqPlate:'302128',  roundTile:null,      sqTile:'307028',  flower:null },
+  '7':  { roundPlate:'614123',  sqPlate:'302123',  roundTile:null,      sqTile:'307023',  flower:null },
+  '63': { roundPlate:'4140671', sqPlate:'4140666', roundTile:null,      sqTile:null,      flower:null },
+  '102':{ roundPlate:'4295276', sqPlate:'4295272', roundTile:null,      sqTile:null,      flower:null },
+  '25': { roundPlate:'4107903', sqPlate:'4107888', roundTile:null,      sqTile:null,      flower:null },
+  '104':{ roundPlate:null,      sqPlate:null,      roundTile:null,      sqTile:null,      flower:null },
+  '47': { roundPlate:'4656474', sqPlate:'4656463', roundTile:null,      sqTile:null,      flower:null },
+  '27': { roundPlate:'4616298', sqPlate:'4616294', roundTile:null,      sqTile:null,      flower:null },
+  '89': { roundPlate:'4107911', sqPlate:'4107907', roundTile:null,      sqTile:null,      flower:null },
+  '28': { roundPlate:'4108009', sqPlate:'4113815', roundTile:null,      sqTile:null,      flower:null },
+  '26': { roundPlate:null,      sqPlate:null,      roundTile:null,      sqTile:null,      flower:null },
+  '84': { roundPlate:'6009059', sqPlate:null,      roundTile:null,      sqTile:null,      flower:null },
+  '150':{ roundPlate:null,      sqPlate:null,      roundTile:null,      sqTile:null,      flower:null },
+};
+
+document.getElementById('pabBtn').addEventListener('click', function(){
+  if(!mosaicData){ alert('Generate a mosaic first.'); return; }
+  exportPAB();
+});
+
+function exportPAB(){
+  var cc=getColorCounts();
+  var rows=[], totalCost=0, unknown=[];
+  Object.entries(cc).forEach(function(e){
+    var hex=e[0], info=e[1];
+    var pid=colorPieceMap[hex]||defaultPiece;
+    var pt=PIECE_TYPES.find(function(p){return p.id===pid;})||PIECE_TYPES[0];
+    var qty=Math.ceil(info.count/pt.studs);
+    var legoCol=LEGO_COLORS.find(function(lc){return lc.hex===hex;});
+    var blId=legoCol?String(legoCol.bl):null;
+    var elMap=blId?PAB_ELEMENTS[blId]:null;
+    var elId=elMap?elMap[pid]:null;
+    var price=PAB_PRICES[pid]||0.11;
+    totalCost+=qty*price;
+    rows.push({elementId:elId,quantity:qty,colour:info.name,part:pt.part,label:pt.label,price:price});
+    if(!elId) unknown.push(info.name+' '+pt.label+' (design #'+pt.part+')');
+  });
+
+  // CSV for PAB upload
+  var csvRows=['elementId,quantity'].concat(
+    rows.filter(function(r){return r.elementId;})
+        .map(function(r){return r.elementId+','+r.quantity;})
+  );
+  // Also include a comment block for unknown ones
+  if(unknown.length){
+    csvRows.push('');
+    csvRows.push('# The following could not be mapped to a PAB element ID.');
+    csvRows.push('# Search for these manually on Pick a Brick by design number:');
+    unknown.forEach(function(u){csvRows.push('# '+u);});
+  }
+
+  // JSON for PAB upload
+  var jsonData=rows.filter(function(r){return r.elementId;})
+    .map(function(r){return {elementId:r.elementId, quantity:r.quantity};});
+
+  // Cost estimate text
+  var costLines=['BRICK LAB — LEGO PICK A BRICK COST ESTIMATE','NZD prices from lego.com/en-nz, July 2026',''];
+  rows.forEach(function(r){
+    var flag=r.elementId?'  ':'? ';
+    costLines.push(flag+r.colour+' '+r.label+' x'+r.quantity+' @ $'+r.price.toFixed(2)+' = $'+(r.quantity*r.price).toFixed(2)+' NZD');
+  });
+  costLines.push('');
+  costLines.push('ESTIMATED TOTAL: $'+totalCost.toFixed(2)+' NZD');
+  costLines.push('(Prices indicative only — verify on PAB before ordering)');
+  if(unknown.length){
+    costLines.push('');
+    costLines.push('Items marked ? have no confirmed PAB element ID.');
+    costLines.push('Search Pick a Brick by design number and select your colour.');
+  }
+
+  function dl(content,name,type){
+    var b=new Blob([content],{type:type});
+    var u=URL.createObjectURL(b);
+    var a=document.createElement('a');a.href=u;a.download=name;a.click();
+    setTimeout(function(){URL.revokeObjectURL(u);},1000);
+  }
+  dl(csvRows.join('\r\n'),'brick-lab-pab.csv','text/csv');
+  setTimeout(function(){dl(JSON.stringify(jsonData,null,2),'brick-lab-pab.json','application/json');},300);
+  setTimeout(function(){dl(costLines.join('\n'),'brick-lab-cost-estimate.txt','text/plain');},600);
+
+  showToast('Saved! Est. $'+totalCost.toFixed(0)+' NZD · '+rows.filter(function(r){return r.elementId;}).length+'/'+rows.length+' mapped to PAB');
+  setTimeout(hideToast,5000);
 }
 
 // ── EXPORT PNG ─────────────────────────────────────────────
