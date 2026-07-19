@@ -259,7 +259,41 @@ tr:last-child td{border-bottom:none;}
 .pb-footer-brand{font-size:clamp(.48rem,1.7vw,.56rem);color:#F2C314;font-weight:700;letter-spacing:.06em;}
 .pb-footer-info{font-size:clamp(.44rem,1.5vw,.52rem);color:rgba(255,255,255,.3);}
 .pb-footer-dots{font-size:4px;color:#F2C314;letter-spacing:3px;opacity:.5;}
-@media print{body>*{display:none !important;}#printBooklet{display:block !important;}@page{size:A4 portrait;margin:0;}.pb-page{page-break-after:always !important;width:210mm !important;min-height:297mm !important;border-radius:0 !important;box-shadow:none !important;margin:0 !important;}.pb-page:last-child{page-break-after:auto !important;}}
+@media print{
+  body>*{display:none !important;}
+  #printBooklet{display:block !important;}
+  @page{size:A4 portrait;margin:0;}
+  .pb-page{
+    page-break-after:always !important;
+    break-after:page !important;
+    width:210mm !important;
+    min-height:297mm !important;
+    max-height:297mm !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    margin:0 !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+  }
+  .pb-page:last-child{page-break-after:auto !important;break-after:auto !important;}
+  .pb-grid-print{
+    padding:4mm 6mm !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+    overflow:hidden !important;
+  }
+  .pb-grid-print table{
+    width:100% !important;
+    max-width:198mm !important;
+    table-layout:fixed !important;
+    border-collapse:collapse !important;
+  }
+  .pb-grid-print td{
+    overflow:hidden !important;
+    padding:0 !important;
+    aspect-ratio:1/1 !important;
+  }
+}
 #printBooklet{display:none;}
 </style>
 </head>
@@ -488,7 +522,7 @@ tr:last-child td{border-bottom:none;}
   <div class="modbar">
     <h3>&#128196; Print Booklet</h3>
     <div class="modbtns">
-      <button onclick="window.print()">&#128424; Print</button>
+      <button id="doPrintBtn">&#128424; Print</button>
       <button class="cl" id="modClose">&#10005; Close</button>
     </div>
   </div>
@@ -1644,6 +1678,10 @@ document.getElementById('printBtn').addEventListener('click',function(){
   document.getElementById('modOv').classList.add('on');
 });
 document.getElementById('modClose').addEventListener('click',function(){document.getElementById('modOv').classList.remove('on');});
+document.getElementById('doPrintBtn').addEventListener('click',function(){
+  // Small delay ensures printBooklet is rendered before print dialog opens
+  setTimeout(function(){ window.print(); }, 100);
+});
 
 function buildBooklet(){
   if(!mosaicData) return '';
@@ -1709,6 +1747,31 @@ function buildBooklet(){
   // For a 16×16 grid: 170/16 = 10.6mm → use 10mm
   // Numbers: font-size about 60% of cell size
 
+  // ── Helpers ───────────────────────────────────────────────────────────
+  const pbFooter=(label)=>`<div class="pb-footer">
+    <span class="pb-footer-brand">BRICK LAB</span>
+    <span class="pb-footer-dots">● ● ● ● ●</span>
+    <span class="pb-footer-info">${label} · ${now}</span>
+  </div>`;
+  const pbTopbar=(title,pg)=>`<div class="pb-topbar">
+    <span class="pb-topbar-title">${title}</span>
+    <div class="pb-page-circle">${pg}</div>
+  </div>`;
+  const stepIcons=['🧱','🎨','🔨','🖼','🔩','📌','🪝'];
+  let sn=0;
+  const pbStep=t=>`<div class="pb-step">
+    <div class="pb-step-num">${++sn}</div>
+    <div class="pb-step-icon">${stepIcons[(sn-1)%stepIcons.length]}</div>
+    <div class="pb-step-body"><p>${t}</p></div>
+  </div>`;
+
+  function buildColgroup(n){
+    // Equal-width columns — percentage only, no mm, so table never overflows
+    var pct = (100/n).toFixed(4);
+    var s='';
+    for(var i=0;i<n;i++) s+='<col style="width:'+pct+'%"/>';
+    return s;
+  }
   function buildSectionPage(bpCol, bpRow, pageNum){
     const startX=bpCol*bpSize, startY=bpRow*bpSize;
     const endX=Math.min(startX+bpSize,w), endY=Math.min(startY+bpSize,h);
@@ -1721,12 +1784,11 @@ function buildBooklet(){
     }
     const secColorList=sortedColors.filter(c=>secColors.has(c.hex));
 
-    // Cell size: fit within 182mm wide × 210mm tall (A4 with 10mm margins each side)
-    // Use percentage width on table so it never overflows — cell is a square percentage
-    const maxCellMm = Math.min(182/secW, 210/secH);
-    const cellMm = Math.min(maxCellMm, 9); // hard cap 9mm
-    const fontMm = Math.max(1.8, cellMm * 0.52);
-    const tableMm = cellMm * secW; // actual table width in mm
+    // Table is width:100% of its container. Columns are equal percentage widths.
+    // Cells use aspect-ratio:1/1 so height automatically matches width — always square.
+    // Font size scales with column count: fewer columns = wider cells = bigger font.
+    const approxCellMm = 198 / secW;
+    const fontPt = Math.min(Math.max(approxCellMm * 1.2, 4), 9);
 
     let gridRows='';
     for(let sy=startY;sy<endY;sy++){
@@ -1735,10 +1797,17 @@ function buildBooklet(){
         const px=pixels[sy*w+sx];
         const num=colorNumMap[px.hex]||'?';
         const txtCol=isLight(px.hex)?'#000':'#fff';
-        // Fixed mm width per cell — table is constrained by max-width below
-        cells+=`<td style="background:${px.hex};color:${txtCol};font-size:${fontMm}mm;border:0.25px solid rgba(0,0,0,.15);padding:0;overflow:hidden">${num}</td>`;
+        cells+='<td style="'
+          +'background:'+px.hex+';'
+          +'color:'+txtCol+';'
+          +'font-size:'+fontPt.toFixed(1)+'pt;'
+          +'border:0.3px solid rgba(0,0,0,.18);'
+          +'padding:0;overflow:hidden;'
+          +'line-height:1;vertical-align:middle;'
+          +'aspect-ratio:1/1'
+          +'">'+num+'</td>';
       }
-      gridRows+=`<tr style="height:${cellMm}mm">${cells}</tr>`;
+      gridRows+='<tr>'+cells+'</tr>';
     }
 
     // Mini key
@@ -1748,33 +1817,32 @@ function buildBooklet(){
         if(pixels[sy*w+sx].hex===c.hex) cnt++;
       }
       const txtCol=isLight(c.hex)?'#000':'#fff';
-      return `<span class="pb-key-chip" style="background:${c.hex};color:${txtCol}">${c.num} ${c.name} <span style="opacity:.6;font-size:.85em">(${cnt})</span></span>`;
+      return '<span class="pb-key-chip" style="background:'+c.hex+';color:'+txtCol+'">'+c.num+' '+c.name+' <span style="opacity:.6;font-size:.85em">('+cnt+')</span></span>';
     }).join('');
 
-    return `<div class="pb-page">
-  <div class="pb-section-topbar">
-    <div>
-      <div class="pb-section-id">Section ${bpRow+1}-${bpCol+1}</div>
-      <div class="pb-section-coords">Cols ${startX+1}–${endX} · Rows ${startY+1}–${endY}</div>
-    </div>
-    <div class="pb-section-pagenum">${pageNum}</div>
-  </div>
-  <div class="pb-mini-key">
-    ${sectionKey}
-  </div>
-  <div class="pb-grid-wrap">
-    <div style="max-width:${tableMm}mm;overflow:hidden">
-      <table style="border-collapse:collapse;table-layout:fixed;
-        width:${tableMm}mm;max-width:182mm;
-        font-family:'Space Grotesk',sans-serif;font-weight:700;
-        text-align:center;line-height:1">
-        <colgroup>${Array(secW).fill(`<col style="width:${cellMm}mm"/>`).join('')}</colgroup>
-        ${gridRows}
-      </table>
-    </div>
-  </div>
-  ${pbFooter(`Section ${bpRow+1}-${bpCol+1}`)}
-</div>`;
+    return '<div class="pb-page">'
+      +'<div class="pb-section-topbar">'
+        +'<div>'
+          +'<div class="pb-section-id">Section '+(bpRow+1)+'-'+(bpCol+1)+'</div>'
+          +'<div class="pb-section-coords">Cols '+(startX+1)+'–'+endX+' · Rows '+(startY+1)+'–'+endY+'</div>'
+        +'</div>'
+        +'<div class="pb-section-pagenum">'+pageNum+'</div>'
+      +'</div>'
+      +'<div class="pb-mini-key">'+sectionKey+'</div>'
+      +'<div class="pb-grid-print" style="padding:4mm 6mm;overflow:hidden;box-sizing:border-box">'
+        +'<table style="'
+          +'width:100%;'
+          +'table-layout:fixed;'
+          +'border-collapse:collapse;'
+          +'font-family:\'Space Grotesk\',sans-serif;'
+          +'font-weight:700;'
+          +'text-align:center">'
+          +'<colgroup>'+buildColgroup(secW)+'</colgroup>'
+          +gridRows
+        +'</table>'
+      +'</div>'
+      +pbFooter('Section '+(bpRow+1)+'-'+(bpCol+1))
+    +'</div>';
   }
 
   // Generate all section pages
@@ -1789,6 +1857,7 @@ function buildBooklet(){
   const bpBLColor = '11'; // Black is most common for mosaics
 
   // Border pieces
+  const borderColorName = document.getElementById('borderColor') ? document.getElementById('borderColor').value : 'Black';
   let borderHardware='';
   if(selBorder==='flat1'){
     const perim=2*(w+h); // studs around perimeter
@@ -1839,34 +1908,16 @@ function buildBooklet(){
     <tr><td></td><td></td><td>IKEA SKÅDIS rail or steel strip</td><td><span class="pb-part-tag">Non-LEGO</span></td><td style="text-align:right;font-weight:600">1</td><td></td><td></td></tr>`;
   }
 
-  const borderColorName=( document.getElementById('borderColor') ? document.getElementById('borderColor').value : 'Black');
   const hardwareRows=(totalSeams>0||joinHardware||hangHardware)?`
     <tr style="background:#f0f4f0"><td colspan="2" style="font-weight:700;font-size:.65rem;color:#555;padding:4px 7px;text-transform:uppercase;letter-spacing:.06em">Baseplates</td><td colspan="5"></td></tr>
     <tr><td></td><td></td><td>${bpSize}×${bpSize} Baseplate</td><td><span class="pb-part-tag">${bpPartNum}</span></td><td style="text-align:right;font-weight:600">${totalBP}</td><td></td><td><a href="https://www.bricklink.com/v2/catalog/catalogitem.page?P=${bpPartNum}" style="font-size:.56rem;color:#F2C314" target="_blank">BL↗</a></td></tr>
     ${borderHardware}
-    ${totalSeams>0?`<tr style="background:#f0f4f0"><td colspan="2" style="font-weight:700;font-size:.65rem;color:#555;padding:4px 7px;text-transform:uppercase;letter-spacing:.06em">Joining (${joinInf.label})</td><td colspan="5"></td></tr>${joinHardware}`:''}
+    ${totalSeams>0?('<tr style="background:#f0f4f0"><td colspan="2" style="font-weight:700;font-size:.65rem;color:#555;padding:4px 7px;text-transform:uppercase;letter-spacing:.06em">Joining ('+joinInf.label+')</td><td colspan="5"></td></tr>'+joinHardware):''}
     <tr style="background:#f0f4f0"><td colspan="2" style="font-weight:700;font-size:.65rem;color:#555;padding:4px 7px;text-transform:uppercase;letter-spacing:.06em">Hanging (${hangInf.label})</td><td colspan="5"></td></tr>
     ${hangHardware}
   `:'';
 
 
-  // ── Helpers ───────────────────────────────────────────────────────────
-  const pbFooter=(label)=>`<div class="pb-footer">
-    <span class="pb-footer-brand">BRICK LAB</span>
-    <span class="pb-footer-dots">● ● ● ● ●</span>
-    <span class="pb-footer-info">${label} · ${now}</span>
-  </div>`;
-  const pbTopbar=(title,pg)=>`<div class="pb-topbar">
-    <span class="pb-topbar-title">${title}</span>
-    <div class="pb-page-circle">${pg}</div>
-  </div>`;
-  const stepIcons=['🧱','🎨','🔨','🖼','🔩','📌','🪝'];
-  let sn=0;
-  const pbStep=t=>`<div class="pb-step">
-    <div class="pb-step-num">${++sn}</div>
-    <div class="pb-step-icon">${stepIcons[(sn-1)%stepIcons.length]}</div>
-    <div class="pb-step-body"><p>${t}</p></div>
-  </div>`;
 
   // ── Hardware rows with new category style ─────────────────────────────
   const catRow=(label)=>`<tr class="pb-bom-cat"><td colspan="7">${label}</td></tr>`;
@@ -1882,6 +1933,14 @@ function buildBooklet(){
     ${hangHardware}
   `:'';
 
+  // Pre-build step strings to avoid nested template literals (Safari bug)
+  const step1=pbStep('<strong>Prepare baseplates.</strong> Lay '+totalBP+' baseplate'+(totalBP!==1?'s':'')+' in a '+bpW+'×'+bpH+' grid. Label each with a sticky note — row 1 left to right, row 2 below, and so on.');
+  const step2=pbStep('<strong>Sort pieces by colour number.</strong> Group each colour into a dish and label it with its number from the Colour Key. Pre-sorting makes placing much faster.');
+  const step3=pbStep('<strong>Work section by section.</strong> Complete one baseplate using its page. Build top to bottom, left to right. Check the number in each cell.');
+  const step4=pbStep('<strong>Use the mini key.</strong> Each section page shows only the colours in that section with per-section piece counts.');
+  const step5=borderStep ? pbStep(borderStep) : '';
+  const step6=pbStep('<strong>Join baseplates — '+joinInf.label+'.</strong> '+joinInf.text(bpW,bpH));
+  const step7=pbStep('<strong>Wall hanging — '+hangInf.label+'.</strong> '+hangInf.text());
   return `<div class="pb-booklet">
 
 
@@ -1922,7 +1981,7 @@ function buildBooklet(){
     <div class="pb-two-col">
       <div>
         <div class="pb-col-label">📷 Original Photo</div>
-        <div class="pb-img-frame">${origSrc?`<img class="pb-photo-img" src="${origSrc}" style="max-height:42vw;object-fit:contain"/>`:'<p style="color:#999;font-size:.75rem;padding:8px">No photo</p>'}</div>
+        <div class="pb-img-frame">${origSrc?('<img class="pb-photo-img" src="'+origSrc+'" style="max-height:42vw;object-fit:contain"/>'):'<p style="color:#999;font-size:.75rem;padding:8px">No photo</p>'}</div>
         <div class="pb-img-caption">Source image</div>
       </div>
       <div>
@@ -1983,13 +2042,7 @@ function buildBooklet(){
       </p>
     </div>
     <div class="pb-steps">
-      ${pbStep(`<strong>Prepare baseplates.</strong> Lay ${totalBP} baseplate${totalBP!==1?'s':''} in a ${bpW}×${bpH} grid. Label each with a sticky note — row 1 left to right, row 2 below, and so on.`)}
-      ${pbStep(`<strong>Sort pieces by colour number.</strong> Group each colour into a dish and label it with its number from the Colour Key. Pre-sorting makes placing much faster.`)}
-      ${pbStep(`<strong>Work section by section.</strong> Complete one baseplate using its page. Build top to bottom, left to right. Check the number in each cell.`)}
-      ${pbStep(`<strong>Use the mini key.</strong> Each section page shows only the colours in that section with per-section piece counts.`)}
-      ${borderStep ? pbStep(borderStep) : ''}
-      ${pbStep(`<strong>Join baseplates — ${joinInf.label}.</strong> ${joinInf.text(bpW,bpH)}`)}
-      ${pbStep(`<strong>Wall hanging — ${hangInf.label}.</strong> ${hangInf.text()}`)}
+      ${step1}${step2}${step3}${step4}${step5}${step6}${step7}
     </div>
     <p style="font-size:clamp(.44rem,1.5vw,.52rem);color:#666;font-family:Inter,sans-serif;line-height:1.5;margin-top:auto">
       LEGO® is a trademark of the LEGO Group, which does not sponsor, authorise or endorse this document. Part numbers sourced from BrickLink Reference Catalog.
